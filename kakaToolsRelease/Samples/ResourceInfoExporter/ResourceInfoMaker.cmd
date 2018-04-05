@@ -1,0 +1,2 @@
+..\..\ResourceInfoMaker -path "projectPath"
+@pause

@@ -1,0 +1,88 @@
+ProtocolGenerater
+
+Usage:
+ProtocolGenerater.exe -protocol "D:\xxx\protocol.xml" -template "D:\xxx\templates\csharp\template_csharp.xml" -output "J:/protocol"
+
+根据协议配置文件和相应语言的代码模板生成协议体类、二进制编解码代码、协议枚举类、静态的回调管理类
+除了基本类型参数，还支持数组参数、结构体复合参数(支持嵌套)，结构体可以单独定义以支持复用
+可以传输的对象类型取决于代码模板中是否定义了该类型的编解码方式，因此可以自由扩展想要的类型(DateTime、Table、Vector3、Error...)
+
+命令行调用参数：
+-protocol 协议配置文件路径
+
+-template 代码模板文件路径
+
+-output 代码输出文件夹路径
+
+
+
+
+
+excelExport
+
+Usage:
+excelExport.exe -excel "D:\xxx\sample\sample.xlsx" -template "D:\xxx\sample\template_csharp.xml" -codeGeneratePath "J:\code" -dataPath "J:\bin"
+
+动态读取excel文件中所有的表，根据表中定义的字段名和类型以及相应语言的代码模板生成VO类，并将表中的数据导出成二进制
+支持的对象类型取决于代码模板中是否定义了该类型的解码方式，因此可以自由扩展想要的类型(DateTime、Vector3...)
+如果出现提示"未在本地计算机上注册Microsoft.Ace.OleDB.12.0提供程序"，就去http://www.microsoft.com/zh-cn/download/details.aspx?id=13255 下载安装组件即可
+
+命令行调用参数：
+-excel			excel文件路径或目录，可以支持多个路径，用","分隔
+
+-template		代码模板文件路径
+
+-codeGeneratePath	代码输出文件夹路径
+
+可选：
+[-dataPath]		excel数据二进制文件输出路径，不指定则输出到源excel同目录下
+
+[-prefix_primaryKey]	主键字段的前缀 (默认[$])，没有指定主键时将第一个字段作为主键
+
+[-prefix_IgnoreSheet]	忽略的表名前缀 (默认#)
+
+[-prefix_IgnoreLine]	注释的行前缀 (默认[#])
+
+[-prefix_IgnoreColumn]	注释的列前缀 (默认[*])
+
+[-endian]		字节序，有效值为LittleEndian、BigEndian (默认LittleEndian)
+
+[-ext]		二进制文件扩展名，默认为".kk"
+
+
+
+
+
+ResourceInfoMaker
+
+将svn目录中所有被版本控制的文件信息(相对路径、字节大小、版本号)导出到fileInfo.txt，格式：文件相对路径，版本号，字节大小。以","分割。  同时将根目录的版本号导出到buildVersion.txt和buildVersion.js
+
+命令行调用参数：
+-path [生成信息的svn根目录]
+
+
+
+
+ResourceInfoExporter
+
+将svn目录中所有被版本控制的文件根据其版本号进行改名并导出到指定目录，同时生成相应的文件信息，格式：原文件相对路径，改名后相对路径，版本号，字节大小。以","分割。
+
+命令行调用参数：
+-input 需要导出信息的项目svn根目录
+
+-output 导出目录
+
+
+
+fileCompressTool 
+
+文件批量压缩、解压缩工具
+
+命令行调用参数：
+-path [必填，指定要处理的文件或目录，以,分割] 
+
+-a [指定算法，可用的值为"lzma"、"zlib"、"gzip"，默认算法为lzma]
+
+-op [执行的操作，compress、c为压缩指令，uncompress、extract、e为解压缩指令]  
+
+-tail [压缩或解压缩后生成的文件名添加的后缀，不使用此参数则覆盖原文件]

@@ -1,0 +1,48 @@
+<root>
+  <message id="3" name="sendLogin" comment="登录" >
+    <param name="actorId" type="short" comment=""/>
+    <param name="m_byte" type="byte" comment=""/>
+    <param name="m_date" type="date" comment=""/>
+    <param name="m_float" type="float" comment=""/>
+    <!--   结构体  -->
+    <param name="testStruct" type="struct" comment="">
+      <param name="m_ushort" type="ushort" comment=""/>
+      <param name="m_int" type="int" comment=""/>
+      <param name="m_uint" type="uint" comment=""/>
+      <param name="m_Boolean" type="bool" comment=""/>
+      <param name="m_Binary" type="bin" comment="二进制类型"/>
+      <param name="m_string" type="string" comment=""/>
+      <param name="m_long" type="long" comment=""/>
+      <param name="m_ulong" type="ulong" comment=""/>
+    </param>
+    <!--   listParam，会直接生成该类型的数组  -->
+    <listParam name="playerList" type="struct" comment="玩家列表">
+      <param name="battleId" type="short" comment="战场唯一id"/>
+      <param name="teamId" type="short" comment=""/>
+      <param name="actorId" type="short" comment=""/>
+      <param name="curX" type="short" comment="当前x"/>
+      <param name="curY" type="short" comment="当前y"/>
+      <param name="fast" type="bool" comment="走路0，跑1"/>
+    </listParam>
+  </message>
+
+  <message id="006" name="testCommonStruct" comment="技能打击伤害">
+    <param name="battleId" type="short" comment="战场唯一id"/>
+    <listParam name="damageList" type="struct" structName="CommonStruct" comment="链接公用结构体" />
+  </message>
+
+  <!--   公用结构体  -->
+  <struct name="CommonStruct" comment="公用结构体">
+    <param name="m_ushort" type="ushort" comment=""/>
+    <param name="m_int" type="int" comment=""/>
+    <param name="m_uint" type="uint" comment=""/>
+    <param name="m_Boolean" type="bool" comment=""/>
+    <param name="m_Binary" type="bin" comment=""/>
+    <param name="m_string" type="string" comment=""/>
+  </struct>
+
+  <message id="100" name="sendString" comment="">
+    <param name="str" type="string" comment=""/>
+  </message>
+
+</root>

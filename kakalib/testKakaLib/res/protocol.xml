@@ -1,0 +1,59 @@
+<root>
+	<!-- 
+		协议头
+		包长 int
+		包体  (协议id 2 
+	 -->
+	<!--  -->
+	<message id="3" name="sendLogin" comment="登录" >
+		<param name="actorId" type="short" comment=""/>
+		<param name="mode" type="byte" comment="0 PVP 1PVE"/><!--   +++  -->
+    <list name="playerList" type="struct" comment="">
+      <param name="battleId" type="short" comment="战场唯一id"/>
+      <param name="teamId" type="short" comment=""/>
+      <!--   +++  -->
+      <param name="actorId" type="short" comment=""/>
+      <param name="curX" type="short" comment="当前x"/>
+      <param name="curY" type="short" comment="当前y"/>
+      <param name="HP" type="int" comment="当前血量"/>
+      <param name="maxHP" type="int" comment="最大血量"/>
+      <param name="fast" type="boolean" comment="走路0，跑1"/>
+      <param name="direction" type="byte" comment=""/>
+    </list>
+	</message>
+  <!--   技能打击伤害  -->
+  <message id="23"  name="recDamage" >
+    <param name="battleId" type="short" comment="攻击者战场唯一id"/>
+    <param name="damageInfo" type="struct" comment="">
+      <param name="battleId" type="short" comment="战场唯一id"/>
+      <param name="damageHP" type="short" comment="HP伤害"/>
+      <param name="damageSuperArmor" type="short" comment="超级盔甲伤害"/>
+      <!--   +++  -->
+    </param>
+  </message>
+
+  <message id="2" name="sendJump" comment="">
+    <param name="currHeigh" type="short" comment="当前高度"/>
+  </message>
+  <message id="12" name="recJump" comment="">
+    <param name="battleId" type="short" comment="战场唯一id"/>
+    <param name="curHeight" type="short" comment=""/>
+    <list name="damageList" type="int" comment="列表啊" />
+  </message>
+
+  <message id="4" name="sendControlUpdate" comment="">
+    <param name="curX" type="short" comment=""/>
+    <param name="curY" type="short" comment=""/>
+    <param name="fast" type="boolean" comment="走路0，跑1"/>
+    <param name="direction" type="byte" comment=""/>
+  </message>
+
+  <message id="14" name="recControlUpdate" comment="">
+    <param name="battleId" type="short" comment="战场唯一id"/>
+    <param name="curX" type="short" comment=""/>
+    <param name="curY" type="short" comment=""/>
+    <param name="fast" type="boolean" comment="走路0，跑1"/>
+    <param name="direction" type="byte" comment=""/>
+  </message>
+
+</root>

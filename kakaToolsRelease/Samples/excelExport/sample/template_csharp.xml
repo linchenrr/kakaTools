@@ -1,0 +1,137 @@
+﻿<root>
+  <config language="C#">
+    <classExtension>.cs</classExtension>
+    <classNameTail>VO</classNameTail>
+    <classStartUpperCase>true</classStartUpperCase>
+    <memberStartUpperCase>true</memberStartUpperCase>
+  </config>
+  <definitionMember>
+    <![CDATA[
+    //$(comment)
+    private $(className) _$(member);
+    public $(className) $(member)
+    {
+        get { return _$(member); }
+    }
+    ]]>
+  </definitionMember>
+  <relationMember>
+    <![CDATA[
+    public $(className) $(member)To$(className)
+    {
+        get { return $(className).GetVO($(member)); }
+    }
+    ]]>
+  </relationMember>
+  <params>
+    <param type="bool" class="bool">
+      <decode>
+        <![CDATA[
+            var str_$(member) = binReader.ReadUTF();
+            _$(member) = (str_$(member).ToLower() == "true" || str_$(member) == "1");
+            ]]>
+      </decode>
+    </param>
+    <param type="int" class="int">
+      <decode>
+        <![CDATA[
+            _$(member) = int.Parse(binReader.ReadUTF());
+            ]]>
+      </decode>
+    </param>
+    <param type="float" class="float">
+      <decode>
+        <![CDATA[
+            _$(member) = float.Parse(binReader.ReadUTF());
+            ]]>
+      </decode>
+    </param>
+    <param type="string" class="string">
+      <decode>
+        <![CDATA[
+            _$(member) = binReader.ReadUTF();
+            ]]>
+      </decode>
+    </param>
+    <param type="date" class="DateTime">
+      <decode>
+        <![CDATA[
+            _$(member) = DateTime.Parse(binReader.ReadUTF());
+            ]]>
+      </decode>
+    </param>
+  </params>
+  <Class>
+    <![CDATA[
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.IO;
+using KLib.utils;
+
+public class $(className)
+{
+    $(definition)
+
+    public void decode(EndianBinaryReader binReader)
+    {
+    $(decode)
+    }
+
+    static public void Fill(byte[] bytes)
+    {
+
+        var binReader = new EndianBinaryReader(Endian.LittleEndian, new MemoryStream(bytes));
+        binReader.Endian = binReader.ReadBoolean() ? Endian.LittleEndian : Endian.BigEndian;
+        
+        
+        var jumpPos = binReader.ReadInt32();
+        
+        //跳过表头信息
+        binReader.BaseStream.Position = jumpPos;
+        
+        /*
+        var headerCount = binReader.ReadInt32();
+        var headers = new string[headerCount];
+        var types = new string[headerCount];
+        for (var i = 0; i < headerCount; i++)
+        {
+            headers[i] = binReader.ReadUTF();
+            types[i] = binReader.ReadUTF();
+        }
+        */
+        
+        var count = binReader.ReadInt32();
+        for (int i = 0; i < count; i++)
+        {
+            var vo = new $(className)();
+            vo.decode(binReader);
+            list_vo.Add(vo);
+            dic_vo.Add(vo.$(primaryKeyName), vo);
+        }
+
+    }
+
+    static private Dictionary<$(primaryKeyType), $(className)> dic_vo = new Dictionary<$(primaryKeyType), $(className)>();
+    static private List<$(className)> list_vo = new List<$(className)>();
+
+    static public IList<$(className)> GetVOList()
+    {
+        return list_vo.AsReadOnly();
+    }
+
+    static public $(className) GetVO($(primaryKeyType) $(primaryKeyName))
+    {
+        return dic_vo[$(primaryKeyName)];
+    }
+
+    static public IList<$(className)> Where(Func<$(className), bool> filter)
+    {
+        return list_vo.Where(filter).ToList();
+    }
+
+}
+]]>
+  </Class>
+</root>

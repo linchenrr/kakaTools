@@ -1,0 +1,38 @@
+		[0]	"REPOSITORY"	object {string}
+		[1]	"sqlite_autoindex_REPOSITORY_1"	object {string}
+		[2]	"sqlite_sequence"	object {string}
+		[3]	"I_UUID"	object {string}
+		[4]	"I_ROOT"	object {string}
+		[5]	"WCROOT"	object {string}
+		[6]	"sqlite_autoindex_WCROOT_1"	object {string}
+		[7]	"I_LOCAL_ABSPATH"	object {string}
+		[8]	"PRISTINE"	object {string}
+		[9]	"sqlite_autoindex_PRISTINE_1"	object {string}
+		[10]	"ACTUAL_NODE"	object {string}
+		[11]	"sqlite_autoindex_ACTUAL_NODE_1"	object {string}
+		[12]	"I_ACTUAL_PARENT"	object {string}
+		[13]	"I_ACTUAL_CHANGELIST"	object {string}
+		[14]	"LOCK"	object {string}
+		[15]	"sqlite_autoindex_LOCK_1"	object {string}
+		[16]	"WORK_QUEUE"	object {string}
+		[17]	"WC_LOCK"	object {string}
+		[18]	"sqlite_autoindex_WC_LOCK_1"	object {string}
+		[19]	"NODES"	object {string}
+		[20]	"sqlite_autoindex_NODES_1"	object {string}
+		[21]	"I_NODES_PARENT"	object {string}
+		[22]	"NODES_CURRENT"	object {string}
+		[23]	"NODES_BASE"	object {string}
+		[24]	"nodes_insert_trigger"	object {string}
+		[25]	"nodes_delete_trigger"	object {string}
+		[26]	"nodes_update_checksum_trigger"	object {string}
+		[27]	"EXTERNALS"	object {string}
+		[28]	"sqlite_autoindex_EXTERNALS_1"	object {string}
+		[29]	"I_EXTERNALS_PARENT"	object {string}
+		[30]	"I_EXTERNALS_DEFINED"	object {string}
+
+local_relpath  parent_relpath
+
+revision  changed_revision
+kind dir file
+translated_size
+"SELECT * FROM [NODES_CURRENT] where [local_relpath] = '' and [parent_relpath] = "

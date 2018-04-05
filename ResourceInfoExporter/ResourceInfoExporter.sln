@@ -1,0 +1,47 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResourceInfoExporter", "ResourceInfoExporter\ResourceInfoExporter.csproj", "{6E46C4A6-B332-4E90-A16E-B038090B3109}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KLib", "..\kakalib\kakalib\KLib.csproj", "{4AFE7E1A-EA8E-4506-AF9E-318FB8934618}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x86 = Release|x86
+		x86|Any CPU = x86|Any CPU
+		x86|x86 = x86|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6E46C4A6-B332-4E90-A16E-B038090B3109}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E46C4A6-B332-4E90-A16E-B038090B3109}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E46C4A6-B332-4E90-A16E-B038090B3109}.Debug|x86.ActiveCfg = Debug|x86
+		{6E46C4A6-B332-4E90-A16E-B038090B3109}.Debug|x86.Build.0 = Debug|x86
+		{6E46C4A6-B332-4E90-A16E-B038090B3109}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E46C4A6-B332-4E90-A16E-B038090B3109}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E46C4A6-B332-4E90-A16E-B038090B3109}.Release|x86.ActiveCfg = Release|x86
+		{6E46C4A6-B332-4E90-A16E-B038090B3109}.Release|x86.Build.0 = Release|x86
+		{6E46C4A6-B332-4E90-A16E-B038090B3109}.x86|Any CPU.ActiveCfg = Release|Any CPU
+		{6E46C4A6-B332-4E90-A16E-B038090B3109}.x86|Any CPU.Build.0 = Release|Any CPU
+		{6E46C4A6-B332-4E90-A16E-B038090B3109}.x86|x86.ActiveCfg = Release|Any CPU
+		{4AFE7E1A-EA8E-4506-AF9E-318FB8934618}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4AFE7E1A-EA8E-4506-AF9E-318FB8934618}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4AFE7E1A-EA8E-4506-AF9E-318FB8934618}.Debug|x86.ActiveCfg = Debug|x86
+		{4AFE7E1A-EA8E-4506-AF9E-318FB8934618}.Debug|x86.Build.0 = Debug|x86
+		{4AFE7E1A-EA8E-4506-AF9E-318FB8934618}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4AFE7E1A-EA8E-4506-AF9E-318FB8934618}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4AFE7E1A-EA8E-4506-AF9E-318FB8934618}.Release|x86.ActiveCfg = Release|x86
+		{4AFE7E1A-EA8E-4506-AF9E-318FB8934618}.Release|x86.Build.0 = Release|x86
+		{4AFE7E1A-EA8E-4506-AF9E-318FB8934618}.x86|Any CPU.ActiveCfg = x86|Any CPU
+		{4AFE7E1A-EA8E-4506-AF9E-318FB8934618}.x86|Any CPU.Build.0 = x86|Any CPU
+		{4AFE7E1A-EA8E-4506-AF9E-318FB8934618}.x86|x86.ActiveCfg = x86|x86
+		{4AFE7E1A-EA8E-4506-AF9E-318FB8934618}.x86|x86.Build.0 = x86|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

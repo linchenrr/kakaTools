@@ -1,0 +1,9 @@
+﻿ProtocolGenerater
+Usage:
+ProtocolGenerater.exe -protocol "D:\work\VS\mycsharp\ProtocolGenerater\ProtocolGenerater\protocol.xml" -template "D:\work\VS\mycsharp\ProtocolGenerater\ProtocolGenerater\templates\csharp\template_csharp.xml" -output "J:/protocol"
+
+-protocol 协议配置文件夹路径
+
+-template 代码模板文件路径
+
+-output 代码输出文件夹路径

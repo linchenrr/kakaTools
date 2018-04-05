@@ -1,0 +1,34 @@
+﻿请求玩家列表
+message RequestPlayers 2001 {
+/*
+	string content 被注释的字段  不会生成
+*/
+}
+
+返回玩家列表
+message ResponsePlayers 2002 {
+	bool	status
+	//数组以 List<元素类型> 的方式定义
+	list<PlayerInfo>	players 玩家列表
+}
+
+struct PlayerInfo {
+	long				uid
+	string			name 名字
+    bool				status 状态
+    PlayerType	type		类型
+	float				fff
+    int				maxResetTimes; 最大可重置次数（根据VIP等级计算）
+	date				createTime  创建时间
+	
+	//float			num  这行被注释掉  不会生成
+	
+	List<int> 		items  道具id列表
+}
+
+角色类型
+enum PlayerType {
+    warrior = 1 战士
+    Archer = 2 弓手
+    Priest = 3 牧师
+}

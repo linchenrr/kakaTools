@@ -1,0 +1,60 @@
+ProtocolGenerater
+Usage:
+ProtocolGenerater.exe -protocol "D:\work\VS\test\protocol.xml" -template "D:\work\VS\test\templates\csharp - single\template_csharp.xml" -output "J:/protocol" -voFolder SubVOFolder -singleMode false
+
+-protocol 协议配置文件路径
+
+-template 代码模板文件路径
+
+-output 代码输出文件夹路径
+
+
+
+ResourceInfoMaker
+
+-path [生成信息的svn目录]
+
+
+protocolMaker v1.0  2013-7-11
+Usage:		protocolMaker <-input inputFile -output outputPath> [options]
+Options:	-input <string> set protocol xml file
+		-output		set output folder
+		-package	set package name, default: enum
+		-className	set class name, default: Protocol
+Examples:	protocolMaker -input protocol.xml -output src\enum
+		protocolMaker -input protocol.xml -output src\enum -package enum -className Protocol
+
+
+
+fileCompressTool 
+
+-path [必填，指定要处理的文件或目录，以,分割] 
+
+-op [执行的操作，compress、c为压缩指令，uncompress、extract、e为解压缩指令]  
+
+-tail [压缩或解压缩后生成的文件名添加的后缀，不使用此参数则覆盖原文件]
+
+
+
+
+excelExport 
+
+-input [必填，指定要处理的文件或目录，以,分割]
+
+以下为选填参数，如果不传则使用注册表中的值
+
+-output [指定输出目录，如果传空字符串则导出到相应文件的目录]
+
+-prefix_primaryKey [主键前缀]
+
+-prefix_IgnoreSheet [忽略的表前缀]
+
+-prefix_IgnoreLine [忽略的行前缀]
+
+-prefix_IgnoreColumn [忽略的列前缀]
+
+-compress [是否启用zlib压缩,true或false]
+
+-ignoreBlank [是否忽略空白行、列]
+
+-merge [是否合并子表,true则将一个文件的所有子表合并到一个表中再导出(表的主键列名必须一致并且不能有相同主键),false则为每个子表单独导出成一个文件，文件名为子表名]

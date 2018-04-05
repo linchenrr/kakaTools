@@ -1,0 +1,178 @@
+﻿<root>
+  <config language="C#">
+    <classExtension>.cs</classExtension>
+    <classNameTail>ExcelVO</classNameTail>
+    <classStartUpperCase>true</classStartUpperCase>
+    <memberStartUpperCase>true</memberStartUpperCase>
+  </config>
+  <definitionMember>
+    <![CDATA[
+    /// <summary>$(comment)</summary>
+    public $(className) $(member) { get; private set; }
+    ]]>
+  </definitionMember>
+  <decodeMember>
+    <![CDATA[
+        dic_dynamic["$(member)"] = $(member) = $(decode)
+        ]]>
+  </decodeMember>
+  <relationMember>
+    <![CDATA[
+    [JsonIgnore]
+    public $(className) $(member)To$(className)
+    {
+        get { return $(className).GetVO($(member)); }
+    }
+    ]]>
+  </relationMember>
+
+  <definitionArray>
+    <![CDATA[
+    /// <summary>$(comment)</summary>
+    public ReadOnlyCollection<$(className)> $(member) { get; private set; }
+    ]]>
+  </definitionArray>
+  <decodeArray>
+    <![CDATA[
+        var len_$(member) = binReader.ReadInt32();
+        var arr_$(member) = new $(className)[len_$(member)];
+        for (int i = 0; i < len_$(member); i++)
+        {
+            arr_$(member)[i] = $(decode)
+        }
+        dic_dynamic["$(member)"] = $(member) = new ReadOnlyCollection<$(className)>(arr_$(member));
+        ]]>
+  </decodeArray>
+
+  <params>
+    <param type="enum">
+      <decode>
+        <![CDATA[
+            ($(enumName))ExcelFieldReader.ReadInt(binReader);
+            ]]>
+      </decode>
+    </param>
+    <param type="bool" class="bool">
+      <decode>
+        <![CDATA[
+            ExcelFieldReader.ReadBool(binReader);
+            ]]>
+      </decode>
+    </param>
+    <param type="int" class="int">
+      <decode>
+        <![CDATA[
+            ExcelFieldReader.ReadInt(binReader);
+            ]]>
+      </decode>
+    </param>
+    <param type="float" class="float">
+      <decode>
+        <![CDATA[
+            ExcelFieldReader.ReadFloat(binReader);
+            ]]>
+      </decode>
+    </param>
+    <param type="string" class="string">
+      <decode>
+        <![CDATA[
+            ExcelFieldReader.ReadString(binReader);
+            ]]>
+      </decode>
+    </param>
+    <param type="date" class="DateTime">
+      <decode>
+        <![CDATA[
+            ExcelFieldReader.ReadDate(binReader);
+            ]]>
+      </decode>
+    </param>
+    <param type="vector3" class="Vector3">
+      <decode>
+        <![CDATA[
+            ExcelFieldReader.ReadVector3(binReader);
+            ]]>
+      </decode>
+    </param>
+    <param type="buffCondition" class="BuffCondition">
+      <decode>
+        <![CDATA[
+            ExcelFieldReader.ReadBuffCondition(binReader);
+            ]]>
+      </decode>
+    </param>
+  </params>
+  <Class>
+    <![CDATA[
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Text;
+using KLib;
+using Newtonsoft.Json;
+using UnityEngine;
+
+public partial class $(className) : BaseExcelVOGeneric<$(primaryKeyType), $(className)>
+{
+    
+    /// <summary>主键的值</summary>
+    override public $(primaryKeyType) PrimaryValue { get { return $(primaryKeyName); } }
+    
+    $(definition)
+    
+    override public void Decode(EndianBinaryReader binReader)
+    {
+        $(decode)
+        
+        AfterInit();
+        
+    }
+    
+    static public void Init()
+    {
+        TableName = "$(tableName)";
+        ClassName = "$(className)";
+        PrimaryKeyName = "$(primaryKeyName)";
+        AutoFillData();
+    }
+    
+}
+]]>
+  </Class>
+  <InitClass fileName="AutoInitExcelData">
+    <![CDATA[
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+
+public class AutoInitExcelData
+{
+    
+    static private bool hasFillData;
+    
+    static public void Start()
+    {
+        
+        if (hasFillData)
+        {
+            Logger.LogError("has loaded excelData");
+            return;
+        }
+        
+        Logger.Log("AutoInitExcelData Start");
+        
+        hasFillData = true;
+        $(initCode)
+    }
+}
+]]>
+  </InitClass>
+  <InitClassItem>
+    <![CDATA[
+        $(className).Init();
+        ]]>
+  </InitClassItem>
+</root>

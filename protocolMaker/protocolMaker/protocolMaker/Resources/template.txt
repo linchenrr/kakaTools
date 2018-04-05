@@ -1,0 +1,12 @@
+﻿package $(package){
+	/**
+	 * 消息枚举
+	 * @author		protocolMaker v1.0	by kaka
+	 */
+	public class $(className)
+	{
+		
+		$(body)
+		
+	}
+}

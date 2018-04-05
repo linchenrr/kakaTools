@@ -1,0 +1,211 @@
+﻿<root>
+  <config language="C#">
+    <classExtension>.cs</classExtension>
+    <classNameTail>VO</classNameTail>
+    <classStartUpperCase>true</classStartUpperCase>
+    <memberStartUpperCase>true</memberStartUpperCase>
+  </config>
+  <definitionMember>
+    <![CDATA[
+    private $(className) _$(member);
+    /*
+    $(comment)
+    */
+    public $(className) $(member)
+    {
+        get { return _$(member); }
+    }
+    ]]>
+  </definitionMember>
+  <relationMember>
+    <![CDATA[
+    public $(className) $(member)To$(className)
+    {
+        get { return $(className).GetVO($(member)); }
+    }
+    ]]>
+  </relationMember>
+  <params>
+    <param type="bool" class="bool">
+      <decode>
+        <![CDATA[
+            dic_dynamic["$(member)"] = _$(member) = ExcelFieldReader.ReadBool(binReader);
+            ]]>
+      </decode>
+    </param>
+    <param type="int" class="int">
+      <decode>
+        <![CDATA[
+            dic_dynamic["$(member)"] = _$(member) = ExcelFieldReader.ReadInt(binReader);
+            ]]>
+      </decode>
+    </param>
+    <param type="float" class="float">
+      <decode>
+        <![CDATA[
+            dic_dynamic["$(member)"] = _$(member) = ExcelFieldReader.ReadFloat(binReader);
+            ]]>
+      </decode>
+    </param>
+    <param type="string" class="string">
+      <decode>
+        <![CDATA[
+            dic_dynamic["$(member)"] = _$(member) = ExcelFieldReader.ReadString(binReader);
+            ]]>
+      </decode>
+    </param>
+    <param type="date" class="DateTime">
+      <decode>
+        <![CDATA[
+            dic_dynamic["$(member)"] = _$(member) = ExcelFieldReader.ReadDate(binReader);
+            ]]>
+      </decode>
+    </param>
+    <param type="vector3" class="Vector3">
+      <decode>
+        <![CDATA[
+            dic_dynamic["$(member)"] = _$(member) = ExcelFieldReader.ReadVector3(binReader);
+            ]]>
+      </decode>
+    </param>
+  </params>
+  <Class>
+    <![CDATA[
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.IO;
+using UnityEngine;
+using KLib;
+
+public partial class $(className)
+{
+    
+    static $(className)()
+    {
+        var bytes = Resources.Load<TextAsset>(@"Data/excel/$(tableName)");
+        Fill(bytes.bytes);
+    }
+    
+    private int index;
+    //数据在表中的索引
+    public int Index
+    {
+        get
+        {
+            return index;
+        }
+    }
+    
+    private $(className) prev;
+    //上一个数据
+    public $(className) Prev
+    {
+        get
+        {
+            return prev;
+        }
+    }
+    
+    private $(className) next;
+    //下一个数据
+    public $(className) Next
+    {
+        get
+        {
+            return next;
+        }
+    }
+    
+    $(definition)
+
+    public void decode(EndianBinaryReader binReader)
+    {
+    $(decode)
+    }
+
+    static public void Fill(byte[] bytes)
+    {
+
+        var binReader = new EndianBinaryReader(Endian.LittleEndian, new MemoryStream(bytes));
+        binReader.Endian = binReader.ReadBoolean() ? Endian.LittleEndian : Endian.BigEndian;
+        
+        
+        var jumpPos = binReader.ReadInt32();
+        
+        //跳过表头信息
+        binReader.BaseStream.Position = jumpPos;
+        
+        /*
+        var headerCount = binReader.ReadInt32();
+        var headers = new string[headerCount];
+        var types = new string[headerCount];
+        for (var i = 0; i < headerCount; i++)
+        {
+            headers[i] = binReader.ReadUTF();
+            types[i] = binReader.ReadUTF();
+        }
+        */
+        
+        var count = binReader.ReadInt32();
+        $(className) lastVO = null;
+        for (int i = 0; i < count; i++)
+        {
+            var vo = new $(className)();
+            vo.decode(binReader);
+            vo.index = i;
+            list_vo.Add(vo);
+            dic_vo.Add(vo.$(primaryKeyName), vo);
+
+            if (lastVO != null)
+            {
+                lastVO.next = vo;
+                vo.prev = lastVO;
+            }
+            lastVO = vo;
+        }
+
+    }
+
+    static private Dictionary<$(primaryKeyType), $(className)> dic_vo = new Dictionary<$(primaryKeyType), $(className)>();
+    static private List<$(className)> list_vo = new List<$(className)>();
+
+    static public IList<$(className)> GetVOList()
+    {
+        return list_vo.AsReadOnly();
+    }
+
+    static public $(className) GetVO($(primaryKeyType) $(primaryKeyName))
+    {
+        if (!dic_vo.ContainsKey($(primaryKeyName)))
+            throw new Exception("$(className)没有$(primaryKeyName)为"+ $(primaryKeyName) +"的记录！");
+        return dic_vo[$(primaryKeyName)];
+    }
+    
+    static public bool HasVO($(primaryKeyType) $(primaryKeyName))
+    {
+        return dic_vo.ContainsKey($(primaryKeyName));
+    }
+    
+    static public IList<$(className)> Where(Func<$(className), bool> filter)
+    {
+        return list_vo.Where(filter).ToList();
+    }
+    
+    private Dictionary<string, object> dic_dynamic = new Dictionary<string, object>();
+    
+    public object this[string key]
+    {
+        get
+        {
+            if (dic_dynamic.ContainsKey(key))
+                return dic_dynamic[key];
+            return null;
+        }
+    }
+    
+}
+]]>
+  </Class>
+</root>

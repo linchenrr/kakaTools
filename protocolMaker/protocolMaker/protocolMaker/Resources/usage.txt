@@ -1,0 +1,8 @@
+﻿protocolMaker v1.0  2013-7-11
+Usage:		protocolMaker <-input inputFile -output outputPath> [options]
+Options:	-input <string> set protocol xml file
+		-output		set output folder
+		-package	set package name, default: enum
+		-className	set class name, default: Protocol
+Examples:	protocolMaker -input protocol.xml -output src\enum
+		protocolMaker -input protocol.xml -output src\enum -package enum -className Protocol

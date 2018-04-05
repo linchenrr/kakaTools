@@ -1,0 +1,13 @@
+﻿发送世界广播
+message RequestWorldTalk 1005 {
+	string content
+}
+
+收到世界广播
+message ResponseWorldTalk 1006 {
+	string talkerName
+	string content 内容
+}
+
+
+

@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ping", "ping\ping.csproj", "{F79A005C-2046-456D-9945-7D55FAD2FDDF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F79A005C-2046-456D-9945-7D55FAD2FDDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F79A005C-2046-456D-9945-7D55FAD2FDDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F79A005C-2046-456D-9945-7D55FAD2FDDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F79A005C-2046-456D-9945-7D55FAD2FDDF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

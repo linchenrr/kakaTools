@@ -1,0 +1,34 @@
+﻿excelExport
+Usage:
+excelExport.exe -excel "D:\work\VS\mycsharp\excelExport\excelExport\sample\sample.xlsx" -template "D:\work\VS\mycsharp\excelExport\excelExport\sample\template_csharp.xml" -codeGeneratePath "J:\code" -dataPath "J:"
+
+-excel			excel文件路径或目录，可以支持多个路径，用","分隔
+
+-template		代码模板文件路径
+
+-codeGeneratePath	代码输出文件夹路径
+
+可选：
+[-dataPath]		excel数据二进制文件输出路径，不指定则输出到源excel同目录下
+
+[-prefix_primaryKey]	主键字段的前缀 (默认[$])，没有指定主键时将第一个字段作为主键
+
+[-prefix_IgnoreSheet]	忽略的表名前缀 (默认#)
+
+[-prefix_IgnoreLine]	注释的行前缀 (默认[#])
+
+[-defaultArraySpliter]	默认数组分隔符，默认为"-"
+
+[-endian]		字节序，有效值为LittleEndian、BigEndian (默认LittleEndian)
+
+[-ext]			二进制文件扩展名，默认为".kk"
+
+[-compress]		压缩二进制文件，可用压缩选项为 lzma、zlib、gzip
+
+[-commentRowNum]	指定注释所在行数 (默认第一行)
+
+[-fieldNameRowNum]	指定字段名所在行数 (默认第二行)
+
+[-typeRowNum]		指定字段类型所在行数 (默认第三行)
+
+[-dataRowStartNum]	指定数据开始行数 (默认第四行)

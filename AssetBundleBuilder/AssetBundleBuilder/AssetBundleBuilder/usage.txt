@@ -1,0 +1,8 @@
+﻿UnityAssetBundleBuilder (ResourceInfoExporter for unity Special Edition) v0.1
+
+Usage:
+UnityAssetBundleBuilder.exe -input J:\assetBundle -output J:\assetBundleRelease
+
+-input			源assetbundle文件夹，必须是包含svn信息的根目录
+
+-output		要导出到的目录

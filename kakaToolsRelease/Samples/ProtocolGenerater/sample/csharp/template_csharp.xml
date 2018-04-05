@@ -1,0 +1,332 @@
+﻿<root>
+  <config language="C#">
+    <classExtension>.cs</classExtension>
+    <!-- singleMode为false时，vo代码输出的子文件夹路径 -->
+    <voFolder>vo</voFolder>
+    <classNameTail>VO</classNameTail>
+  </config>
+  <definitionMember>
+    <![CDATA[//$(comment)
+        public $(className) $(member);
+        ]]>
+  </definitionMember>
+  <definitionArray>
+    <![CDATA[//$(comment)
+        public $(className)[] $(member);
+        ]]>
+  </definitionArray>
+  <accessArray>
+    <![CDATA[
+    $(member)[i]
+    ]]>
+  </accessArray>
+  <decodeArray>
+    <![CDATA[
+            var len_$(member) = binReader.ReadUInt16();
+            $(member) = new $(className)[len_$(member)];
+            for (int i = 0; i < len_$(member); i++)
+            {
+$(decode)
+            }
+            ]]>
+  </decodeArray>
+  <encodeArray>
+    <![CDATA[
+			ushort len_$(member) = (ushort)$(member).Length;
+			binWriter.Write(len_$(member));
+            for (int i = 0; i < len_$(member); i++)
+            {
+$(encode)
+            }
+            ]]>
+  </encodeArray>
+  <params>
+    <param type="byte" class="sbyte">
+      <decode>
+        <![CDATA[
+            $(member) = binReader.ReadSByte();
+            ]]>
+      </decode>
+      <encode>
+        <![CDATA[
+            binWriter.Write($(member));
+            ]]>
+      </encode>
+    </param>
+    <param type="Bin" class="byte[]">
+      <decode>
+        <![CDATA[
+            $(member) = binReader.ReadBytes(binReader.ReadInt32());
+            ]]>
+      </decode>
+      <encode>
+        <![CDATA[
+            binWriter.Write($(member).Length);
+            binWriter.Write($(member));
+            ]]>
+      </encode>
+    </param>
+    <param type="bool" class="bool">
+      <decode>
+        <![CDATA[
+            $(member) = binReader.ReadBoolean();
+            ]]>
+      </decode>
+      <encode>
+        <![CDATA[
+            binWriter.Write($(member));
+            ]]>
+      </encode>
+    </param>
+    <param type="short" class="short">
+      <decode>
+        <![CDATA[
+            $(member) = binReader.ReadInt16();
+            ]]>
+      </decode>
+      <encode>
+        <![CDATA[
+            binWriter.Write($(member));
+            ]]>
+      </encode>
+    </param>
+    <param type="ushort" class="ushort">
+      <decode>
+        <![CDATA[
+            $(member) = binReader.ReadUInt16();
+            ]]>
+      </decode>
+      <encode>
+        <![CDATA[
+            binWriter.Write($(member));
+            ]]>
+      </encode>
+    </param>
+    <param type="int" class="int">
+      <decode>
+        <![CDATA[
+            $(member) = binReader.ReadInt32();
+            ]]>
+      </decode>
+      <encode>
+        <![CDATA[
+            binWriter.Write($(member));
+            ]]>
+      </encode>
+    </param>
+    <param type="uint" class="uint">
+      <decode>
+        <![CDATA[
+            $(member) = binReader.ReadUInt32();
+            ]]>
+      </decode>
+      <encode>
+        <![CDATA[
+            binWriter.Write($(member));
+            ]]>
+      </encode>
+    </param>
+    <param type="long" class="long">
+      <decode>
+        <![CDATA[
+            $(member) = binReader.ReadInt64();
+            ]]>
+      </decode>
+      <encode>
+        <![CDATA[
+            binWriter.Write($(member));
+            ]]>
+      </encode>
+    </param>
+    <param type="ulong" class="ulong">
+      <decode>
+        <![CDATA[
+            $(member) = binReader.ReadUInt64();
+            ]]>
+      </decode>
+      <encode>
+        <![CDATA[
+            binWriter.Write($(member));
+            ]]>
+      </encode>
+    </param>
+    <param type="float" class="double">
+      <decode>
+        <![CDATA[
+            $(member) = binReader.ReadFloat();
+            ]]>
+      </decode>
+      <encode>
+        <![CDATA[
+            binWriter.WriteFloat($(member));
+            ]]>
+      </encode>
+    </param>
+    <param type="string" class="string">
+      <decode>
+        <![CDATA[
+            $(member) = binReader.ReadUTF();
+            ]]>
+      </decode>
+      <encode>
+        <![CDATA[
+            binWriter.WriteUTF($(member));
+            ]]>
+      </encode>
+    </param>
+    <param type="date" class="DateTime">
+      <decode>
+        <![CDATA[
+            $(member) = binReader.ReadDate();
+            ]]>
+      </decode>
+      <encode>
+        <![CDATA[
+            binWriter.WriteDate($(member));
+            ]]>
+      </encode>
+    </param>
+    <param type="struct" class="struct">
+      <decode>
+        <![CDATA[
+            $(member) = new $(className)();
+            $(member).decode(binReader);
+            ]]>
+      </decode>
+      <encode>
+        <![CDATA[
+            $(member).encode(binWriter);
+            ]]>
+      </encode>
+    </param>
+  </params>
+
+  <ProtocolVOClass>
+    <![CDATA[
+using System;
+using System.IO;
+using System.Text;
+using KLib.utils;
+
+namespace protocol.vo
+{
+    //$(comment)
+    public class $(className) : BaseVO
+    {
+        
+        $(definition)
+        
+        public $(className)() : base(Protocol.$(messageName))
+        {
+
+        }
+        
+        override public void decode(EndianBinaryReader binReader)
+        {
+        $(decode)
+        }
+        
+        override public void encode(EndianBinaryWriter binWriter)
+        {
+        $(encode)
+        }
+        
+    }
+
+}
+]]>
+  </ProtocolVOClass>
+  <StructClass>
+    <![CDATA[
+using System;
+using System.IO;
+using System.Text;
+using KLib.utils;
+
+namespace protocol.vo
+{
+    //$(comment)
+    public class $(className)
+    {
+        
+        $(definition)
+        
+        public void decode(EndianBinaryReader binReader)
+        {
+        $(decode)
+        }
+        
+        public void encode(EndianBinaryWriter binWriter)
+        {
+        $(encode)
+        }
+        
+    }
+
+}
+]]>
+  </StructClass>
+
+  <ProtocolEnumClass fileName="Protocol.cs" >
+    <![CDATA[
+using System;
+
+namespace protocol
+{
+    public class Protocol
+    {
+        $(content)
+    }
+}
+]]>
+  </ProtocolEnumClass>
+  <definitionEnum>
+    <![CDATA[
+        //$(comment)
+        public const int $(member) = $(value);
+        ]]>
+  </definitionEnum>
+  <MessageRegisterClass fileName="MessageRegister.cs" >
+    <![CDATA[
+using System;
+using System.Text;
+using protocol;
+using protocol.vo;
+
+namespace protocol
+{
+    public class MessageRegister
+    {
+        
+        static public PackageTranslator GetTranslator()
+        {
+            var translator = new PackageTranslator();
+            Register(translator);
+            return translator;
+        }
+        
+        static public void Register(PackageTranslator target)
+        {
+            $(content)
+        }
+        
+        $(creater)
+        
+    }
+}
+]]>
+  </MessageRegisterClass>
+  <MessageRegister>
+    <![CDATA[
+            target.RegisterMessage(Protocol.$(member), Create_$(className));
+        ]]>
+  </MessageRegister>
+  <MessageCreater>
+    <![CDATA[
+        static public BaseVO Create_$(className)()
+        {
+            return new $(className)();
+        }
+        ]]>
+  </MessageCreater>
+</root>

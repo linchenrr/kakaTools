@@ -1,0 +1,1 @@
+随便从svn检出一个项目至projectPath文件夹，然后运行cmd测试
