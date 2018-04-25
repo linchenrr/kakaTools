@@ -144,6 +144,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="ReaderTest.cs" />
+    <Compile Include="tools\CRC32.cs" />
     <Compile Include="tools\ExcelGenerater.cs" />
     <Compile Include="tools\UnityAssetBundleBuilder.cs" />
     <Compile Include="tools\GZipCompresser.cs" />

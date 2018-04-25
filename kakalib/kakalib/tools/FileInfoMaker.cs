@@ -36,8 +36,12 @@ namespace KLib
 
             Byte[] FileInfoBytes = Encoding.UTF8.GetBytes(sb.ToString());
 
-            String fileInfoName = "fileInfo" + ".txt";
-            FileUtil.writeFile(outputPath + fileInfoName, FileInfoBytes);
+            var buildVersion = DateTime.Now.ToString("yyyyMMddHHmm");
+
+            String fileInfoName = "fileInfo_" + buildVersion + ".txt";
+            File.WriteAllBytes(outputPath + fileInfoName, FileInfoBytes);
+            File.WriteAllBytes(outputPath + "fileInfoName.txt", Encoding.UTF8.GetBytes(fileInfoName));
+            File.WriteAllBytes(outputPath + "buildVersion.txt", Encoding.UTF8.GetBytes(buildVersion));
 
             Console.WriteLine("已生成" + count + "个文件信息");
             //Console.ReadLine();

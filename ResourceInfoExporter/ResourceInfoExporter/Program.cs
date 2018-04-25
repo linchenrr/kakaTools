@@ -12,15 +12,22 @@ namespace ResourceInfoExporter
             var dic = CommandParse.parse(args);
             if (dic.ContainsKey("input") && dic.ContainsKey("output"))
             {
+#if !DEBUG
                 try
+#endif
                 {
                     FileInfoMaker.makeCfg(dic["input"], dic["output"]);
+#if DEBUG
+                    Console.ReadLine();
+#endif
                 }
+#if !DEBUG
                 catch (Exception e)
                 {
                     Console.WriteLine(e.Message);
                     Console.ReadLine();
                 }
+#endif
             }
             else
             {
