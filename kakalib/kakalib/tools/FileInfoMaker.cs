@@ -5,6 +5,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Collections;
 using KLib;
+using Newtonsoft.Json;
 
 namespace KLib
 {
@@ -16,12 +17,16 @@ namespace KLib
         static private string inputPath;
         static private string outputPath;
 
+        static private Dictionary<string, string> dic_ver = new Dictionary<string, string>();
+
+        static public bool WithOriginalFiles = false;
+
         static public void makeCfg(String input, String output)
         {
             inputPath = input + "/";
             outputPath = output + "/";
 
-            DirectoryInfo outputDir = new DirectoryInfo(outputPath);
+            var outputDir = new DirectoryInfo(outputPath);
             if (outputDir.Exists)
             {
                 outputDir.Delete(true);
@@ -34,13 +39,19 @@ namespace KLib
 
             if (count > 0) sb.Remove(sb.Length - 2, 2);
 
-            Byte[] FileInfoBytes = Encoding.UTF8.GetBytes(sb.ToString());
+            var FileInfoBytes = Encoding.UTF8.GetBytes(sb.ToString());
 
             var buildVersion = DateTime.Now.ToString("yyyyMMddHHmm");
 
-            String fileInfoName = "fileInfo_" + buildVersion + ".txt";
-            File.WriteAllBytes(outputPath + fileInfoName, FileInfoBytes);
-            File.WriteAllBytes(outputPath + "fileInfoName.txt", Encoding.UTF8.GetBytes(fileInfoName));
+            //var fileInfoName = "fileInfo_" + buildVersion + ".txt";
+            //File.WriteAllBytes(outputPath + fileInfoName, FileInfoBytes);
+            //File.WriteAllBytes(outputPath + "fileInfoName.txt", Encoding.UTF8.GetBytes(fileInfoName));
+
+            var json = JsonConvert.SerializeObject(dic_ver);
+            var jsonName = "fileVersion_" + buildVersion + ".json";
+            File.WriteAllBytes(outputPath + jsonName, Encoding.UTF8.GetBytes(json));
+            File.WriteAllBytes(outputPath + "fileVersionName.txt", Encoding.UTF8.GetBytes(jsonName));
+
             File.WriteAllBytes(outputPath + "buildVersion.txt", Encoding.UTF8.GetBytes(buildVersion));
 
             Console.WriteLine("已生成" + count + "个文件信息");
@@ -71,11 +82,15 @@ namespace KLib
                 else
                     newFileName = fileName + "_" + crc;
 
-                File.WriteAllBytes(outputPath + "/" + dirPath + "/" + newFileName, bytes);
+                File.WriteAllBytes(outputPath + "/" + dirPath + newFileName, bytes);
+                if (WithOriginalFiles)
+                    File.WriteAllBytes(outputPath + "/" + dirPath + fileName, bytes);
 
-                sb.Append(fileName);
+                dic_ver.Add(dirPath + fileName, dirPath + newFileName);
+
+                sb.Append(dirPath + fileName);
                 sb.Append(",");
-                sb.Append(newFileName);
+                sb.Append(dirPath + newFileName);
                 sb.Append(",");
                 sb.Append(Convert.ToString(bytes.Length));
                 sb.Append("\r\n");
@@ -83,13 +98,10 @@ namespace KLib
                 count++;
             }
 
-            var addPath = "";
-            if (dirPath.Length > 0)
-                addPath = dirPath + "/";
             foreach (var dir in Directory.GetDirectories(curPath))
             {
                 var dirInfo = new DirectoryInfo(dir);
-                readFiles(basePath, addPath + dirInfo.Name, ref count);
+                readFiles(basePath, dirPath + dirInfo.Name + "/", ref count);
             }
         }
 

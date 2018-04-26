@@ -16,6 +16,9 @@ namespace ResourceInfoExporter
                 try
 #endif
                 {
+                    if (dic.ContainsKey("withOriginalFiles"))
+                        FileInfoMaker.WithOriginalFiles = Convert.ToBoolean(dic["withOriginalFiles"]);
+
                     FileInfoMaker.makeCfg(dic["input"], dic["output"]);
 #if DEBUG
                     Console.ReadLine();
