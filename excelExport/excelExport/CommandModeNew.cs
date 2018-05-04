@@ -40,14 +40,6 @@ namespace excelExport
                 if (args.ContainsKey("prefix_IgnoreSheet"))
                     prefix_IgnoreSheet = args["prefix_IgnoreSheet"];
 
-                String prefix_IgnoreLine = "[#]";
-                if (args.ContainsKey("prefix_IgnoreLine"))
-                    prefix_IgnoreLine = args["prefix_IgnoreLine"];
-
-                String prefix_IgnoreColumn = "[*]";
-                if (args.ContainsKey("prefix_IgnoreColumn"))
-                    prefix_IgnoreColumn = args["prefix_IgnoreColumn"];
-
                 string customerEncoder = null;
                 if (args.ContainsKey("customerEncoder"))
                     customerEncoder = args["customerEncoder"];
@@ -127,7 +119,7 @@ namespace excelExport
                     ExcelGenerater.endian = endian;
                     ExcelGenerater.fileExt = fileExt;
                     ExcelGenerater.customerEncoder = customerEncoder;
-                    ExcelGenerater.export(inputPathList, output, compress, prefix_primaryKey, prefix_IgnoreSheet, prefix_IgnoreLine, prefix_IgnoreColumn, ignoreBlank);
+                    ExcelGenerater.export(inputPathList, output, compress, prefix_primaryKey, prefix_IgnoreSheet, ignoreBlank);
 
                 }
 #if !DEBUG
@@ -145,6 +137,9 @@ namespace excelExport
 
 {e.Message}");
                     }
+                    MessageBox.Show(@"导出时出现错误                                         
+
+");
                     Console.ReadLine();
                 }
 #endif

@@ -51,7 +51,7 @@ namespace KLib
             get { return new DateTime(2016, 3, 22); }
         }
 
-        static public void export(String inputPath, String outputPath, CompressOption op, String prefix_primaryKey, String prefix_IgnoreSheet, String prefix_IgnoreLine, String prefix_IgnoreColumn, Boolean ignoreBlank)
+        static public void export(String inputPath, String outputPath, CompressOption op, String prefix_primaryKey, String prefix_IgnoreSheet, Boolean ignoreBlank)
         {
 
             if (Directory.Exists(inputPath))
@@ -75,13 +75,13 @@ namespace KLib
 
                 for (int k = 0; k < fileInfos.Length; k++)
                 {
-                    export(fileInfos[k].FullName, outputPath, op, prefix_primaryKey, prefix_IgnoreSheet, prefix_IgnoreLine, prefix_IgnoreColumn, ignoreBlank);
+                    export(fileInfos[k].FullName, outputPath, op, prefix_primaryKey, prefix_IgnoreSheet, ignoreBlank);
                 }
             }
             else
             {
                 curExcel = Path.GetFileName(inputPath);
-                ExcelTable[] sheets = doExport(inputPath, prefix_primaryKey, prefix_IgnoreSheet, prefix_IgnoreLine, prefix_IgnoreColumn, ignoreBlank);
+                ExcelTable[] sheets = doExport(inputPath, prefix_primaryKey, prefix_IgnoreSheet, ignoreBlank);
 
                 if (null == outputPath || "" == outputPath)
                 {
@@ -167,7 +167,7 @@ namespace KLib
 
         }
 
-        static public void export(String[] inputPathList, String outputPath, CompressOption op, String prefix_primaryKey, String prefix_IgnoreSheet, String prefix_IgnoreLine, String prefix_IgnoreColumn, Boolean ignoreBlank)
+        static public void export(String[] inputPathList, String outputPath, CompressOption op, String prefix_primaryKey, String prefix_IgnoreSheet, Boolean ignoreBlank)
         {
             //customerEncoder = @"C:\work\unity\project\demo\demo\demo\codes\client\tools\excelEncoder\excelEncoder\bin\Release\excelEncoder.dll";
 
@@ -229,7 +229,7 @@ namespace KLib
             while (i < len)
             {
 
-                export(inputPathList[i], outputPath, op, prefix_primaryKey, prefix_IgnoreSheet, prefix_IgnoreLine, prefix_IgnoreColumn, ignoreBlank);
+                export(inputPathList[i], outputPath, op, prefix_primaryKey, prefix_IgnoreSheet, ignoreBlank);
 
                 i++;
 
@@ -245,7 +245,7 @@ namespace KLib
 
         static private ExcelCodeTemplate codeTemplate;
 
-        static ExcelTable[] doExport(String path, String prefix_primaryKey, String prefix_IgnoreSheet, String prefix_IgnoreLine, String prefix_IgnoreColumn, Boolean ignoreBlank)
+        static ExcelTable[] doExport(String path, String prefix_primaryKey, String prefix_IgnoreSheet, Boolean ignoreBlank)
         {
             var sheets = new List<ExcelTable>();
             var excelTables = getTables(path, prefix_IgnoreSheet);
@@ -257,7 +257,7 @@ namespace KLib
                 try
 #endif
                 {
-                    ExcelTable excelSheet = processSheet(table, prefix_primaryKey, prefix_IgnoreLine, prefix_IgnoreColumn, ignoreBlank);
+                    ExcelTable excelSheet = processSheet(table, prefix_primaryKey, ignoreBlank);
                     if (excelSheet != null)
                     {
                         sheets.Add(excelSheet);
@@ -337,7 +337,7 @@ namespace KLib
         static public string codeFolderPath;
 
 
-        static private ExcelTable processSheet(DataTable dt, String prefix_primaryKey, String prefix_IgnoreLine, String prefix_IgnoreColumn, Boolean ignoreBlank)
+        static private ExcelTable processSheet(DataTable dt, String prefix_primaryKey, Boolean ignoreBlank)
         {
             //字段名+类型  至少2行
             if (dt.Rows.Count < 3 && dt.Columns.Count == 1)
@@ -379,32 +379,7 @@ namespace KLib
                 }
             }
 
-            int i = dt.Rows.Count - 1;
-            while (i >= dataRowStartNum)
-            {
-                //忽略行
-                if (isPrefix(dt.Rows[i][0].ToString(), prefix_IgnoreLine))
-                {
-                    dt.Rows.RemoveAt(i);
-                }
-                i--;
-            }
-
-            header = new Object[dt.Rows[0].ItemArray.Length];
-            dt.Rows[0].ItemArray.CopyTo(header, 0);
-
-            /*
-            i = header.Length - 1;
-            while (i >= 0)
-            {
-                //忽略列
-                if (isPrefix(header[i].ToString(), prefix_IgnoreColumn))
-                {
-                    dt.Columns.RemoveAt(i);
-                }
-                i--;
-            }
-            */
+            int i;
 
             header = new Object[dt.Rows[fieldNameRowNum].ItemArray.Length];
             dt.Rows[fieldNameRowNum].ItemArray.CopyTo(header, 0);
@@ -424,6 +399,9 @@ namespace KLib
                     }
                     column--;
                 }
+
+                if (dt.Columns.Count <= 0)
+                    return null;
 
                 header = new String[dt.Rows[fieldNameRowNum].ItemArray.Length];
                 dt.Rows[fieldNameRowNum].ItemArray.CopyTo(header, 0);
@@ -589,8 +567,6 @@ namespace KLib
                         for (int c = 1, k = sheet.Dimension.End.Column; c <= k; c++)
                         {
                             var cell = sheet.Cells[r, c];
-
-                            //row[c - 1] = cell.Text;
                             try
                             {
                                 row[c - 1] = cell.Text;

@@ -6,6 +6,8 @@ excelExport.exe -excel "D:\work\VS\mycsharp\excelExport\excelExport\sample\sampl
 
 -template		代码模板文件路径
 
+-customerEncoder		自定义数据编码器路径
+
 -codeGeneratePath	代码输出文件夹路径
 
 可选：
@@ -14,8 +16,6 @@ excelExport.exe -excel "D:\work\VS\mycsharp\excelExport\excelExport\sample\sampl
 [-prefix_primaryKey]	主键字段的前缀 (默认[$])，没有指定主键时将第一个字段作为主键
 
 [-prefix_IgnoreSheet]	忽略的表名前缀 (默认#)
-
-[-prefix_IgnoreLine]	注释的行前缀 (默认[#])
 
 [-defaultArraySpliter]	默认数组分隔符，默认为"-"
 
