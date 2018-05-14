@@ -19,6 +19,9 @@ namespace ResourceInfoExporter
                     if (dic.ContainsKey("withOriginalFiles"))
                         FileInfoMaker.WithOriginalFiles = Convert.ToBoolean(dic["withOriginalFiles"]);
 
+                    if (dic.ContainsKey("compressExt"))
+                        FileInfoMaker.compressExt = dic["compressExt"].Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+
                     FileInfoMaker.makeCfg(dic["input"], dic["output"]);
 #if DEBUG
                     Console.ReadLine();
@@ -27,7 +30,8 @@ namespace ResourceInfoExporter
 #if !DEBUG
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.Message);
+                    Console.WriteLine($@"出现异常:
+{e.Message}");
                     Console.ReadLine();
                 }
 #endif

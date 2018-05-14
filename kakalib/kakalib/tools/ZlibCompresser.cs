@@ -29,5 +29,13 @@ namespace KLib
 
         }
 
+        static public byte[] compress(byte[] bytes)
+        {
+            var inStream = new MemoryStream(bytes);
+            var outStream = new MemoryStream();
+            (new ZlibCompresser()).compress(inStream, outStream);
+            return outStream.ToArray();
+        }
+
     }
 }
