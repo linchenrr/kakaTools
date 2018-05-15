@@ -20,27 +20,42 @@ namespace KLib
 
         static private Dictionary<string, string> dic_ver = new Dictionary<string, string>();
 
-        static public string[] compressExt = new string[0];
+        static public string[] compressFiles = new string[0];
+        static public string[] compressFileName = new string[0];
         static public bool WithOriginalFiles = false;
+        static public string SpecifiedFolder;
 
         static public void makeCfg(String input, String output)
         {
             inputPath = input + "/";
             outputPath = output + "/";
+            var originalOutputPath = outputPath;
 
-            for (int i = 0; i < compressExt.Length; i++)
+            for (int i = 0; i < compressFiles.Length; i++)
             {
-                compressExt[i] = compressExt[i].Trim().ToLower();
+                compressFiles[i] = compressFiles[i].Trim().ToLower();
             }
 
             var outputDir = new DirectoryInfo(outputPath);
             if (outputDir.Exists)
             {
-                outputDir.Delete(true);
+                try
+                {
+                    outputDir.Delete(true);
+                }
+                catch (Exception)
+                {
+                    outputDir.Delete(true);
+                }
             }
 
             FileUtil.copyDirectoryStruct(inputPath, outputPath);
 
+            if (SpecifiedFolder != null)
+            {
+                inputPath += SpecifiedFolder + "/";
+                outputPath += SpecifiedFolder + "/";
+            }
             var count = 0;
             readFiles(inputPath, "", ref count);
 
@@ -61,13 +76,13 @@ namespace KLib
 
             //var bytes = Encoding.UTF8.GetBytes(json);
             var bytes = Encoding.UTF8.GetBytes(sb.ToString());
-            File.WriteAllBytes(outputPath + jsonName, bytes);
+            File.WriteAllBytes(originalOutputPath + jsonName, bytes);
 
             var bytes_compress = ZlibCompresser.compress(bytes);
-            File.WriteAllBytes(outputPath + jsonName_compress, bytes_compress);
+            File.WriteAllBytes(originalOutputPath + jsonName_compress, bytes_compress);
 
-            File.WriteAllBytes(outputPath + "fileInfoName.txt", Encoding.UTF8.GetBytes(jsonName_compress));
-            File.WriteAllBytes(outputPath + "buildVersion.txt", Encoding.UTF8.GetBytes(buildVersion));
+            File.WriteAllBytes(originalOutputPath + "fileInfoName.txt", Encoding.UTF8.GetBytes(jsonName_compress));
+            File.WriteAllBytes(originalOutputPath + "buildVersion.txt", Encoding.UTF8.GetBytes(buildVersion));
 
             Console.WriteLine("已生成" + count + "个文件信息");
             //Console.ReadLine();
@@ -101,7 +116,8 @@ namespace KLib
                     File.WriteAllBytes(outputPath + "/" + dirPath + fileName, bytes);
 
                 var isCompress = false;
-                if (compressExt.Contains(fileInfo.Extension.ToLower()))
+                var fileNameLower = fileInfo.Name.ToLower();
+                if (compressFiles.FirstOrDefault(item => fileNameLower.EndsWith(item)) != null)
                 {
                     isCompress = true;
                     bytes = ZlibCompresser.compress(bytes);

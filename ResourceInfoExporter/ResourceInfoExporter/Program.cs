@@ -18,9 +18,12 @@ namespace ResourceInfoExporter
                 {
                     if (dic.ContainsKey("withOriginalFiles"))
                         FileInfoMaker.WithOriginalFiles = Convert.ToBoolean(dic["withOriginalFiles"]);
+                    if (dic.ContainsKey("specifiedFolder"))
+                        FileInfoMaker.SpecifiedFolder = dic["specifiedFolder"].Trim();
 
-                    if (dic.ContainsKey("compressExt"))
-                        FileInfoMaker.compressExt = dic["compressExt"].Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+
+                    if (dic.ContainsKey("compressFiles"))
+                        FileInfoMaker.compressFiles = dic["compressFiles"].Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
 
                     FileInfoMaker.makeCfg(dic["input"], dic["output"]);
 #if DEBUG
