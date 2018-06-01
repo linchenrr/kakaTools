@@ -7,6 +7,8 @@ using System.Text.RegularExpressions;
 using System.Collections;
 using KLib;
 using Newtonsoft.Json;
+using System.Diagnostics;
+using System.Windows.Forms;
 
 namespace KLib
 {
@@ -23,6 +25,7 @@ namespace KLib
         static public string[] compressFiles = new string[0];
         static public string[] compressFileName = new string[0];
         static public bool WithOriginalFiles = false;
+        static public bool CompressPNG = false;
         static public string SpecifiedFolder;
 
         static public void makeCfg(String input, String output)
@@ -90,6 +93,7 @@ namespace KLib
 
         static private void readFiles(string basePath, string dirPath, ref int count)
         {
+            Console.WriteLine();
             Console.WriteLine($"dir:{dirPath}");
 
             var curPath = basePath + "/" + dirPath;
@@ -123,8 +127,15 @@ namespace KLib
                     bytes = ZlibCompresser.compress(bytes);
                 }
 
-                File.WriteAllBytes(outputPath + "/" + dirPath + newFileName, bytes);
-
+                var newPah = outputPath + "/" + dirPath + newFileName;
+                if (CompressPNG && fileInfo.Extension.ToLower() == ".png")
+                {
+                    compressPNGFile(fileInfo.FullName, bytes, newPah);
+                }
+                else
+                {
+                    File.WriteAllBytes(newPah, bytes);
+                }
 
                 dic_ver.Add(dirPath + fileName, dirPath + newFileName);
 
@@ -145,6 +156,37 @@ namespace KLib
                 var dirInfo = new DirectoryInfo(dir);
                 readFiles(basePath, dirPath + dirInfo.Name + "/", ref count);
             }
+        }
+
+        static private void compressPNGFile(string path, byte[] bytes, string output)
+        {
+            try
+            {
+                Console.WriteLine($@"compress {Path.GetFileName(path)}");
+                var tmpFileName = Path.GetTempPath() + "resourceInfoExporter.png";
+                var tmpWriteName = Path.GetTempPath() + "resourceInfoExporter_compress.png";
+                File.WriteAllBytes(tmpFileName, bytes);
+                var p = new Process();
+                p.StartInfo.FileName = Application.StartupPath + "/pngquant.exe";
+                p.StartInfo.Arguments = $@"{tmpFileName} -o {tmpWriteName} --force";
+                //p.StartInfo.Arguments = $@"{tmpFileName} --force --ext .png";
+                p.StartInfo.UseShellExecute = false;
+                p.StartInfo.RedirectStandardInput = true;
+                p.StartInfo.RedirectStandardOutput = true;
+                p.Start();
+                p.WaitForExit();
+
+                File.Copy(tmpWriteName, output);
+            }
+            catch (Exception e)
+            {
+                var msg = $@"压缩图片错误
+{path}";
+                Console.WriteLine(msg);
+                MessageBox.Show(msg);
+                throw e;
+            }
+
         }
 
     }

@@ -1,6 +1,7 @@
 ﻿using KLib;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace ResourceInfoExporter
@@ -24,6 +25,9 @@ namespace ResourceInfoExporter
 
                     if (dic.ContainsKey("compressFiles"))
                         FileInfoMaker.compressFiles = dic["compressFiles"].Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+
+                    if (dic.ContainsKey("compressPNG"))
+                        FileInfoMaker.CompressPNG = Convert.ToBoolean(dic["compressPNG"]);
 
                     FileInfoMaker.makeCfg(dic["input"], dic["output"]);
 #if DEBUG
