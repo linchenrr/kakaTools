@@ -27,9 +27,18 @@ namespace KLib
         static public bool WithOriginalFiles = false;
         static public bool CompressPNG = false;
         static public string SpecifiedFolder;
+        static private Process p;
 
         static public void makeCfg(String input, String output)
         {
+            p = new Process();
+            p.StartInfo.FileName = Application.StartupPath + "/pngquant.exe";
+            p.StartInfo.Arguments = $@"-";
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.RedirectStandardInput = true;
+            p.StartInfo.RedirectStandardOutput = true;
+
+
             inputPath = input + "/";
             outputPath = output + "/";
             var originalOutputPath = outputPath;
@@ -105,17 +114,6 @@ namespace KLib
                 var fileName = fileInfo.Name;
                 var bytes = File.ReadAllBytes(filePath);
 
-                var crc32 = new Crc32();
-                var crc = "";
-                foreach (byte b in crc32.ComputeHash(bytes)) crc += b.ToString("x2").ToLower();
-
-                int idx = fileName.LastIndexOf(".");
-                String newFileName;
-                if (idx != -1)
-                    newFileName = fileName.Insert(idx, "_" + crc);
-                else
-                    newFileName = fileName + "_" + crc;
-
                 if (WithOriginalFiles)
                     File.WriteAllBytes(outputPath + "/" + dirPath + fileName, bytes);
 
@@ -127,15 +125,26 @@ namespace KLib
                     bytes = ZlibCompresser.compress(bytes);
                 }
 
-                var newPah = outputPath + "/" + dirPath + newFileName;
                 if (CompressPNG && fileInfo.Extension.ToLower() == ".png")
                 {
-                    compressPNGFile(fileInfo.FullName, bytes, newPah);
+                    bytes = compressPNGFile(fileInfo.FullName, bytes);
                 }
+
+                var crc32 = new Crc32();
+                var crc = new StringBuilder();
+                foreach (var b in crc32.ComputeHash(bytes))
+                    crc.Append(b.ToString("x2").ToLower());
+
+                var idx = fileName.LastIndexOf(".");
+                String newFileName;
+                if (idx != -1)
+                    newFileName = fileName.Insert(idx, "_" + crc);
                 else
-                {
-                    File.WriteAllBytes(newPah, bytes);
-                }
+                    newFileName = fileName + "_" + crc;
+
+                var newPah = outputPath + "/" + dirPath + newFileName;
+
+                File.WriteAllBytes(newPah, bytes);
 
                 dic_ver.Add(dirPath + fileName, dirPath + newFileName);
 
@@ -158,30 +167,27 @@ namespace KLib
             }
         }
 
-        static private void compressPNGFile(string path, byte[] bytes, string output)
+        static private byte[] compressPNGFile(string path, byte[] bytes)
         {
             try
             {
                 Console.WriteLine($@"compress {Path.GetFileName(path)}");
-                var tmpFileName = Path.GetTempPath() + "resourceInfoExporter.png";
-                var tmpWriteName = Path.GetTempPath() + "resourceInfoExporter_compress.png";
-                File.WriteAllBytes(tmpFileName, bytes);
-                var p = new Process();
-                p.StartInfo.FileName = Application.StartupPath + "/pngquant.exe";
-                p.StartInfo.Arguments = $@"{tmpFileName} -o {tmpWriteName} --force";
-                //p.StartInfo.Arguments = $@"{tmpFileName} --force --ext .png";
-                p.StartInfo.UseShellExecute = false;
-                p.StartInfo.RedirectStandardInput = true;
-                p.StartInfo.RedirectStandardOutput = true;
-                p.Start();
-                p.WaitForExit();
 
-                File.Copy(tmpWriteName, output);
+                p.Start();
+                p.StandardInput.BaseStream.Write(bytes, 0, bytes.Length);
+                p.StandardInput.Flush();
+                //p.WaitForExit();
+
+                var ms = new MemoryStream();
+                p.StandardOutput.BaseStream.CopyTo(ms);
+                var outBytes = ms.ToArray();
+                return outBytes;
             }
             catch (Exception e)
             {
                 var msg = $@"压缩图片错误
-{path}";
+{path}
+{e}";
                 Console.WriteLine(msg);
                 MessageBox.Show(msg);
                 throw e;
