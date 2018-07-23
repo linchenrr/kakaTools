@@ -766,7 +766,7 @@ namespace KLib
             text = text.Replace(mark_className, className);
             text = text.Replace("$(definition)", definition);
             text = text.Replace("$(decode)", decode);
-            text = text.Replace("$(primaryKeyType)", primaryKeyType);
+            text = text.Replace("$(primaryKeyType)", getTypeClassName(primaryKeyType));
             text = text.Replace("$(primaryKeyName)", primaryKeyName);
 
             text = text.Replace(mark_comment, comment);
