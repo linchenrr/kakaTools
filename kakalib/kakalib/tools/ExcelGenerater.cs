@@ -58,7 +58,7 @@ namespace KLib
             {
                 DirectoryInfo di = new DirectoryInfo(inputPath);
 
-                FileInfo[] fileInfos = di.GetFiles("*.xlsx", SearchOption.TopDirectoryOnly);
+                FileInfo[] fileInfos = di.GetFiles("*.xlsx", SearchOption.AllDirectories);
 
                 fileInfos = fileInfos.Where(fileInfo =>
                 {
