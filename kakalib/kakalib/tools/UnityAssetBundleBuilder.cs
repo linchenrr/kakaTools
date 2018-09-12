@@ -310,58 +310,79 @@ namespace KLib
             {
                 if (finishCount >= c)
                     break;
-                Thread.Sleep(50);
+                Thread.Sleep(10);
                 if (curThread >= maxThread)
                     continue;
-                if (i >= c)
-                    continue;
-                ResourceInfo resInfo = list_info[i];
-                i++;
-
-                String fileName = resInfo.name;
-                String newFileName = fileName;
-
-                FileInfo file = new FileInfo(inputPath + fileName);
-
-                if (file.Exists)
+                if (i < c)
                 {
-                    curThread++;
-                    var thread = new Thread(() =>
+                    ResourceInfo resInfo_loop = list_info[i];
+                    i++;
+
+                    var threadParam = new FileThreadParam()
                     {
+                        FileName = resInfo_loop.name,
+                        ResInfo = resInfo_loop,
+                    };
 
-                        var bytes = File.ReadAllBytes(inputPath + fileName);
-
-                        bytes = compresser.compress(bytes);
-
-                        File.WriteAllBytes(outputFilePath + newFileName, bytes);
-
-                        var md5 = MD5Utils.BytesToMD5(bytes);
-
-                        lock (lockObj)
+                    if (File.Exists(inputPath + threadParam.FileName))
+                    {
+                        curThread++;
+                        var thread = new Thread((par) =>
                         {
-                            sb.Append(newFileName);
-                            sb.Append(",");
-                            sb.Append(resInfo.version);
-                            sb.Append(",");
-                            sb.Append(bytes.Length);
-                            sb.Append(",");
-                            sb.Append(md5);
-                            sb.Append("\r\n");
-                            finishCount++;
-                            count++;
-                            curThread--;
-                        }
+                            var param = (FileThreadParam)par;
+                            var fileName = param.FileName;
+                            var resInfo = param.ResInfo;
+                            var bytes = File.ReadAllBytes(inputPath + fileName);
 
-                    });
-                    thread.Priority = ThreadPriority.Lowest;
-                    thread.Start();
+                            bytes = compresser.compress(bytes);
+                            /*
+                            //======crc32===========
+                            var crc32 = new Crc32();
+                            var crc = new StringBuilder();
+                            foreach (var b in crc32.ComputeHash(bytes))
+                                crc.Append(b.ToString("x2").ToLower());
 
-                }
-                else
-                {
-                    finishCount++;
-                    lost.Append(fileName);
-                    lost.Append("\r\n");
+                            var idx = fileName.LastIndexOf(".");
+                            String newFileName;
+                            if (idx != -1)
+                                newFileName = fileName.Insert(idx, "_" + crc);
+                            else
+                                newFileName = fileName + "_" + crc;
+                            //====================
+                            */
+                            var newFileName = fileName;
+                            File.WriteAllBytes(outputFilePath + newFileName, bytes);
+
+                            var md5 = MD5Utils.BytesToMD5(bytes);
+
+                            lock (lockObj)
+                            {
+                                sb.Append(fileName);
+                                sb.Append(",");
+                                //sb.Append(newFileName);
+                                //sb.Append(",");
+                                sb.Append(resInfo.version);
+                                sb.Append(",");
+                                sb.Append(bytes.Length);
+                                sb.Append(",");
+                                sb.Append(md5);
+                                sb.Append("\r\n");
+                                finishCount++;
+                                count++;
+                                curThread--;
+                            }
+
+                        });
+                        thread.Priority = ThreadPriority.Lowest;
+                        thread.Start(threadParam);
+
+                    }
+                    else
+                    {
+                        finishCount++;
+                        lost.Append(resInfo_loop.name);
+                        lost.Append("\r\n");
+                    }
                 }
                 var backStr = new StringBuilder();
                 for (int j = 0; j < backNum; j++)
@@ -395,6 +416,12 @@ namespace KLib
             Console.WriteLine();
             Console.WriteLine("已生成" + count + "个文件信息");
             Console.WriteLine("耗时" + time.Elapsed.TotalSeconds + "秒");
+        }
+
+        public class FileThreadParam
+        {
+            public string FileName;
+            public ResourceInfo ResInfo;
         }
 
         static private String readFromSqlite(String path, ArrayList list)
