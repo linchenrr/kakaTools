@@ -77,11 +77,11 @@ namespace KLib
 
             ResourceInfo[] resInfoList = (ResourceInfo[])list.ToArray(typeof(ResourceInfo));
 
-            FileUtil.writeFile(path_folder + "/" + resInfoGenerator.resourceInfoFileName, resInfoGenerator.resourceInfoToBytes(resInfoList));
+            File.WriteAllBytes(path_folder + "/" + resInfoGenerator.resourceInfoFileName, resInfoGenerator.resourceInfoToBytes(resInfoList));
 
-            FileUtil.writeFile(path_folder + "/" + resInfoGenerator.buildVersionFileName, resInfoGenerator.buildVersionToBytes(buildVersion));
+            File.WriteAllBytes(path_folder + "/" + resInfoGenerator.buildVersionFileName, resInfoGenerator.buildVersionToBytes(buildVersion));
 
-            FileUtil.writeFile(path_folder + "/" + "buildVersion.txt", Encoding.UTF8.GetBytes(buildVersion));
+            File.WriteAllBytes(path_folder + "/" + "buildVersion.txt", Encoding.UTF8.GetBytes(buildVersion));
 
             return "buildVersion:" + buildVersion + "\r\n已生成" + list.Count + "个文件信息";
 

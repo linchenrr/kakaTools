@@ -198,7 +198,7 @@ namespace KLib
             //Console.ReadLine();
 
             if (singleMode)
-                FileUtil.writeFile(codeFolderPath + codeTemplate.element_SingleProtocolFile.Attribute("fileName").Value, Encoding.UTF8.GetBytes(codeTemplate.getSingleFileText(singleText)));
+                File.WriteAllBytes(codeFolderPath + codeTemplate.element_SingleProtocolFile.Attribute("fileName").Value, Encoding.UTF8.GetBytes(codeTemplate.getSingleFileText(singleText)));
 
 
             var list_message = dic_message.Values.ToList();
@@ -223,8 +223,8 @@ namespace KLib
             str_enum = codeTemplate.getProtocolEnumClass(codeTemplate.ProtocolEnumName, str_enum, "");
             str_registerMessage = codeTemplate.getMessageRegisterClass(str_registerMessage, str_createMessage, str_dispatchMessage);
 
-            FileUtil.writeFile(codeFolderPath + codeTemplate.ProtocolEnumName + codeTemplate.ClassExtension, Encoding.UTF8.GetBytes(str_enum));
-            FileUtil.writeFile(codeFolderPath + codeTemplate.element_MessageRegisterClass.Attribute("fileName").Value, Encoding.UTF8.GetBytes(str_registerMessage));
+            File.WriteAllBytes(codeFolderPath + codeTemplate.ProtocolEnumName + codeTemplate.ClassExtension, Encoding.UTF8.GetBytes(str_enum));
+            File.WriteAllBytes(codeFolderPath + codeTemplate.element_MessageRegisterClass.Attribute("fileName").Value, Encoding.UTF8.GetBytes(str_registerMessage));
 
 
             var copyFiles = template.Element("CopyFiles");
@@ -235,7 +235,7 @@ namespace KLib
                 {
                     var fileName = item.Attribute("fileName").Value.Trim();
                     var content = item.Value;
-                    FileUtil.writeFile(codeFolderPath + fileName, Encoding.UTF8.GetBytes(content));
+                    File.WriteAllBytes(codeFolderPath + fileName, Encoding.UTF8.GetBytes(content));
                 }
             }
 
@@ -439,7 +439,7 @@ namespace KLib
             if (singleMode)
                 text += singleVOText;
             else
-                FileUtil.writeFile(voFolderPath + fileClassName + codeTemplate.ClassExtension, Encoding.UTF8.GetBytes(singleVOText));
+                File.WriteAllBytes(voFolderPath + fileClassName + codeTemplate.ClassExtension, Encoding.UTF8.GetBytes(singleVOText));
 
             return text;
         }
@@ -479,7 +479,7 @@ namespace KLib
             if (singleMode)
                 text += singleVOText;
             else
-                FileUtil.writeFile(voFolderPath + fileClassName + codeTemplate.ClassExtension, Encoding.UTF8.GetBytes(singleVOText));
+                File.WriteAllBytes(voFolderPath + fileClassName + codeTemplate.ClassExtension, Encoding.UTF8.GetBytes(singleVOText));
 
 
             return text;

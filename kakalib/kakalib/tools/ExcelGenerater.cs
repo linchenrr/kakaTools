@@ -317,7 +317,7 @@ namespace KLib
                     }
 
                     var classText = codeTemplate.getClassText(sheet.name, fileClassName, str_definition, str_decode, sheet.types[sheet.primaryKeyIndex], codeTemplate.getFinalMemberName(sheet.header[sheet.primaryKeyIndex]));
-                    FileUtil.writeFile(codeFolderPath + fileClassName + codeTemplate.ClassExtension, Encoding.UTF8.GetBytes(classText));
+                    File.WriteAllBytes(codeFolderPath + fileClassName + codeTemplate.ClassExtension, Encoding.UTF8.GetBytes(classText));
 
                     ExcelCodeTemplate.AddClassName(fileClassName);
 
@@ -325,7 +325,8 @@ namespace KLib
 
                 if (codeTemplate.HasInitClass)
                 {
-                    FileUtil.writeFile(codeFolderPath + codeTemplate.GetInitClassFileName(), Encoding.UTF8.GetBytes(codeTemplate.GetInitClassText()));
+                    File.WriteAllBytes(codeFolderPath + codeTemplate.GetInitClassFileName(), Encoding.UTF8.GetBytes(codeTemplate.GetInitClassText()));
+                    //FileUtil.writeFile(codeFolderPath + codeTemplate.GetInitClassFileName(), Encoding.UTF8.GetBytes(codeTemplate.GetInitClassText()));
                 }
 
             }
@@ -814,7 +815,7 @@ namespace KLib
                 var item = InitClassItem.Replace("$(className)", list_className[i]);
                 str_item += item;
             }
-            return InitClass.Replace("$(initCode)", str_item).Replace("$(initCount)", list_className.Count.ToString());
+            return InitClass.Replace("$(initCode)", str_item).Replace("$(initCount)", list_className.Count.ToString()).Trim();
         }
 
         public string GetInitClassFileName()

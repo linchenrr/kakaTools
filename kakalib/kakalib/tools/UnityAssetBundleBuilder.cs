@@ -193,9 +193,9 @@ namespace KLib
 
             Byte[] FileInfoBytes = Encoding.UTF8.GetBytes(sb.ToString());
 
-            FileUtil.writeFile(inputPath + "assetInfo.txt", FileInfoBytes);
-            FileUtil.writeFile(inputPath + "assetInfo_compressed.txt", compresser.compress(FileInfoBytes));
-            FileUtil.writeFile(inputPath + "assetVersion.txt", Encoding.UTF8.GetBytes(buildVersion));
+            File.WriteAllBytes(inputPath + "assetInfo.txt", FileInfoBytes);
+            File.WriteAllBytes(inputPath + "assetInfo_compressed.txt", compresser.compress(FileInfoBytes));
+            File.WriteAllBytes(inputPath + "assetVersion.txt", Encoding.UTF8.GetBytes(buildVersion));
 
             if (lost.Length != 0)
             {
@@ -403,9 +403,9 @@ namespace KLib
 
             Byte[] FileInfoBytes = Encoding.UTF8.GetBytes(sb.ToString());
 
-            FileUtil.writeFile(outputFilePath + "assetInfo.txt", FileInfoBytes);
-            FileUtil.writeFile(outputFilePath + "assetInfo_compressed.txt", compresser.compress(FileInfoBytes));
-            FileUtil.writeFile(outputPath + "assetVersion.txt", Encoding.UTF8.GetBytes(buildVersion));
+            File.WriteAllBytes(outputFilePath + "assetInfo.txt", FileInfoBytes);
+            File.WriteAllBytes(outputFilePath + "assetInfo_compressed.txt", compresser.compress(FileInfoBytes));
+            File.WriteAllBytes(outputPath + "assetVersion.txt", Encoding.UTF8.GetBytes(buildVersion));
 
             if (lost.Length != 0)
             {
