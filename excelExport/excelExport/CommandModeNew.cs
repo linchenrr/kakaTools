@@ -26,7 +26,7 @@ namespace excelExport
 
             if (args.ContainsKey("excel"))
             {
-                String[] inputPathList = args["excel"].Split(',');
+                var inputPath = args["excel"];
 
                 String output = "";
                 if (args.ContainsKey("dataPath"))
@@ -119,7 +119,7 @@ namespace excelExport
                     ExcelGenerater.endian = endian;
                     ExcelGenerater.fileExt = fileExt;
                     ExcelGenerater.customerEncoder = customerEncoder;
-                    ExcelGenerater.export(inputPathList, output, compress, prefix_primaryKey, prefix_IgnoreSheet, ignoreBlank);
+                    ExcelGenerater.startExport(inputPath, output, compress, prefix_primaryKey, prefix_IgnoreSheet, ignoreBlank);
 
                 }
 #if !DEBUG

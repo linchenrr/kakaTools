@@ -12,6 +12,7 @@ using System.Xml.Linq;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using OfficeOpenXml;
+using System.Threading;
 
 namespace KLib
 {
@@ -82,16 +83,6 @@ namespace KLib
             {
                 curExcel = Path.GetFileName(inputPath);
                 ExcelTable[] sheets = doExport(inputPath, prefix_primaryKey, prefix_IgnoreSheet, ignoreBlank);
-
-                if (null == outputPath || "" == outputPath)
-                {
-                    FileInfo fi = new FileInfo(inputPath);
-                    outputPath = fi.DirectoryName;
-                }
-
-                if (!Directory.Exists(outputPath))
-                    //throw new Exception("导出路径\"" + outputPath + "\"不存在");
-                    Directory.CreateDirectory(outputPath);
 
                 foreach (ExcelTable sheet in sheets)
                 {
@@ -167,7 +158,7 @@ namespace KLib
 
         }
 
-        static public void export(String[] inputPathList, String outputPath, CompressOption op, String prefix_primaryKey, String prefix_IgnoreSheet, Boolean ignoreBlank)
+        static public void startExport(String inputPath, String outputPath, CompressOption op, String prefix_primaryKey, String prefix_IgnoreSheet, Boolean ignoreBlank)
         {
             //customerEncoder = @"C:\work\unity\project\demo\demo\demo\codes\client\tools\excelEncoder\excelEncoder\bin\Release\excelEncoder.dll";
 
@@ -208,10 +199,34 @@ namespace KLib
 */
             }
 
+            if (null == outputPath || "" == outputPath)
+            {
+                FileInfo fi = new FileInfo(inputPath);
+                outputPath = fi.DirectoryName;
+            }
+
+            if (!Directory.Exists(outputPath))
+                Directory.CreateDirectory(outputPath);
+
+            if (exportDataBytes)
+            {
+                var deleteFiles = Directory.GetFiles(outputPath, "*" + fileExt, SearchOption.TopDirectoryOnly);
+                foreach (var deleteFilePath in deleteFiles)
+                {
+                    File.Delete(deleteFilePath);
+                }
+            }
+
             if (templatePath != null)
             {
                 codeTemplate = new ExcelCodeTemplate();
                 codeTemplate.load(templatePath);
+
+                var codeFiles = Directory.GetFiles(codeFolderPath, "*" + codeTemplate.ClassExtension, SearchOption.TopDirectoryOnly);
+                foreach (var codeFilePath in codeFiles)
+                {
+                    File.Delete(codeFilePath);
+                }
             }
 
 
@@ -223,17 +238,7 @@ namespace KLib
             Console.WriteLine();
             Console.WriteLine();
 
-            int i = 0;
-            int len = inputPathList.Length;
-
-            while (i < len)
-            {
-
-                export(inputPathList[i], outputPath, op, prefix_primaryKey, prefix_IgnoreSheet, ignoreBlank);
-
-                i++;
-
-            }
+            export(inputPath, outputPath, op, prefix_primaryKey, prefix_IgnoreSheet, ignoreBlank);
 
             if (codeTemplate != null)
             {
