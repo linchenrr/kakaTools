@@ -30,6 +30,7 @@ namespace KLib
 
         static public bool exportDataBytes = true;
         static public bool exportDatajson = true;
+        static public string exclude;
 
         static public string customerEncoder;
         static private ExcelTable.ExcelEncoder encoder;
@@ -68,6 +69,8 @@ namespace KLib
                         return false;
                     //过滤excel临时文件
                     if (fileInfo.Name.StartsWith("~$"))
+                        return false;
+                    if (string.IsNullOrEmpty(exclude) == false && fileInfo.FullName.ToLower().Contains(exclude))
                         return false;
                     return true;
                 }).ToArray();
@@ -222,6 +225,9 @@ namespace KLib
                 codeTemplate = new ExcelCodeTemplate();
                 codeTemplate.load(templatePath);
 
+                if (codeFolderPath != null && !Directory.Exists(codeFolderPath))
+                    Directory.CreateDirectory(codeFolderPath);
+
                 var codeFiles = Directory.GetFiles(codeFolderPath, "*" + codeTemplate.ClassExtension, SearchOption.TopDirectoryOnly);
                 foreach (var codeFilePath in codeFiles)
                 {
@@ -279,10 +285,6 @@ namespace KLib
             }
 
             ExcelTable[] tables = sheets.ToArray();
-
-
-            if (codeFolderPath != null && !Directory.Exists(codeFolderPath))
-                Directory.CreateDirectory(codeFolderPath);
 
 
             if (codeTemplate != null)
