@@ -90,6 +90,9 @@ namespace excelExport
                 if (args.ContainsKey("exportDatajson"))
                     ExcelGenerater.exportDatajson = getArgsBool("exportDatajson");
 
+                if (args.ContainsKey("mergeSheets"))
+                    ExcelGenerater.mergeSheets = getArgsBool("mergeSheets");
+
                 if (args.ContainsKey("exclude"))
                     ExcelGenerater.exclude = args["exclude"].Trim().ToLower();
 

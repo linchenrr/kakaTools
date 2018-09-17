@@ -30,6 +30,7 @@ namespace KLib
 
         static public bool exportDataBytes = true;
         static public bool exportDatajson = true;
+        static public bool mergeSheets = false;
         static public string exclude;
 
         static public string customerEncoder;
@@ -86,6 +87,9 @@ namespace KLib
             {
                 curExcel = Path.GetFileName(inputPath);
                 ExcelTable[] sheets = doExport(inputPath, prefix_primaryKey, prefix_IgnoreSheet, ignoreBlank);
+
+                if (sheets == null || sheets.Length == 0)
+                    return;
 
                 foreach (ExcelTable sheet in sheets)
                 {
@@ -260,29 +264,54 @@ namespace KLib
         {
             var sheets = new List<ExcelTable>();
             var excelTables = getTables(path, prefix_IgnoreSheet);
+            if (excelTables.Count == 0)
+                return null;
 
-            foreach (var table in excelTables)
+            if (mergeSheets)
             {
-
-#if !DEBUG
-                try
-#endif
+                var mainTable = excelTables[0];
+                for (int i = 1; i < excelTables.Count; i++)
                 {
-                    ExcelTable excelSheet = processSheet(table, prefix_primaryKey, ignoreBlank);
-                    if (excelSheet != null)
+                    var subTable = excelTables[i];
+                    ///去掉表头
+                    for (int j = 0; j < dataRowStartNum; j++)
                     {
-                        sheets.Add(excelSheet);
+                        subTable.Rows.RemoveAt(0);
                     }
+                    mainTable.Merge(subTable);
                 }
-#if !DEBUG
-                catch (Exception e)
-                {
-                    throw new Exception($@"处理表{table.TableName}失败
-" + e.Message);
-                }
-#endif
 
+                var excelSheet = processSheet(mainTable, prefix_primaryKey, ignoreBlank);
+                excelSheet.name = Path.GetFileNameWithoutExtension(path).ToLower();
+                if (excelSheet != null)
+                {
+                    sheets.Add(excelSheet);
+                }
             }
+            else
+            {
+                foreach (var table in excelTables)
+                {
+#if !DEBUG
+                    try
+#endif
+                    {
+                        var excelSheet = processSheet(table, prefix_primaryKey, ignoreBlank);
+                        if (excelSheet != null)
+                        {
+                            sheets.Add(excelSheet);
+                        }
+                    }
+#if !DEBUG
+                    catch (Exception e)
+                    {
+                        throw new Exception($@"处理表{table.TableName}失败
+" + e.Message);
+                    }
+#endif
+                }
+            }
+
 
             ExcelTable[] tables = sheets.ToArray();
 
@@ -557,9 +586,13 @@ namespace KLib
                     if (isPrefix(sheet.Name, prefix_IgnoreSheet))
                         continue;
 
-                    if (hs_sheetNames.Contains(sheet.Name))
-                        throw new Exception(string.Format("有相同的表名:{0}", sheet.Name));
-                    hs_sheetNames.Add(sheet.Name);
+                    if (!mergeSheets)
+                    {
+                        if (hs_sheetNames.Contains(sheet.Name))
+                            throw new Exception(string.Format("有相同的表名:{0}", sheet.Name));
+                        hs_sheetNames.Add(sheet.Name);
+                    }
+
 
                     var table = new DataTable(sheet.Name);
                     for (int c = sheet.Dimension.Start.Column, k = sheet.Dimension.End.Column; c <= k; c++)
