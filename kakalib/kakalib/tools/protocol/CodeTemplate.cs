@@ -46,9 +46,6 @@ namespace KLib
 
         private string template_messageRegisterClass;
         private string template_messageRegister;
-        private string template_messageCreater;
-
-        private string template_messageDispatcherItem;
 
         public XElement element_SingleProtocolFile;
         public XElement element_ProtocolEnumClass;
@@ -99,18 +96,10 @@ namespace KLib
             template_messageRegisterClass = element_MessageRegisterClass.Value;
             template_messageRegisterClass = Properties.Resources.logo_protocol + template_messageRegisterClass;
 
-            var element_MessageRegisterCreater = xml_template.Element("MessageRegisterCreater");
-            if (element_MessageRegisterCreater == null)
-                throw new Exception("缺少MessageRegisterCreater节点！");
-            template_messageRegister = element_MessageRegisterCreater.Value;
-
-            var element_MessageCreater = xml_template.Element("MessageCreateFun");
-            if (element_MessageCreater != null)
-                template_messageCreater = element_MessageCreater.Value;
-
-            var element_messageDispatcher = xml_template.Element("MessageDispatcherItem");
-            if (element_messageDispatcher != null)
-                template_messageDispatcherItem = element_messageDispatcher.Value;
+            var element_MessageRegister = xml_template.Element("MessageRegister");
+            if (element_MessageRegister == null)
+                throw new Exception("缺少MessageRegister节点！");
+            template_messageRegister = element_MessageRegister.Value;
 
             var list_type = xml_template.Element("params").Elements("param");
             foreach (var item in list_type)
@@ -347,32 +336,13 @@ namespace KLib
             return result;
         }
 
-        public string getMessageCreater(string className)
-        {
-            if (template_messageCreater == null)
-                return "";
-            var result = template_messageCreater.Replace(mark_className, className);
-            return result;
-        }
-
-        public string getMessageRegisterClass(string content, string creater, string dispatch)
+        public string getMessageRegisterClass(string messageRegister)
         {
             var text = template_messageRegisterClass;
-            text = text.Replace("$(content)", content);
-            text = text.Replace("$(creater)", creater);
-            text = text.Replace("$(dispatch)", dispatch);
+            text = text.Replace("$(messageRegister)", messageRegister);
             text = text.Replace("\n", "\r\n");
             text = text.Replace("\r\r\n", "\r\n");
             return text;
-        }
-
-        public string getMessageDispatcher(string messageName)
-        {
-            if (template_messageDispatcherItem == null)
-                return "";
-            var result = template_messageDispatcherItem.Replace("$(protocolEnumName)", protocolEnumName);
-            result = result.Replace("$(messageName)", messageName);
-            return result;
         }
 
     }

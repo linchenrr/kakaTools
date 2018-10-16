@@ -205,8 +205,6 @@ namespace KLib
             list_message = (from item in list_message orderby item.id select item).ToList();
             var str_enum = "";
             var str_registerMessage = "";
-            var str_createMessage = "";
-            var str_dispatchMessage = "";
 
             str_enum += codeTemplate.getEnumDefinition("None", "0", "");
 
@@ -216,12 +214,9 @@ namespace KLib
                 str_enum += codeTemplate.getEnumDefinition(msg.type, msg.id.ToString(), msg.comment);
 
                 str_registerMessage += codeTemplate.getMessageRegister(msg.type, msg.type);
-
-                str_createMessage += codeTemplate.getMessageCreater(msg.type);
-                str_dispatchMessage += codeTemplate.getMessageDispatcher(msg.type);
             }
             str_enum = codeTemplate.getProtocolEnumClass(codeTemplate.ProtocolEnumName, str_enum, "");
-            str_registerMessage = codeTemplate.getMessageRegisterClass(str_registerMessage, str_createMessage, str_dispatchMessage);
+            str_registerMessage = codeTemplate.getMessageRegisterClass(str_registerMessage);
 
             File.WriteAllBytes(codeFolderPath + codeTemplate.ProtocolEnumName + codeTemplate.ClassExtension, Encoding.UTF8.GetBytes(str_enum));
             File.WriteAllBytes(codeFolderPath + codeTemplate.element_MessageRegisterClass.Attribute("fileName").Value, Encoding.UTF8.GetBytes(str_registerMessage));
