@@ -351,9 +351,23 @@ namespace KLib
                             //====================
                             */
                             var newFileName = fileName;
-                            File.WriteAllBytes(outputFilePath + newFileName, bytes);
 
+                            var writeFileComplete = false;
+                            var fileThread = new Thread(() =>
+                            {
+                                File.WriteAllBytes(outputFilePath + newFileName, bytes);
+                                writeFileComplete = true;
+                            });
+                            fileThread.Priority = ThreadPriority.Lowest;
+                            fileThread.Start();
+
+                            //写文件和计算md5需要分线程并行执行
                             var md5 = MD5Utils.BytesToMD5(bytes);
+
+                            while (writeFileComplete == false)
+                            {
+                                Thread.Sleep(1);
+                            }
 
                             lock (lockObj)
                             {
