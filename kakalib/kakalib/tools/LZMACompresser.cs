@@ -12,21 +12,33 @@ namespace KLib
 
         public byte[] compress(byte[] bytes)
         {
-            var outStream = new MemoryStream();
-            compress(new MemoryStream(bytes), outStream);
-            outStream.Position = 0;
-            var outBytes = new byte[outStream.Length];
-            outStream.Read(outBytes, 0, outBytes.Length);
+            byte[] outBytes = null;
+            using (var inStream = new MemoryStream(bytes))
+            {
+                using (var outStream = new MemoryStream())
+                {
+                    compress(inStream, outStream);
+                    outStream.Position = 0;
+                    outBytes = new byte[outStream.Length];
+                    outStream.Read(outBytes, 0, outBytes.Length);
+                }
+            }
             return outBytes;
         }
 
         public byte[] uncompress(byte[] bytes)
         {
-            var outStream = new MemoryStream();
-            uncompress(new MemoryStream(bytes), outStream);
-            outStream.Position = 0;
-            var outBytes = new byte[outStream.Length];
-            outStream.Read(outBytes, 0, outBytes.Length);
+            byte[] outBytes = null;
+            using (var inStream = new MemoryStream(bytes))
+            {
+                using (var outStream = new MemoryStream())
+                {
+                    uncompress(inStream, outStream);
+                    outStream.Position = 0;
+                    outBytes = new byte[outStream.Length];
+                    outStream.Read(outBytes, 0, outBytes.Length);
+                }
+            }
             return outBytes;
         }
 
