@@ -20,52 +20,6 @@ namespace AssetBundleBuilder
             if (dic.ContainsKey("thread"))
                 thread = Convert.ToInt32(dic["thread"]);
 
-            if (dic.ContainsKey("command") && dic.ContainsKey("input"))
-            {
-                var command = dic["command"];
-                if (command == "compressFiles")
-                {
-#if !DEBUG
-                    try
-#endif
-                    {
-                        UnityAssetBundleBuilder.compressFiles(dic["input"], thread);
-#if DEBUG
-                        Console.ReadLine();
-#endif
-                    }
-#if !DEBUG
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e.Message);
-                        Console.ReadLine();
-                        return 5;
-                    }
-#endif
-                }
-                else if (command == "buildAssetInfo")
-                {
-#if !DEBUG
-                    try
-#endif
-                    {
-                        UnityAssetBundleBuilder.buildAssetInfo(dic["input"]);
-#if DEBUG
-                        Console.ReadLine();
-#endif
-                    }
-#if !DEBUG
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e.Message);
-                        Console.ReadLine();
-                        return 5;
-                    }
-#endif
-                }
-            }
-
-
             if (dic.ContainsKey("input") && dic.ContainsKey("output"))
             {
 #if !DEBUG
