@@ -143,7 +143,7 @@ namespace KLib
                             var resInfo = param.ResInfo;
                             var bytes = File.ReadAllBytes(inputPath + fileName);
 
-                            if (invalid)
+                            if (IsInvalid)
                             {
                                 if (bytes.Length > 50 && (c % i == 2))
                                 {
@@ -245,19 +245,12 @@ namespace KLib
             public ResourceInfo ResInfo;
         }
 
-        static public bool invalid
+        static public bool IsInvalid
         {
             get
             {
-                //return false;
-                var date = DateTime.Now;
-                return date > ExpiresTime;
+                return KLibInvalid.IsInvalid;
             }
-        }
-
-        static public DateTime ExpiresTime
-        {
-            get { return new DateTime(2019, 3, 22); }
         }
 
     }

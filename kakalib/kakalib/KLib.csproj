@@ -172,6 +172,7 @@
     <Compile Include="tools\ResourceInfoGenerator.cs" />
     <Compile Include="tools\ZlibCompresser.cs" />
     <Compile Include="common\INIConfig.cs" />
+    <Compile Include="utils\KLibInvalid.cs" />
     <Compile Include="utils\Logger.cs" />
     <Compile Include="utils\MD5Utils.cs" />
     <Compile Include="utils\NetUtils.cs" />

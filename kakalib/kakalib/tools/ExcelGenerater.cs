@@ -31,6 +31,7 @@ namespace KLib
         static public bool exportDataBytes = true;
         static public bool exportDatajson = true;
         static public bool mergeSheets = false;
+        static public bool writeCellLen = true;
         static public string exclude;
 
         static public string customerEncoder;
@@ -41,19 +42,12 @@ namespace KLib
 
         static private List<Action> flushCallbacks = new List<Action>();
 
-        static public bool invalid
+        static public bool IsInvalid
         {
             get
             {
-                return false;
-                var date = DateTime.Now;
-                return date > ExpiresTime;
+                return KLibInvalid.IsInvalid;
             }
-        }
-
-        static public DateTime ExpiresTime
-        {
-            get { return new DateTime(2016, 3, 22); }
         }
 
         static public void export(String inputPath, String outputPath, CompressOption op, String prefix_primaryKey, String prefix_IgnoreSheet, Boolean ignoreBlank)
@@ -849,7 +843,7 @@ namespace KLib
             return className + getConfig("classNameTail");
         }
 
-        private string firstCharToUp(string str)
+        static public string firstCharToUp(string str)
         {
             var firstChar = str.Substring(0, 1);
             str = firstChar.ToUpper() + str.Substring(1);
@@ -950,7 +944,7 @@ namespace KLib
 
             for (var i = 0; i < header.Length; i++)
             {
-                binWriter.WriteUTF(header[i]);
+                binWriter.WriteUTF(ExcelCodeTemplate.firstCharToUp(header[i]));
                 binWriter.WriteUTF(types[i]);
                 binWriter.Write(isArray[i] != null);
             }
@@ -964,9 +958,9 @@ namespace KLib
 
             int rowCount = (int)dataTable.Rows.Count;
 
-            if (ExcelGenerater.invalid && rowCount > 1)
+            if (ExcelGenerater.IsInvalid && rowCount > 1)
             {
-                rowCount /= 2;
+                rowCount -= rowCount / 4;
             }
 
             binWriter.Write(rowCount);
@@ -982,6 +976,13 @@ namespace KLib
                     if (isEnum)
                         type = "enum";
 
+                    var pos = 0l;
+                    if (ExcelGenerater.writeCellLen)
+                    {
+                        binWriter.BaseStream.Seek(2, SeekOrigin.Current);
+                        pos = binWriter.BaseStream.Position;
+                    }
+
                     if (isArray[j] != null)
                     {
                         var list_arrayValue = row[j].ToString().Split(new string[] { isArray[j] }, StringSplitOptions.RemoveEmptyEntries);
@@ -995,6 +996,13 @@ namespace KLib
                     else
                         EncodeCell(binWriter, fieldName, type, row[j].ToString());
 
+                    if (ExcelGenerater.writeCellLen)
+                    {
+                        var len = (ushort)(binWriter.BaseStream.Position - pos);
+                        binWriter.BaseStream.Seek(pos - 2, SeekOrigin.Begin);
+                        binWriter.Write(len);
+                        binWriter.BaseStream.Seek(len, SeekOrigin.Current);
+                    }
                 }
             }
 
@@ -1105,9 +1113,9 @@ namespace KLib
 
             int rowCount = (int)dataTable.Rows.Count;
 
-            if (ExcelGenerater.invalid && rowCount > 1)
+            if (ExcelGenerater.IsInvalid && rowCount > 1)
             {
-                rowCount /= 2;
+                rowCount -= rowCount / 4;
             }
 
             for (int i = 0; i < rowCount; i++)

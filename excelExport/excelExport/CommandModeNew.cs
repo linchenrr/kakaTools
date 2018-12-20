@@ -18,8 +18,7 @@ namespace excelExport
 
             if (args.ContainsKey("showExpires"))
             {
-                Console.WriteLine("工具到期日期为:" + ExcelGenerater.ExpiresTime.ToShortDateString());
-
+                Console.WriteLine($@"是否过期:{KLibInvalid.IsInvalid}，工具到期日期为:{KLibInvalid.ExpiresTime.ToShortDateString()}");
                 return;
             }
 
@@ -92,6 +91,9 @@ namespace excelExport
 
                 if (args.ContainsKey("mergeSheets"))
                     ExcelGenerater.mergeSheets = getArgsBool("mergeSheets");
+
+                if (args.ContainsKey("writeCellLen"))
+                    ExcelGenerater.writeCellLen = getArgsBool("writeCellLen");
 
                 if (args.ContainsKey("exclude"))
                     ExcelGenerater.exclude = args["exclude"].Trim().ToLower();

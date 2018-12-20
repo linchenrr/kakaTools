@@ -1,0 +1,140 @@
+﻿<root>
+  <config language="lua">
+    <classExtension>.lua</classExtension>
+    <classNameTail>_config</classNameTail>
+    <classStartUpperCase>false</classStartUpperCase>
+    <memberStartUpperCase>false</memberStartUpperCase>
+  </config>
+  <definitionMember>
+  </definitionMember>
+  <decodeMember></decodeMember>
+  <relationMember></relationMember>
+  <definitionArray></definitionArray>
+  <decodeArray>
+
+  </decodeArray>
+
+  <params>
+    <param type="enum">
+      <decode></decode>
+    </param>
+    <param type="bool" class="bool">
+      <decode></decode>
+    </param>
+    <param type="int" class="int">
+      <decode></decode>
+    </param>
+    <param type="float" class="float">
+      <decode></decode>
+    </param>
+    <param type="string" class="string">
+      <decode></decode>
+    </param>
+    <param type="date" class="DateTime">
+      <decode></decode>
+    </param>
+    <param type="vector3" class="Vector3">
+      <decode></decode>
+    </param>
+    <param type="propertyChanger" class="PropertyChanger">
+      <decode></decode>
+    </param>
+    <param type="itemNum" class="ItemNum">
+      <decode></decode>
+    </param>
+	<param type="FP" class="FP">
+      <decode></decode>
+    </param>
+    <param type="heroAttrWeight" class="HeroAttrWeight">
+      <decode></decode>
+    </param>
+    <param type="getChipApproach" class="GetChipApproach">
+      <decode></decode>
+    </param>
+  </params>
+  <Class>
+    <![CDATA[
+--$(tableName)表
+
+local _mt = {}
+
+--数据源引用
+local s_data
+
+
+--设置数据源
+function _mt._set_data(data)
+	s_data = data
+	
+	local pk = s_data.headerInfo.primaryKey
+	s_data.pk_index = {}
+	for k,v in pairs(s_data.data)do
+		s_data.pk_index[v[pk]] = k
+	end
+end
+
+--设置数据源list
+function _mt._set_data_list(data, key1, key2)
+	s_data = data
+	
+	s_data.pk_index = {}
+	for k,v in pairs(s_data.data)do
+		if key1 and v[key1] then
+			if not s_data.pk_index[v[key1]] then
+				s_data.pk_index[v[key1]] = {}
+			end
+
+			if key2 and v[key2] then
+				s_data.pk_index[v[key1]][v[key2]] = k
+			else
+				table.insert(s_data.pk_index[v[key1]], k)
+			end
+		end
+	end
+end
+
+--获取$(tableName)表序列信息
+--@return {table}、{number}
+function _mt.get_$(tableName)_sequence()
+	return s_data.data, s_data.headerInfo.count
+end
+
+--根据序列索引查找$(tableName)表配置对象
+--@param {number} index 序列索引
+--@return {table}
+function _mt.find_$(tableName)_by_sequence_index(index)
+	return s_data.data[index]
+end
+
+
+
+--根据$(primaryKeyName)查找$(tableName)表配置对象
+--@param {$(primaryKeyType)} $(primaryKeyName)
+--@return {table}
+function _mt.find_$(tableName)_by_$(primaryKeyName)($(primaryKeyName), key2)
+	local idx = s_data.pk_index[$(primaryKeyName)]
+	if not idx then
+		return nil
+	end
+	
+	if type(idx) == "number" then
+		return s_data.data[idx]
+		
+	elseif type(idx) == "table" then
+		if key2 then
+			return s_data.data[idx[key2]]
+		else
+			local data_list = {}
+			for k ,v in pairs(idx) do
+				table.insert(data_list, s_data.data[v])
+			end
+			return data_list
+		end
+	end
+end
+
+
+return _mt
+]]>
+  </Class>
+</root>
