@@ -39,6 +39,8 @@ namespace KLib
         static public string curExcel;
         static public string curSheet;
 
+        static private List<Action> flushCallbacks = new List<Action>();
+
         static public bool invalid
         {
             get
@@ -96,9 +98,7 @@ namespace KLib
 
                     curSheet = sheet.name;
 
-                    Console.WriteLine(string.Format("为{0}表生成数据文件", curSheet));
-
-                    var jsonPath = outputPath + sheet.name + ".json";
+                    Console.WriteLine($@"为{curSheet}表生成数据文件");
 
                     if (exportDataBytes)
                     {
@@ -106,68 +106,74 @@ namespace KLib
                         sheet.SetEncoder(encoder);
                         var bytes = sheet.ToBytes(endian);
 
-
-                        MemoryStream inStream = new MemoryStream(bytes);
-                        MemoryStream outStream = new MemoryStream();
-
-                        ICompresser compresser;
-
-                        switch (op)
+                        flushCallbacks.Add(() =>
                         {
+                            var inStream = new MemoryStream(bytes);
+                            var outStream = new MemoryStream();
 
-                            case CompressOption.lzma:
-                                compresser = new LZMACompresser();
-                                compresser.compress(inStream, outStream);
-                                break;
+                            ICompresser compresser;
 
-                            case CompressOption.zlib:
-                                compresser = new ZlibCompresser();
-                                compresser.compress(inStream, outStream);
-                                break;
+                            switch (op)
+                            {
 
-                            case CompressOption.gzip:
-                                compresser = new GZipCompresser();
-                                compresser.compress(inStream, outStream);
-                                break;
+                                case CompressOption.lzma:
+                                    compresser = new LZMACompresser();
+                                    compresser.compress(inStream, outStream);
+                                    break;
 
-                            case CompressOption.none:
-                                outStream = inStream;
-                                break;
+                                case CompressOption.zlib:
+                                    compresser = new ZlibCompresser();
+                                    compresser.compress(inStream, outStream);
+                                    break;
 
-                            default:
-                                throw new Exception();
+                                case CompressOption.gzip:
+                                    compresser = new GZipCompresser();
+                                    compresser.compress(inStream, outStream);
+                                    break;
 
-                        }
+                                case CompressOption.none:
+                                    outStream = inStream;
+                                    break;
 
-                        FileStream fs = File.Create(path);
-                        outStream.WriteTo(fs);
-                        fs.Close();
+                                default:
+                                    throw new Exception();
 
-                        outStream.Dispose();
+                            }
 
-                        Console.WriteLine(path);
+                            Console.WriteLine($@"写入{path}");
+
+                            FileStream fs = File.Create(path);
+                            outStream.WriteTo(fs);
+                            fs.Close();
+
+                            outStream.Dispose();
+                        });
                     }
 
                     if (exportDatajson)
                     {
+                        var jsonPath = outputPath + sheet.name + ".json";
                         var jsonBytes = sheet.ToJson();
-                        File.WriteAllBytes(jsonPath, jsonBytes);
-                        Console.WriteLine(jsonPath);
-                    }
 
-                    Console.WriteLine();
+                        flushCallbacks.Add(() =>
+                        {
+                            Console.WriteLine($@"写入{jsonPath}");
+                            File.WriteAllBytes(jsonPath, jsonBytes);
+                        });
+                    }
 
                 }
 
                 curSheet = null;
 
             }
-
         }
 
         static public void startExport(String inputPath, String outputPath, CompressOption op, String prefix_primaryKey, String prefix_IgnoreSheet, Boolean ignoreBlank)
         {
             //customerEncoder = @"C:\work\unity\project\demo\demo\demo\codes\client\tools\excelEncoder\excelEncoder\bin\Release\excelEncoder.dll";
+
+            flushCallbacks.Clear();
 
             Assembly ass = null;
             if (!string.IsNullOrEmpty(customerEncoder))
@@ -250,12 +256,19 @@ namespace KLib
 
             export(inputPath, outputPath, op, prefix_primaryKey, prefix_IgnoreSheet, ignoreBlank);
 
+            Console.WriteLine();
+
+            foreach (var action in flushCallbacks)
+            {
+                action();
+            }
+
             if (codeTemplate != null)
             {
+                Console.WriteLine();
                 Console.WriteLine("已生成代码至");
                 Console.WriteLine(codeFolderPath);
             }
-
         }
 
         static private ExcelCodeTemplate codeTemplate;
@@ -353,7 +366,11 @@ namespace KLib
                     }
 
                     var classText = codeTemplate.getClassText(sheet.name, fileClassName, str_definition, str_decode, sheet.types[sheet.primaryKeyIndex], codeTemplate.getFinalMemberName(sheet.header[sheet.primaryKeyIndex]));
-                    File.WriteAllBytes(codeFolderPath + fileClassName + codeTemplate.ClassExtension, Encoding.UTF8.GetBytes(classText));
+
+                    flushCallbacks.Add(() =>
+                    {
+                        File.WriteAllBytes(codeFolderPath + fileClassName + codeTemplate.ClassExtension, Encoding.UTF8.GetBytes(classText));
+                    });
 
                     ExcelCodeTemplate.AddClassName(fileClassName);
 
@@ -361,8 +378,10 @@ namespace KLib
 
                 if (codeTemplate.HasInitClass)
                 {
-                    File.WriteAllBytes(codeFolderPath + codeTemplate.GetInitClassFileName(), Encoding.UTF8.GetBytes(codeTemplate.GetInitClassText()));
-                    //FileUtil.writeFile(codeFolderPath + codeTemplate.GetInitClassFileName(), Encoding.UTF8.GetBytes(codeTemplate.GetInitClassText()));
+                    flushCallbacks.Add(() =>
+                    {
+                        File.WriteAllBytes(codeFolderPath + codeTemplate.GetInitClassFileName(), Encoding.UTF8.GetBytes(codeTemplate.GetInitClassText()));
+                    });
                 }
 
             }
