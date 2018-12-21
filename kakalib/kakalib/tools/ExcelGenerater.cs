@@ -218,10 +218,13 @@ namespace KLib
             if (exportDataBytes)
             {
                 var deleteFiles = Directory.GetFiles(outputPath, "*" + fileExt, SearchOption.TopDirectoryOnly);
-                foreach (var deleteFilePath in deleteFiles)
+                flushCallbacks.Add(() =>
                 {
-                    File.Delete(deleteFilePath);
-                }
+                    foreach (var deleteFilePath in deleteFiles)
+                    {
+                        File.Delete(deleteFilePath);
+                    }
+                });
             }
 
             if (templatePath != null)
@@ -233,10 +236,13 @@ namespace KLib
                     Directory.CreateDirectory(codeFolderPath);
 
                 var codeFiles = Directory.GetFiles(codeFolderPath, "*" + codeTemplate.ClassExtension, SearchOption.TopDirectoryOnly);
-                foreach (var codeFilePath in codeFiles)
+                flushCallbacks.Add(() =>
                 {
-                    File.Delete(codeFilePath);
-                }
+                    foreach (var codeFilePath in codeFiles)
+                    {
+                        File.Delete(codeFilePath);
+                    }
+                });
             }
 
 
