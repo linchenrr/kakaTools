@@ -1,0 +1,1 @@
+dotnet bin\publish\IOSBuildClient.dll -requestURL "http://192.168.61.129:8001/build/BuildIPA" -shellPath "/Users/kaka/Desktop/share/buildIPA.sh"
