@@ -32,6 +32,7 @@ namespace KLib
         static public bool exportDatajson = true;
         static public bool mergeSheets = false;
         static public bool writeCellLen = true;
+        static public string[] writeCellLenExclude = new string[0];
         static public string exclude;
 
         static public string customerEncoder;
@@ -89,13 +90,12 @@ namespace KLib
 
                 foreach (ExcelTable sheet in sheets)
                 {
-
                     curSheet = sheet.name;
-
-                    Console.WriteLine($@"为{curSheet}表生成数据文件");
 
                     if (exportDataBytes)
                     {
+                        Console.WriteLine($@"为{curSheet}表生成数据文件");
+
                         var path = outputPath + sheet.name + fileExt;
                         sheet.SetEncoder(encoder);
                         var bytes = sheet.ToBytes(endian);
@@ -251,8 +251,6 @@ namespace KLib
             typeRowNum--;
             dataRowStartNum--;
 
-            Console.WriteLine();
-            Console.WriteLine();
 
             export(inputPath, outputPath, op, prefix_primaryKey, prefix_IgnoreSheet, ignoreBlank);
 
@@ -846,7 +844,7 @@ namespace KLib
         {
             if (getConfig("classStartUpperCase") == "true")
                 className = firstCharToUp(className);
-            return className + getConfig("classNameTail");
+            return getConfig("classNamePrefix") + className + getConfig("classNameTail");
         }
 
         static public string firstCharToUp(string str)
@@ -951,7 +949,10 @@ namespace KLib
             for (var i = 0; i < header.Length; i++)
             {
                 binWriter.WriteUTF(ExcelCodeTemplate.firstCharToUp(header[i]));
-                binWriter.WriteUTF(types[i]);
+                var str_type = types[i];
+                if (enumNames[i] != null)
+                    str_type = $@"enum";
+                binWriter.WriteUTF(str_type);
                 binWriter.Write(isArray[i] != null);
             }
 
@@ -983,7 +984,13 @@ namespace KLib
                         type = "enum";
 
                     var pos = 0l;
+                    var needWriteCellLen = false;
                     if (ExcelGenerater.writeCellLen)
+                    {
+                        needWriteCellLen = !ExcelGenerater.writeCellLenExclude.Contains(type);
+                    }
+
+                    if (needWriteCellLen)
                     {
                         binWriter.BaseStream.Seek(2, SeekOrigin.Current);
                         pos = binWriter.BaseStream.Position;
@@ -1002,7 +1009,7 @@ namespace KLib
                     else
                         EncodeCell(binWriter, fieldName, type, row[j].ToString());
 
-                    if (ExcelGenerater.writeCellLen)
+                    if (needWriteCellLen)
                     {
                         var len = (ushort)(binWriter.BaseStream.Position - pos);
                         binWriter.BaseStream.Seek(pos - 2, SeekOrigin.Begin);

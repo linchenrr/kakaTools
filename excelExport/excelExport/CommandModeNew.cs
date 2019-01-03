@@ -95,6 +95,9 @@ namespace excelExport
                 if (args.ContainsKey("writeCellLen"))
                     ExcelGenerater.writeCellLen = getArgsBool("writeCellLen");
 
+                if (args.ContainsKey("writeCellLenExclude"))
+                    ExcelGenerater.writeCellLenExclude = args["writeCellLenExclude"].Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+
                 if (args.ContainsKey("exclude"))
                     ExcelGenerater.exclude = args["exclude"].Trim().ToLower();
 
