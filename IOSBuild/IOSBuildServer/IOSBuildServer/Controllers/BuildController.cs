@@ -49,15 +49,17 @@ namespace IOSBuildServer.Controllers
         }
 
         [HttpPost]
-        public JsonResult BuildIPA([FromBody] BuildParam buildParam)
+        public ActionResult BuildIPA([FromBody] BuildParam buildParam)
         {
+
             var start = new ProcessStartInfo
             {
                 FileName = "/bin/sh",
-                Arguments = buildParam.targetShell,
+                Arguments = buildParam.targetShell + " " + buildParam.targetIpa,
                 CreateNoWindow = false,
                 UseShellExecute = false,
-                RedirectStandardOutput = true
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
             };
 
             var buildResult = new BuildResult();
@@ -68,20 +70,26 @@ namespace IOSBuildServer.Controllers
                 p.WaitForExit();
 
                 var exitCode = p.ExitCode;
+                var errorMsg = p.StandardError.ReadToEnd();
 
-                if (exitCode != 0)
+                if (exitCode != 0 || string.IsNullOrWhiteSpace(errorMsg) == false)
                 {
-                    buildResult.message = $@"build failed, exitCode:{exitCode}, shell:{buildParam.targetShell}";
+                    buildResult.message = $@"build failed, exitCode:{exitCode},
+shell:{buildParam.targetShell}
+error:{errorMsg}
+";
                 }
                 else
                 {
                     buildResult.success = true;
                     buildResult.message = "build success";
+
+                    var fs = new FileStream(buildParam.targetIpa, FileMode.Open);
+                    return new FileStreamResult(fs, "application/octet-stream");
                 }
             }
             catch (Exception e)
             {
-
                 buildResult.message = $@"build failed, Exception:{e}";
             }
 
@@ -91,6 +99,7 @@ namespace IOSBuildServer.Controllers
         public class BuildParam
         {
             public string targetShell;
+            public string targetIpa;
         }
 
         public class BuildResult

@@ -1,5 +1,14 @@
 curPath=$(cd `dirname $0`;pwd)
+
+if [ x$1 != x ]
+then
+ipaPath=$1
+else
+ipaPath=${curPath}/Unity-iPhone.ipa
+fi
+
 echo ${curPath}
+echo ${ipaPath}
 
 cd ${curPath}
 rm -f *.ipa
@@ -12,7 +21,8 @@ cd ${xcodeProj_path}
 project_Name="Unity-iPhone"
 build_debug="Release"
 #清理
-xcodebuild clean -project ${project_Name}.xcodeproj -scheme ${project_Name} -configuration ${build_debug}
+#xcodebuild clean -project ${project_Name}.xcodeproj -scheme ${project_Name} -configuration ${build_debug}
+xcodebuild clean -workspace ${xcodeProj_path}/${project_Name}.xcodeproj/project.xcworkspace -scheme ${project_Name} -configuration ${build_debug}
 
 #编译工程
 #ARCHIVEPATH=${WORKSPACE_PATH}/output
@@ -27,7 +37,7 @@ xcodebuild clean -project ${project_Name}.xcodeproj -scheme ${project_Name} -con
 #sudo xcodebuild || exit
 echo "build ipa..."
 #打包#
-xcrun -sdk iphoneos PackageApplication -v ${xcodeProj_path}/build/Release-iphoneos/*.app -o ${curPath}/Unity-iPhone.ipa
+xcrun -sdk iphoneos PackageApplication -v ${xcodeProj_path}/build/Release-iphoneos/*.app -o ${ipaPath}
 
 echo "ipa生成完毕"
 

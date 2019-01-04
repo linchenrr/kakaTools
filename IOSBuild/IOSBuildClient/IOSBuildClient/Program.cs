@@ -11,7 +11,9 @@ namespace IOSBuildClient
             var buildRunner = new BuildRunner();
             buildRunner.Start(commands);
 
+#if DEBUG
             Console.ReadLine();
+#endif
 
         }
     }
