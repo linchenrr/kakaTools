@@ -4,17 +4,21 @@ namespace IOSBuildClient
 {
     class Program
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
 
             var commands = CommandParser.Parse(args);
             var buildRunner = new BuildRunner();
-            buildRunner.Start(commands);
+            var success = buildRunner.Start(commands);
 
 #if DEBUG
             Console.ReadLine();
 #endif
 
+            if (success)
+                return 0;
+
+            return 5;
         }
     }
 

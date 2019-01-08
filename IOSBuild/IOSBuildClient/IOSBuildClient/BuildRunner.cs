@@ -13,7 +13,7 @@ namespace IOSBuildClient
     class BuildRunner
     {
 
-        public void Start(CommandDictionary commands)
+        public bool Start(CommandDictionary commands)
         {
             var requestURL = commands.GetValue("requestURL", "http://192.168.61.129:8001/build/BuildIPA");
             var outputURL = commands.GetValue("outputURL", "http://192.168.61.129:8001/build/BuildOutput");
@@ -77,7 +77,7 @@ namespace IOSBuildClient
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
                         Console.WriteLine($@"request failed. StatusCode:{response.StatusCode}");
-                        return;
+                        return false;
                     }
 
                     Console.WriteLine($@"responseInfo:{response.ContentType}, {response.ContentLength}, {response.ContentEncoding}");
@@ -133,6 +133,7 @@ message:{result.errorMsg}");
                     }
 
                 }
+                return true;
             }
             catch (Exception e)
             {
@@ -141,6 +142,7 @@ message:{result.errorMsg}");
 {e.ToString()}");
 
             }
+            return false;
         }
 
         private bool buildComplete = false;
