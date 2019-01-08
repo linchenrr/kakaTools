@@ -5,6 +5,7 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IOSBuildClient
@@ -15,12 +16,16 @@ namespace IOSBuildClient
         public void Start(CommandDictionary commands)
         {
             var requestURL = commands.GetValue("requestURL", "http://192.168.61.129:8001/build/BuildIPA");
+            var outputURL = commands.GetValue("outputURL", "http://192.168.61.129:8001/build/BuildOutput");
             var shellPath = commands.GetValue("shellPath", "/Users/kaka/Desktop/share/buildIPA.sh");
             var ipaPath = commands.GetValue("ipaPath", "/Users/kaka/Desktop/share/output.ipa");
             var writeLocalIpa = commands.GetValue("writeLocalIpa", "/output.ipa");
 
-            Console.WriteLine($@"requestURL:{requestURL}");
-            Console.WriteLine($@"shellPath:{shellPath}");
+            Console.WriteLine();
+            foreach (var kv in commands)
+            {
+                Console.WriteLine($@"{kv.Key}:{kv.Value}");
+            }
 
             var buildParam = new BuildParam()
             {
@@ -38,19 +43,45 @@ namespace IOSBuildClient
                 request.ContentType = "application/json;charset=UTF-8";
                 request.ContentLength = paramBytes.Length;
 
+                var thread = new Thread(() =>
+                  {
+                      Thread.Sleep(1000);
+                      if (buildComplete)
+                      {
+                          outputGetComplete = true;
+                          return;
+                      }
+
+                      while (buildComplete == false)
+                      {
+                          GetNewOutput(outputURL);
+                          Thread.Sleep(1000);
+                      }
+                      GetNewOutput(outputURL);
+                      outputGetComplete = true;
+                  });
+
                 using (var reqStream = request.GetRequestStream())
                 {
                     reqStream.Write(paramBytes, 0, paramBytes.Length);
                 }
+
+                Console.WriteLine();
+                Console.WriteLine();
+
+                thread.Start();
+
                 using (var response = (HttpWebResponse)request.GetResponse())
                 {
+                    SetBuildComplete();
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
                         Console.WriteLine($@"request failed. StatusCode:{response.StatusCode}");
                         return;
                     }
 
-                    Console.WriteLine(response.ContentType, response.ContentLength, response.ContentEncoding);
+                    Console.WriteLine($@"responseInfo:{response.ContentType}, {response.ContentLength}, {response.ContentEncoding}");
+                    Console.WriteLine();
 
                     //在这里对接收到的页面内容进行处理 
                     var responseStream = response.GetResponseStream();
@@ -96,7 +127,7 @@ downloading ipa...");
                             else
                             {
                                 Console.WriteLine($@"build failed!
-message:{result.message}");
+message:{result.errorMsg}");
                             }
                         }
                     }
@@ -105,12 +136,56 @@ message:{result.message}");
             }
             catch (Exception e)
             {
+                SetBuildComplete();
                 Console.WriteLine($@"Error:
 {e.ToString()}");
 
             }
         }
 
+        private bool buildComplete = false;
+        private bool outputGetComplete = false;
+        private void SetBuildComplete()
+        {
+            buildComplete = true;
+            while (outputGetComplete == false)
+            {
+                Thread.Sleep(10);
+            }
+            Console.WriteLine();
+            Console.WriteLine();
+        }
+
+        private void GetNewOutput(string outputURL)
+        {
+            try
+            {
+                var outputRequest = (HttpWebRequest)WebRequest.Create(outputURL);
+                outputRequest.Method = "GET";
+
+                using (var response = (HttpWebResponse)outputRequest.GetResponse())
+                {
+                    if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        Console.WriteLine($@"request output log failed. StatusCode:{response.StatusCode}");
+                        return;
+                    }
+
+                    var responseStream = response.GetResponseStream();
+                    using (var reader = new StreamReader(responseStream, Encoding.UTF8))
+                    {
+                        var responseString = reader.ReadToEnd();
+                        Console.Write(responseString);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+
+                Console.WriteLine($@"获取编译实时输出失败
+{e}");
+            }
+        }
 
     }
 
@@ -123,7 +198,8 @@ message:{result.message}");
     public class BuildResult
     {
         public bool success;
-        public string message;
+        public string buildMsg;
+        public string errorMsg;
     }
 
 }

@@ -1,7 +1,8 @@
 {
   "profiles": {
     "IOSBuildClient": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "-requestURL \"http://10.246.89.26:8001/build/BuildIPA\" -outputURL \"http://10.246.89.26:8001/build/GetBuildOutput\" -shellPath \"/Volumes/LocalCD/buildServer/buildIPA.sh\" -ipaPath \"/Volumes/LocalCD/buildServer/currentBuild.ipa\" -writeLocalIpa \"J:/other/output.ipa\""
     }
   }
 }
