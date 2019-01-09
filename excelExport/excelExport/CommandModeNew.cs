@@ -99,7 +99,7 @@ namespace excelExport
                     ExcelGenerater.writeCellLenExclude = args["writeCellLenExclude"].Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
 
                 if (args.ContainsKey("exclude"))
-                    ExcelGenerater.exclude = args["exclude"].Trim().ToLower();
+                    ExcelGenerater.excludes = args["exclude"].Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
 
                 //if (args.ContainsKey("addLogo"))
                 //    ExcelGenerater.addLogo = getArgsBool("addLogo");

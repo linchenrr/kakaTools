@@ -33,7 +33,7 @@ namespace KLib
         static public bool mergeSheets = false;
         static public bool writeCellLen = true;
         static public string[] writeCellLenExclude = new string[0];
-        static public string exclude;
+        static public string[] excludes = new string[0];
 
         static public string customerEncoder;
         static private ExcelTable.ExcelEncoder encoder;
@@ -68,8 +68,12 @@ namespace KLib
                     //过滤excel临时文件
                     if (fileInfo.Name.StartsWith("~$"))
                         return false;
-                    if (string.IsNullOrEmpty(exclude) == false && fileInfo.FullName.ToLower().Contains(exclude))
-                        return false;
+
+                    foreach (var exclude in excludes)
+                    {
+                        if (fileInfo.FullName.ToLower().Contains(exclude.ToLower()))
+                            return false;
+                    }
                     return true;
                 }).ToArray();
 
