@@ -21,6 +21,7 @@ namespace KLib
 
             Console.WriteLine("input:" + inputPath);
             Console.WriteLine("output:" + outputPath);
+            Console.WriteLine("maxThread:" + maxThread);
 
             inputPath = inputPath.TrimEnd('/');
             outputPath = outputPath.TrimEnd('/');

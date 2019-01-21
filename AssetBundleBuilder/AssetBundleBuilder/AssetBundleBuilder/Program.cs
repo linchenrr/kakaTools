@@ -14,6 +14,8 @@ namespace AssetBundleBuilder
             //Console.InputEncoding = Encoding.UTF8;
             //Console.OutputEncoding = Encoding.UTF8;
 
+            Console.OutputEncoding = Encoding.UTF8;
+
             var dic = CommandParse.parse(args);
 
             var thread = Environment.ProcessorCount;
@@ -37,16 +39,19 @@ namespace AssetBundleBuilder
                     Console.WriteLine(e.Message);
                     Console.WriteLine(e.Source);
                     Console.WriteLine(e.StackTrace);
-                    Console.ReadLine();
+                    Console.Error.Write(e);
+                    //Console.ReadLine();
                     return 5;
                 }
 #endif
             }
             else
             {
-                Console.WriteLine("-input 源assetbundle文件夹，必须是包含svn信息的根目录");
+                Console.WriteLine("-input 源assetbundle文件夹");
                 Console.WriteLine("-output 导出目录");
-                Console.ReadLine();
+                Console.Error.Write("-input 源assetbundle文件夹 -output 导出目录");
+                //Console.ReadLine();
+                return 7;
             }
 
             return 0;
