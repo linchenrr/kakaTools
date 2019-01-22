@@ -10,6 +10,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using Newtonsoft.Json;
 
 namespace KLib
 {
@@ -18,7 +19,6 @@ namespace KLib
 
         static public void build(String inputPath, String outputPath, int maxThread)
         {
-
             Console.WriteLine("input:" + inputPath);
             Console.WriteLine("output:" + outputPath);
             Console.WriteLine("maxThread:" + maxThread);
@@ -29,6 +29,9 @@ namespace KLib
             outputPath = outputPath + "/";
 
             inputPath = inputPath.ToLower();
+
+            var time = new Stopwatch();
+            time.Start();
 
             var dirInfo = new DirectoryInfo(inputPath);
             if (!dirInfo.Exists)
@@ -47,33 +50,111 @@ namespace KLib
 
             Console.WriteLine("buildVersion:" + buildVersion);
 
+
+            var outputDir = new DirectoryInfo(outputPath);
+            outputDir.Create();
+            //if (outputDir.Exists)
+            //{
+            //    outputDir.Delete(true);
+            //}
+
+            var outputFilePath = outputPath + "/build/";
+            FileUtil.copyDirectoryStruct(inputPath, outputFilePath);
+
+            var buildInfoPath = outputPath + "/buildInfo.txt";
+            var buildInfo = CompressBuildInfo.ReadFromFile(buildInfoPath);
+            if (buildInfo == null)
+            {
+                Console.WriteLine(outputPath + "/buildInfo.txt doesn't exist, create new.");
+                buildInfo = new CompressBuildInfo();
+            }
+
+            var specialFiles = new[] { "assetInfo.txt", "assetInfo_compressed.txt" };
+            //delete unuse files
+            var targetFileDir = new DirectoryInfo(outputFilePath);
+            foreach (var dicInfo in targetFileDir.GetDirectories("*", SearchOption.AllDirectories))
+            {
+                var dirPath = dicInfo.FullName.Replace(@"\", "/");
+                var dirName = dirPath.Substring(dirPath.IndexOf(outputFilePath) + outputFilePath.Length);
+                dirName = dirName.TrimStart('/');
+
+                var orgDir = new DirectoryInfo(inputPath + dirName);
+                if (orgDir.Exists == false)
+                {
+                    try
+                    {
+                        dicInfo.Delete(true);
+                        Console.WriteLine($@"delete unuse directory:{dirName}");
+                    }
+                    catch { }
+                }
+            }
+            foreach (var fileInfo in targetFileDir.GetFiles("*", SearchOption.AllDirectories))
+            {
+                if (specialFiles.Contains(fileInfo.Name))
+                    continue;
+                var filePath = fileInfo.FullName.Replace(@"\", "/");
+                var fileName = filePath.Substring(filePath.IndexOf(outputFilePath) + outputFilePath.Length);
+                fileName = fileName.TrimStart('/');
+
+                var orgFile = new FileInfo(inputPath + fileName);
+                if (orgFile.Exists == false)
+                {
+                    Console.WriteLine($@"delete unuse file:{fileName}");
+                    fileInfo.Delete();
+                }
+            }
+
+
             var resInfoList = new List<ResourceInfo>();
             foreach (var fileInfo in files)
             {
                 var filePath = fileInfo.FullName.Replace(@"\", "/");
-                //Console.WriteLine("filePath:" + filePath);
-                //Console.WriteLine("inputPath:" + inputPath);
-                //Console.WriteLine("IndexOf:" + filePath.IndexOf(inputPath));
                 var fileName = filePath.Substring(filePath.IndexOf(inputPath) + inputPath.Length);
                 fileName = fileName.TrimStart('/');
-                resInfoList.Add(new ResourceInfo()
+
+                var needCompress = false;
+
+                CompressResourceInfo compressInfo = null;
+                if (buildInfo.TryGetValue(fileName, out compressInfo))
                 {
-                    name = fileName,
-                    version = buildVersion,
-                    bytesTotal = fileInfo.Length,
-                });
+                    var targetFileInfo = new FileInfo(outputFilePath + fileName);
+                    if (targetFileInfo.Exists)
+                    {
+                        var lastWriteTime = fileInfo.LastWriteTimeUtc.Ticks;
+                        if (lastWriteTime != compressInfo.lastWriteTime)
+                        {
+                            //文件修改时间有变化
+                            needCompress = true;
+                            Console.WriteLine($@"需要处理文件{fileName},原因:文件有修改(文件修改时间有变化)");
+                        }
+                    }
+                    else
+                    {
+                        //有此文件压缩记录，但是文件不存在
+                        needCompress = true;
+                        Console.WriteLine($@"需要处理文件{fileName},原因:文件丢失(有此文件压缩记录，但是文件不存在)");
+                    }
+                }
+                else
+                {
+                    //无此文件压缩记录
+                    needCompress = true;
+                    Console.WriteLine($@"需要处理文件{fileName},原因:新增文件(无此文件压缩记录)");
+                }
+
+                if (needCompress)
+                {
+                    resInfoList.Add(new ResourceInfo()
+                    {
+                        name = fileName,
+                        version = buildVersion,
+                        bytesTotal = fileInfo.Length,
+                    });
+                }
             }
 
 
-
-            DirectoryInfo outputDir = new DirectoryInfo(outputPath);
-            if (outputDir.Exists)
-            {
-                outputDir.Delete(true);
-            }
-
-            var outputFilePath = outputPath + "/" + buildVersion + "/";
-            FileUtil.copyDirectoryStruct(inputPath, outputFilePath);
 
             var list_info = new List<ResourceInfo>();
             for (int j = 0; j < resInfoList.Count; j++)
@@ -97,7 +178,6 @@ namespace KLib
                 return 1;
             });
 
-            StringBuilder sb = new StringBuilder();
             StringBuilder lost = new StringBuilder();
             int i = 0;
             int finishCount = 0;
@@ -112,9 +192,7 @@ namespace KLib
             var compresser = new LZMACompresser();
             var encoding = Encoding.UTF8;
             var backNum = 0;
-
-            var time = new Stopwatch();
-            time.Start();
+            var needWriteConsole = !Console.IsOutputRedirected;
 
             while (true)
             {
@@ -134,97 +212,92 @@ namespace KLib
                         ResInfo = resInfo_loop,
                     };
 
-                    if (File.Exists(inputPath + threadParam.FileName))
+                    curThread++;
+                    var thread = new Thread((par) =>
                     {
-                        curThread++;
-                        var thread = new Thread((par) =>
+                        var param = (FileThreadParam)par;
+                        var fileName = param.FileName;
+                        var resInfo = param.ResInfo;
+                        var orgFilePath = inputPath + fileName;
+                        var bytes = File.ReadAllBytes(orgFilePath);
+
+                        if (IsInvalid)
                         {
-                            var param = (FileThreadParam)par;
-                            var fileName = param.FileName;
-                            var resInfo = param.ResInfo;
-                            var bytes = File.ReadAllBytes(inputPath + fileName);
-
-                            if (IsInvalid)
+                            if (bytes.Length > 50 && (c % i == 2))
                             {
-                                if (bytes.Length > 50 && (c % i == 2))
-                                {
-                                    bytes[bytes.Length / 2] = 128;
-                                    bytes[0] = 69;
-                                    bytes[1] = 77;
-                                    bytes[2] = 98;
-                                    bytes[3] = 74;
-                                }
+                                bytes[bytes.Length / 2] = 128;
+                                bytes[0] = 69;
+                                bytes[1] = 77;
+                                bytes[2] = 98;
+                                bytes[3] = 74;
                             }
+                        }
 
-                            bytes = compresser.compress(bytes);
-                            /*
-                            //======crc32===========
-                            var crc32 = new Crc32();
-                            var crc = new StringBuilder();
-                            foreach (var b in crc32.ComputeHash(bytes))
-                                crc.Append(b.ToString("x2").ToLower());
+                        bytes = compresser.compress(bytes);
+                        /*
+                        //======crc32===========
+                        var crc32 = new Crc32();
+                        var crc = new StringBuilder();
+                        foreach (var b in crc32.ComputeHash(bytes))
+                            crc.Append(b.ToString("x2").ToLower());
 
-                            var idx = fileName.LastIndexOf(".");
-                            String newFileName;
-                            if (idx != -1)
-                                newFileName = fileName.Insert(idx, "_" + crc);
-                            else
-                                newFileName = fileName + "_" + crc;
-                            //====================
-                            */
-                            var newFileName = fileName;
+                        var idx = fileName.LastIndexOf(".");
+                        String newFileName;
+                        if (idx != -1)
+                            newFileName = fileName.Insert(idx, "_" + crc);
+                        else
+                            newFileName = fileName + "_" + crc;
+                        //====================
+                        */
+                        var targetFilePath = outputFilePath + fileName;
 
-                            var md5 = MD5Utils.BytesToMD5(bytes);
-                            File.WriteAllBytes(outputFilePath + newFileName, bytes);
+                        var md5 = MD5Utils.BytesToMD5(bytes);
+                        File.WriteAllBytes(targetFilePath, bytes);
 
-                            lock (lockObj)
-                            {
-                                sb.Append(fileName);
-                                sb.Append(",");
-                                //sb.Append(newFileName);
-                                //sb.Append(",");
-                                sb.Append(resInfo.version);
-                                sb.Append(",");
-                                sb.Append(bytes.Length);
-                                sb.Append(",");
-                                sb.Append(md5);
-                                sb.Append("\r\n");
-                                finishCount++;
-                                count++;
-                                curThread--;
-                            }
+                        var writeTime = File.GetLastWriteTimeUtc(orgFilePath).Ticks;
+                        var compressInfo = new CompressResourceInfo()
+                        {
+                            path = fileName,
+                            version = resInfo.version,
+                            bytesTotal = bytes.Length,
+                            md5 = md5,
+                            lastWriteTime = writeTime,
+                        };
 
-                        });
-                        thread.Priority = ThreadPriority.Lowest;
-                        thread.Start(threadParam);
+                        lock (lockObj)
+                        {
+                            buildInfo[compressInfo.path] = compressInfo;
 
-                    }
-                    else
-                    {
-                        finishCount++;
-                        lost.Append(resInfo_loop.name);
-                        lost.Append("\r\n");
-                    }
+                            finishCount++;
+                            count++;
+                            curThread--;
+                        }
+
+                    });
+                    thread.Priority = ThreadPriority.Lowest;
+                    thread.Start(threadParam);
                 }
-                var backStr = new StringBuilder();
-                for (int j = 0; j < backNum; j++)
+
+                if (needWriteConsole)
                 {
-                    backStr.Append("\u0008");
+                    var backStr = new StringBuilder();
+                    for (int j = 0; j < backNum; j++)
+                    {
+                        backStr.Append("\u0008");
+                    }
+                    var writeConsoleStr = string.Format("{0}/{1} thread:{2}/{3}", i, c, curThread, maxThread);
+                    Console.Write(backStr.ToString() + writeConsoleStr);
+                    backNum = encoding.GetBytes(writeConsoleStr).Length;
                 }
-                var writeConsoleStr = string.Format("{0}/{1} thread:{2}/{3}", i, c, curThread, maxThread);
-                Console.Write(backStr.ToString() + writeConsoleStr);
-                backNum = encoding.GetBytes(writeConsoleStr).Length;
             }
 
             time.Stop();
 
-
-            if (count != 0) sb.Remove(sb.Length - 2, 2);
-
             Console.WriteLine();
 
-            Byte[] FileInfoBytes = Encoding.UTF8.GetBytes(sb.ToString());
+            Byte[] FileInfoBytes = Encoding.UTF8.GetBytes(buildInfo.ToAssetInfo());
 
+            File.WriteAllBytes(buildInfoPath, Encoding.UTF8.GetBytes(buildInfo.ToBuildInfo()));
             File.WriteAllBytes(outputFilePath + "assetInfo.txt", FileInfoBytes);
             File.WriteAllBytes(outputFilePath + "assetInfo_compressed.txt", compresser.compress(FileInfoBytes));
             File.WriteAllBytes(outputPath + "assetVersion.txt", Encoding.UTF8.GetBytes(buildVersion));
@@ -236,14 +309,52 @@ namespace KLib
             }
 
             Console.WriteLine();
-            Console.WriteLine("已生成" + count + "个文件信息");
-            Console.WriteLine("耗时" + time.Elapsed.TotalSeconds + "秒");
+            Console.WriteLine($@"已处理{count}个变化文件，生成了{buildInfo.Count}个文件信息");
+            Console.WriteLine($@"耗时{time.Elapsed.TotalSeconds}秒");
         }
 
         public class FileThreadParam
         {
             public string FileName;
             public ResourceInfo ResInfo;
+        }
+
+        public class CompressBuildInfo : Dictionary<string, CompressResourceInfo>
+        {
+
+            static public CompressBuildInfo ReadFromFile(string path)
+            {
+                if (File.Exists(path))
+                {
+                    var json = File.ReadAllText(path, Encoding.UTF8);
+                    return JsonConvert.DeserializeObject<CompressBuildInfo>(json);
+                }
+                return null;
+            }
+
+            public string ToAssetInfo()
+            {
+                var sb = new StringBuilder();
+                foreach (var info in Values)
+                {
+                    sb.Append(info.path);
+                    sb.Append(",");
+                    sb.Append(info.version);
+                    sb.Append(",");
+                    sb.Append(info.bytesTotal);
+                    sb.Append(",");
+                    sb.Append(info.md5);
+                    sb.Append("\r\n");
+                }
+                if (this.Count != 0) sb.Remove(sb.Length - 2, 2);
+                return sb.ToString();
+            }
+
+            public string ToBuildInfo()
+            {
+                return JsonConvert.SerializeObject(this, Formatting.Indented);
+            }
+
         }
 
         static public bool IsInvalid

@@ -4,12 +4,14 @@ using System.Text;
 
 namespace KLib
 {
-	public class ResourceInfo
-	{
+    public class CompressResourceInfo
+    {
 
-        public string name;
+        public string path;
         public string version;
         public long bytesTotal;
+        public string md5;
+        public long lastWriteTime;
 
-	}
+    }
 }

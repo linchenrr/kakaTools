@@ -63,7 +63,10 @@ namespace KLib
             {
                 if ((list_subDir[i].Attributes & FileAttributes.Hidden) != FileAttributes.Hidden)
                 {
-                    DirectoryInfo newDir = output.CreateSubdirectory(list_subDir[i].Name);
+                    var newDir = output.CreateSubdirectory(list_subDir[i].Name);
+                    //var newDir = new DirectoryInfo(output.FullName + "/" + list_subDir[i].Name);
+                    //if (newDir.Exists == false)
+                    //    newDir.Create();
                     doCopyDirectoryStruct(list_subDir[i], newDir);
                 }
                 i++;

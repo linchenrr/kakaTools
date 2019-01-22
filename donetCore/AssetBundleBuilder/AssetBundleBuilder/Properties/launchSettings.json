@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "AssetBundleBuilder": {
+      "commandName": "Project",
+      "commandLineArgs": " -input F:\\work\\unity\\Phoenix\\Phoenix_Android\\output\\android\\sourceAssetBundle -output F:\\work\\unity\\Phoenix\\Phoenix_Android\\output\\android\\assetBundle -thread 3"
+    }
+  }
+}

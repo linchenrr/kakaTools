@@ -13,9 +13,12 @@ namespace AssetBundleBuilder
         {
             //Console.InputEncoding = Encoding.UTF8;
             //Console.OutputEncoding = Encoding.UTF8;
-            
-            Console.OutputEncoding = Encoding.UTF8;
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
+            if (Console.IsOutputRedirected)
+            {
+                Console.OutputEncoding = Encoding.UTF8;
+                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            }
 
             var dic = CommandParse.parse(args);
 
