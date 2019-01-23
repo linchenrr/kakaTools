@@ -44,7 +44,8 @@ namespace AssetBundleBuilder
                     Console.WriteLine(e.Source);
                     Console.WriteLine(e.StackTrace);
                     Console.Error.Write(e);
-                    //Console.ReadLine();
+                    if (Console.IsErrorRedirected == false)
+                        Console.ReadLine();
                     return 5;
                 }
 #endif
@@ -54,7 +55,8 @@ namespace AssetBundleBuilder
                 Console.WriteLine("-input 源assetbundle文件夹");
                 Console.WriteLine("-output 导出目录");
                 Console.Error.Write("-input 源assetbundle文件夹 -output 导出目录");
-                //Console.ReadLine();
+                if (Console.IsErrorRedirected == false)
+                    Console.ReadLine();
                 return 7;
             }
 

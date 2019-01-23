@@ -59,9 +59,8 @@ namespace KLib
             //}
 
             var outputFilePath = outputPath + "/build/";
-            FileUtil.copyDirectoryStruct(inputPath, outputFilePath);
 
-            var buildInfoPath = outputPath + "/buildInfo.txt";
+            var buildInfoPath = outputPath + "/buildCache.json";
             var buildInfo = CompressBuildInfo.ReadFromFile(buildInfoPath);
             if (buildInfo == null)
             {
@@ -70,7 +69,7 @@ namespace KLib
             }
 
             var specialFiles = new[] { "assetInfo.txt", "assetInfo_compressed.txt" };
-            //delete unuse files
+            //delete unuse dirs
             var targetFileDir = new DirectoryInfo(outputFilePath);
             foreach (var dicInfo in targetFileDir.GetDirectories("*", SearchOption.AllDirectories))
             {
@@ -89,6 +88,7 @@ namespace KLib
                     catch { }
                 }
             }
+            //delete unuse files
             foreach (var fileInfo in targetFileDir.GetFiles("*", SearchOption.AllDirectories))
             {
                 if (specialFiles.Contains(fileInfo.Name))
@@ -105,8 +105,10 @@ namespace KLib
                 }
             }
 
+            FileUtil.copyDirectoryStruct(inputPath, outputFilePath);
 
             var resInfoList = new List<ResourceInfo>();
+            var newBuildInfo = new CompressBuildInfo();
             foreach (var fileInfo in files)
             {
                 var filePath = fileInfo.FullName.Replace(@"\", "/");
@@ -118,6 +120,8 @@ namespace KLib
                 CompressResourceInfo compressInfo = null;
                 if (buildInfo.TryGetValue(fileName, out compressInfo))
                 {
+                    newBuildInfo[fileName] = compressInfo;
+
                     var targetFileInfo = new FileInfo(outputFilePath + fileName);
                     if (targetFileInfo.Exists)
                     {
@@ -126,21 +130,21 @@ namespace KLib
                         {
                             //文件修改时间有变化
                             needCompress = true;
-                            Console.WriteLine($@"需要处理文件{fileName},原因:文件有修改(文件修改时间有变化)");
+                            Console.WriteLine($@"需要处理文件{fileName}, reason:文件有修改");
                         }
                     }
                     else
                     {
                         //有此文件压缩记录，但是文件不存在
                         needCompress = true;
-                        Console.WriteLine($@"需要处理文件{fileName},原因:文件丢失(有此文件压缩记录，但是文件不存在)");
+                        Console.WriteLine($@"需要处理文件{fileName}, reason:文件丢失(有此文件压缩记录，但是文件不存在)");
                     }
                 }
                 else
                 {
                     //无此文件压缩记录
                     needCompress = true;
-                    Console.WriteLine($@"需要处理文件{fileName},原因:新增文件(无此文件压缩记录)");
+                    Console.WriteLine($@"需要处理文件{fileName}, reason:新增文件(无此文件压缩记录)");
                 }
 
                 if (needCompress)
@@ -154,6 +158,7 @@ namespace KLib
                 }
             }
 
+            buildInfo = newBuildInfo;
 
 
             var list_info = new List<ResourceInfo>();
@@ -178,7 +183,6 @@ namespace KLib
                 return 1;
             });
 
-            StringBuilder lost = new StringBuilder();
             int i = 0;
             int finishCount = 0;
             int count = 0;
@@ -302,12 +306,6 @@ namespace KLib
             File.WriteAllBytes(outputFilePath + "assetInfo_compressed.txt", compresser.compress(FileInfoBytes));
             File.WriteAllBytes(outputPath + "assetVersion.txt", Encoding.UTF8.GetBytes(buildVersion));
 
-            if (lost.Length != 0)
-            {
-                Console.WriteLine("未发现以下文件:");
-                Console.WriteLine(lost);
-            }
-
             Console.WriteLine();
             Console.WriteLine($@"已处理{count}个变化文件，生成了{buildInfo.Count}个文件信息");
             Console.WriteLine($@"耗时{time.Elapsed.TotalSeconds}秒");
@@ -352,7 +350,9 @@ namespace KLib
 
             public string ToBuildInfo()
             {
-                return JsonConvert.SerializeObject(this, Formatting.Indented);
+                var dic = Values.OrderBy(item => item.path).ToDictionary(item => item.path);
+
+                return JsonConvert.SerializeObject(dic, Formatting.Indented);
             }
 
         }
