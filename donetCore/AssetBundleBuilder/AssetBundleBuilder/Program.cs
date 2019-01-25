@@ -14,6 +14,13 @@ namespace AssetBundleBuilder
             //Console.InputEncoding = Encoding.UTF8;
             //Console.OutputEncoding = Encoding.UTF8;
 
+            //KLibInvalid.RemoteCheckAsync(KLibInvalid.AssetBundleBuilderURL, (info) =>
+            //{
+            //    Console.WriteLine(info.IsInvalid);
+            //});
+            //Console.ReadLine();
+            //return 0;
+
             if (Console.IsOutputRedirected)
             {
                 Console.OutputEncoding = Encoding.UTF8;

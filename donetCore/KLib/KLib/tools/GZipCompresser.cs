@@ -8,10 +8,10 @@ using Ionic.Zlib;
 
 namespace KLib
 {
-    public class GZipCompresser : ICompresser
+    public class GZipCompresser
     {
 
-        public void compress(Stream inStream, Stream outStream)
+        static public void compress(Stream inStream, Stream outStream)
         {
 
             GZipStream compressionStream = new GZipStream(outStream, CompressionMode.Compress, true);
@@ -22,7 +22,7 @@ namespace KLib
 
         }
 
-        public void uncompress(Stream inStream, Stream outStream)
+        static public void uncompress(Stream inStream, Stream outStream)
         {
 
             GZipStream compressionStream = new GZipStream(inStream, CompressionMode.Decompress, true);

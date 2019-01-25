@@ -7,10 +7,10 @@ using lzma = SevenZip.Compression.LZMA;
 
 namespace KLib
 {
-    public class LZMACompresser : ICompresser
+    public class LZMACompresser
     {
 
-        public byte[] compress(byte[] bytes)
+        static public byte[] compress(byte[] bytes)
         {
             byte[] outBytes = null;
             using (var inStream = new MemoryStream(bytes))
@@ -26,7 +26,7 @@ namespace KLib
             return outBytes;
         }
 
-        public byte[] uncompress(byte[] bytes)
+        static public byte[] uncompress(byte[] bytes)
         {
             byte[] outBytes = null;
             using (var inStream = new MemoryStream(bytes))
@@ -42,7 +42,7 @@ namespace KLib
             return outBytes;
         }
 
-        public void compress(Stream inStream, Stream outStream)
+        static public void compress(Stream inStream, Stream outStream)
         {
 
             var coder = new lzma.Encoder();
@@ -58,7 +58,7 @@ namespace KLib
 
         }
 
-        public void uncompress(Stream inStream, Stream outStream)
+        static public void uncompress(Stream inStream, Stream outStream)
         {
 
             var coder = new lzma.Decoder();
@@ -77,8 +77,6 @@ namespace KLib
             coder.Code(inStream, outStream, inStream.Length, fileLength, null);
 
         }
-
-
 
     }
 }

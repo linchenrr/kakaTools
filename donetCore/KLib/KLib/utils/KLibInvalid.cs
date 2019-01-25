@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -26,16 +27,17 @@ namespace KLib
             get { return new DateTime(2019, 3, 22); }
         }
 
-        public const string AssetBundleBuilderURL = "http://www.nothingleft.cn:40000/asb.json";
-        public const string ExcelToolURL = "http://www.nothingleft.cn:40000/ext.json";
-        static public async Task RemoteCheckAsync(string requestURL, Action<bool> resultHandler)
+        public const string AssetBundleBuilderURL = "http://www.nothingleft.cn:40000/asb";
+        public const string ExcelToolURL = "http://www.nothingleft.cn:40000/ext";
+        static public async Task RemoteCheckAsync(string requestURL, Action<InvalidInfo> resultHandler)
         {
-            var res = false;
+            InvalidInfo info = new InvalidInfo();
+
             var request = (HttpWebRequest)WebRequest.Create(requestURL);
             //等待超时3秒
             //request.Timeout = 3 * 1000;
-            //var needLog = !Console.IsInputRedirected;
-            var needLog = false;
+            var needLog = !Console.IsInputRedirected;
+            needLog = false;
             try
             {
                 using (var response = (HttpWebResponse)await request.GetResponseAsync())
@@ -45,30 +47,34 @@ namespace KLib
                     {
                         if (needLog)
                             Console.WriteLine($@"request failed. StatusCode:{response.StatusCode}");
-                        res = false;
-                    }
-
-                    if (needLog)
-                    {
-                        Console.WriteLine($@"responseInfo:{response.ContentType}, {response.ContentLength}, {response.ContentEncoding}");
-                        Console.WriteLine();
                     }
 
                     //在这里对接收到的页面内容进行处理 
                     var responseStream = response.GetResponseStream();
-
-                    using (var reader = new StreamReader(responseStream, Encoding.UTF8))
+                    if (response.ContentType == "application/octet-stream")
                     {
-                        var responseJson = reader.ReadToEnd();
+                        var ms = new MemoryStream();
+                        int i = 0;
+                        var bufferSize = 1024;
+                        var buffer = new byte[bufferSize];
+                        do
+                        {
+                            i = responseStream.Read(buffer, 0, bufferSize);
+
+                            ms.Write(buffer, 0, i);
+                        }
+                        while (i > 0);
+
+
+                        var bytes = LZMACompresser.uncompress(ms.ToArray());
+                        var responseJson = Encoding.UTF8.GetString(bytes);
                         if (needLog)
-                            Console.WriteLine($@"response json:
+                            Console.WriteLine($@"response:
 {responseJson}
 ");
+                        info = JsonConvert.DeserializeObject<InvalidInfo>(responseJson);
 
-                        var result = JsonConvert.DeserializeObject<InvalidInfo>(responseJson);
-
-                        Console.WriteLine($@"$({result.isInvalid})");
-                        res = result.isInvalid;
+                        Console.WriteLine($@"$({info.IsInvalid})");
                     }
                 }
             }
@@ -76,17 +82,37 @@ namespace KLib
             {
                 if (needLog)
                     Console.Write(e);
-                res = false;
             }
 
-            resultHandler(res);
+            resultHandler(info);
         }
 
         public class InvalidInfo
         {
-            //是否过期
-            public bool isInvalid;
-        }
+            public string expiresTime;
+            public bool disable_win = false;
+            public bool disable_osx = false;
 
+            public bool IsInvalid
+            {
+                get
+                {
+                    if (disable_win == false)
+                    {
+                        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                            return false;
+                    }
+                    if (disable_osx == false)
+                    {
+                        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                            return false;
+                    }
+                    var expiresDate = DateTime.Parse(expiresTime);
+                    if (DateTime.Now > expiresDate)
+                        return true;
+                    return false;
+                }
+            }
+        }
     }
 }

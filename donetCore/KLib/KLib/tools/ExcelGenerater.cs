@@ -109,24 +109,19 @@ namespace KLib
                             var inStream = new MemoryStream(bytes);
                             var outStream = new MemoryStream();
 
-                            ICompresser compresser;
-
                             switch (op)
                             {
 
                                 case CompressOption.lzma:
-                                    compresser = new LZMACompresser();
-                                    compresser.compress(inStream, outStream);
+                                    LZMACompresser.compress(inStream, outStream);
                                     break;
 
                                 case CompressOption.zlib:
-                                    compresser = new ZlibCompresser();
-                                    compresser.compress(inStream, outStream);
+                                    ZlibCompresser.compress(inStream, outStream);
                                     break;
 
                                 case CompressOption.gzip:
-                                    compresser = new GZipCompresser();
-                                    compresser.compress(inStream, outStream);
+                                    GZipCompresser.compress(inStream, outStream);
                                     break;
 
                                 case CompressOption.none:

@@ -24,11 +24,8 @@ namespace KLib
             Console.WriteLine("output:" + outputPath);
             Console.WriteLine("maxThread:" + maxThread);
 
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) == false)
-            {
-                KLibInvalid.RemoteCheckAsync(KLibInvalid.AssetBundleBuilderURL, result => IsInvalid = result);
-                Thread.Sleep(500);
-            }
+            KLibInvalid.RemoteCheckAsync(KLibInvalid.AssetBundleBuilderURL, (info) => IsInvalid = info.IsInvalid);
+            Thread.Sleep(500);
 
             inputPath = inputPath.TrimEnd('/');
             outputPath = outputPath.TrimEnd('/');
@@ -200,7 +197,6 @@ namespace KLib
             var lockObj = new object();
             int curThread = 0;
 
-            var compresser = new LZMACompresser();
             var encoding = Encoding.UTF8;
             var backNum = 0;
             var needWriteConsole = !Console.IsOutputRedirected;
@@ -257,7 +253,7 @@ namespace KLib
                             }
                         }
 
-                        bytes = compresser.compress(bytes);
+                        LZMACompresser.compress(bytes);
                         /*
                         //======crc32===========
                         var crc32 = new Crc32();
@@ -323,7 +319,7 @@ namespace KLib
 
             File.WriteAllBytes(buildInfoPath, Encoding.UTF8.GetBytes(buildInfo.ToBuildInfo()));
             File.WriteAllBytes(outputFilePath + "assetInfo.txt", FileInfoBytes);
-            File.WriteAllBytes(outputFilePath + "assetInfo_compressed.txt", compresser.compress(FileInfoBytes));
+            File.WriteAllBytes(outputFilePath + "assetInfo_compressed.txt", LZMACompresser.compress(FileInfoBytes));
             File.WriteAllBytes(outputPath + "assetVersion.txt", Encoding.UTF8.GetBytes(buildVersion));
 
             Console.WriteLine();

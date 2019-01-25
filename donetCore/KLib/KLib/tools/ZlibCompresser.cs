@@ -6,10 +6,10 @@ using Ionic.Zlib;
 
 namespace KLib
 {
-    public class ZlibCompresser : ICompresser
+    public class ZlibCompresser
     {
 
-        public void compress(Stream inStream, Stream outStream)
+        static public void compress(Stream inStream, Stream outStream)
         {
 
             ZlibStream compressionStream = new ZlibStream(outStream, CompressionMode.Compress, true);
@@ -20,7 +20,7 @@ namespace KLib
 
         }
 
-        public void uncompress(Stream inStream, Stream outStream)
+        static public void uncompress(Stream inStream, Stream outStream)
         {
 
             ZlibStream compressionStream = new ZlibStream(inStream, CompressionMode.Decompress, true);
@@ -33,7 +33,7 @@ namespace KLib
         {
             var inStream = new MemoryStream(bytes);
             var outStream = new MemoryStream();
-            (new ZlibCompresser()).compress(inStream, outStream);
+            compress(inStream, outStream);
             return outStream.ToArray();
         }
 
