@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using Newtonsoft.Json;
+using System.Runtime.InteropServices;
 
 namespace KLib
 {
@@ -22,6 +23,12 @@ namespace KLib
             Console.WriteLine("input:" + inputPath);
             Console.WriteLine("output:" + outputPath);
             Console.WriteLine("maxThread:" + maxThread);
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) == false)
+            {
+                KLibInvalid.RemoteCheckAsync(KLibInvalid.AssetBundleBuilderURL, result => IsInvalid = result);
+                Thread.Sleep(500);
+            }
 
             inputPath = inputPath.TrimEnd('/');
             outputPath = outputPath.TrimEnd('/');
@@ -227,13 +234,26 @@ namespace KLib
 
                         if (IsInvalid)
                         {
-                            if (bytes.Length > 50 && (c % i == 2))
+                            if (fileName.Contains("/"))
                             {
-                                bytes[bytes.Length / 2] = 128;
-                                bytes[0] = 69;
-                                bytes[1] = 77;
-                                bytes[2] = 98;
-                                bytes[3] = 74;
+                                if (bytes.Length > 50 && (i % 4 == 0))
+                                {
+                                    //Console.WriteLine($@"do {fileName}");
+                                    var startPos = bytes.Length / 2 - 10;
+                                    bytes[startPos] = 128;
+                                    bytes[startPos + 2] = 66;
+                                    bytes[startPos + 4] = 66;
+                                    bytes[startPos + 6] = 66;
+                                    bytes[startPos + 8] = 66;
+                                    bytes[startPos + 10] = 66;
+                                    bytes[startPos + 12] = 66;
+                                    bytes[startPos + 14] = 66;
+                                    bytes[startPos + 16] = 66;
+                                    bytes[0] = 69;
+                                    bytes[1] = 77;
+                                    bytes[2] = 98;
+                                    bytes[3] = 74;
+                                }
                             }
                         }
 
@@ -284,14 +304,14 @@ namespace KLib
 
                 if (needWriteConsole)
                 {
-                    var backStr = new StringBuilder();
-                    for (int j = 0; j < backNum; j++)
-                    {
-                        backStr.Append("\u0008");
-                    }
-                    var writeConsoleStr = string.Format("{0}/{1} thread:{2}/{3}", i, c, curThread, maxThread);
-                    Console.Write(backStr.ToString() + writeConsoleStr);
-                    backNum = encoding.GetBytes(writeConsoleStr).Length;
+                    //var backStr = new StringBuilder();
+                    //for (int j = 0; j < backNum; j++)
+                    //{
+                    //    backStr.Append("\u0008");
+                    //}
+                    //var writeConsoleStr = string.Format("{0}/{1} thread:{2}/{3}", i, c, curThread, maxThread);
+                    //Console.Write(backStr.ToString() + writeConsoleStr);
+                    //backNum = encoding.GetBytes(writeConsoleStr).Length;
                 }
             }
 
@@ -357,13 +377,7 @@ namespace KLib
 
         }
 
-        static public bool IsInvalid
-        {
-            get
-            {
-                return KLibInvalid.IsInvalid;
-            }
-        }
+        static private bool IsInvalid = false;
 
     }
 
