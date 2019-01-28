@@ -253,7 +253,7 @@ namespace KLib
                             }
                         }
 
-                        LZMACompresser.compress(bytes);
+                        bytes = LZMACompresser.compress(bytes);
                         /*
                         //======crc32===========
                         var crc32 = new Crc32();
