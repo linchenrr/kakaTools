@@ -74,7 +74,9 @@ namespace KLib
 ");
                         info = JsonConvert.DeserializeObject<InvalidInfo>(responseJson);
 
-                        Console.WriteLine($@"$({info.IsInvalid})");
+                        var mark = info.IsInvalid ? "..." : "....";
+
+                        Console.WriteLine($@"$init{mark}");
                     }
                 }
             }

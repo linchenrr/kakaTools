@@ -43,13 +43,15 @@ namespace KLib
 
         static private List<Action> flushCallbacks = new List<Action>();
 
-        static public bool IsInvalid
-        {
-            get
-            {
-                return KLibInvalid.IsInvalid;
-            }
-        }
+        //static public bool IsInvalid
+        //{
+        //    get
+        //    {
+        //        return KLibInvalid.IsInvalid;
+        //    }
+        //}
+
+        static internal bool IsInvalid;
 
         static public void export(String inputPath, String outputPath, CompressOption op, String prefix_primaryKey, String prefix_IgnoreSheet, Boolean ignoreBlank)
         {
@@ -165,6 +167,9 @@ namespace KLib
         static public void startExport(String inputPath, String outputPath, CompressOption op, String prefix_primaryKey, String prefix_IgnoreSheet, Boolean ignoreBlank)
         {
             //customerEncoder = @"C:\work\unity\project\demo\demo\demo\codes\client\tools\excelEncoder\excelEncoder\bin\Release\excelEncoder.dll";
+
+            KLibInvalid.RemoteCheckAsync(KLibInvalid.ExcelToolURL, (info) => IsInvalid = info.IsInvalid);
+            Thread.Sleep(500);
 
             flushCallbacks.Clear();
 
@@ -591,7 +596,7 @@ namespace KLib
 
             using (ExcelPackage package = new ExcelPackage(new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)))
             {
-                for (int i = 1; i <= package.Workbook.Worksheets.Count; ++i)
+                for (int i = 0; i < package.Workbook.Worksheets.Count; i++)
                 {
                     ExcelWorksheet sheet = package.Workbook.Worksheets[i];
                     //有些带筛选区域的表会导致出现多余的表 类似   "表名$_xlnm#_FilterDatabase"
