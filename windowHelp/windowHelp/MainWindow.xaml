@@ -4,8 +4,18 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:windowHelp"
-        mc:Ignorable="d" Height="450" Width="800" Loaded="Window_Loaded" Title="提示" ResizeMode="NoResize">
+        mc:Ignorable="d" Height="453.912" Width="800" Loaded="Window_Loaded" Title="提示" ResizeMode="NoResize" Background="#FFAEAEAE" BorderThickness="0,0,0,0">
     <Grid>
-        <TextBox x:Name="txt_content" HorizontalAlignment="Left" Height="420" TextWrapping="Wrap" VerticalAlignment="Top" Width="792" AllowDrop="False"/>
+        <TextBox x:Name="txt_content" HorizontalAlignment="Left" Height="370" TextWrapping="Wrap" VerticalAlignment="Top" Width="784" AllowDrop="False" Text="内容显示内容显示内容显示" FontSize="14" Background="Black" Foreground="White" VerticalScrollBarVisibility="Auto"/>
+        <Button Content="确定" HorizontalAlignment="Left" VerticalAlignment="Top" Width="126" Margin="317,375,0,0" Height="37" FontSize="20" Click="Button_Click">
+            <Button.Background>
+                <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                    <GradientStop Color="#FFF3F3F3" Offset="0"/>
+                    <GradientStop Color="#FFEBEBEB" Offset="0.5"/>
+                    <GradientStop Color="#FFDDDDDD" Offset="0.5"/>
+                    <GradientStop Color="#FFAEAEAE" Offset="1"/>
+                </LinearGradientBrush>
+            </Button.Background>
+        </Button>
     </Grid>
 </Window>

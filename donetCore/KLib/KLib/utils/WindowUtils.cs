@@ -36,7 +36,7 @@ namespace KLib
 
         static public void Alert(string message)
         {
-            Console.WriteLine(message);
+            //Console.WriteLine(message);
 
             var bytes = Encoding.Default.GetBytes(message);
             //转成 Base64 形式的 String  

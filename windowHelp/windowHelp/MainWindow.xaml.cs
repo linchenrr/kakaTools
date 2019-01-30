@@ -34,5 +34,10 @@ namespace windowHelp
             txt_content.IsReadOnly = true;
             txt_content.Text = content;
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
     }
 }
