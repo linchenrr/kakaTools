@@ -135,21 +135,23 @@ namespace ExcelExport
 #if !DEBUG
                 catch (Exception e)
                 {
+                    string errMsg = null;
                     if (string.IsNullOrEmpty(ExcelGenerater.curExcel))
-                        Console.WriteLine($@"出现异常:
-{e}");
+                        errMsg = $@"出现异常:
+{e}";
                     else
                     {
-                        var infoStr = $@"处理文件{ExcelGenerater.curExcel}";
+                        errMsg = $@"处理文件{ExcelGenerater.curExcel}";
                         if (!string.IsNullOrEmpty(ExcelGenerater.curSheet))
-                            infoStr += $@"中表{ExcelGenerater.curSheet}";
-                        Console.WriteLine($@"{infoStr}时出现异常:
-
-{e}");
+                            errMsg += $@"中表{ExcelGenerater.curSheet}";
+                        errMsg = $@"{errMsg}时出现异常:
+{e}";
                     }
+                    Console.WriteLine(errMsg);
                     WindowUtils.Alert($@"导出时出现错误:
-{e}");
+{errMsg}");
                     Console.ReadLine();
+                    Environment.Exit(5);
                 }
 #endif
 #if DEBUG
@@ -162,6 +164,7 @@ namespace ExcelExport
             {
                 Console.WriteLine(Properties.Resources.usage);
                 Console.ReadLine();
+                Environment.Exit(10);
             }
 
         }
