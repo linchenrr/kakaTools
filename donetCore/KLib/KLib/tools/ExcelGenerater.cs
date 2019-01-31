@@ -89,6 +89,8 @@ namespace KLib
             else
             {
                 curExcel = Path.GetFileName(inputPath);
+                Console.WriteLine($@"解析文件{curExcel}");
+
                 ExcelTable[] sheets = doExport(inputPath, prefix_primaryKey, prefix_IgnoreSheet, ignoreBlank);
 
                 if (sheets == null || sheets.Length == 0)
@@ -100,7 +102,7 @@ namespace KLib
 
                     if (exportDataBytes)
                     {
-                        Console.WriteLine($@"为{curSheet}表生成数据文件");
+                        //Console.WriteLine($@"为{curSheet}表生成数据文件");
 
                         var path = outputPath + sheet.name + fileExt;
                         sheet.SetEncoder(encoder);
@@ -135,7 +137,7 @@ namespace KLib
 
                             }
 
-                            Console.WriteLine($@"写入{path}");
+                            //Console.WriteLine($@"写入{path}");
 
                             FileStream fs = File.Create(path);
                             outStream.WriteTo(fs);
@@ -152,7 +154,7 @@ namespace KLib
 
                         flushCallbacks.Add(() =>
                         {
-                            Console.WriteLine($@"写入{jsonPath}");
+                            //Console.WriteLine($@"写入{jsonPath}");
                             File.WriteAllBytes(jsonPath, jsonBytes);
                         });
                     }
@@ -247,8 +249,15 @@ namespace KLib
                         File.Delete(codeFilePath);
                     }
                 });
-            }
 
+                if (codeTemplate.HasInitClass)
+                {
+                    flushCallbacks.Add(() =>
+                    {
+                        File.WriteAllBytes(codeFolderPath + codeTemplate.GetInitClassFileName(), Encoding.UTF8.GetBytes(codeTemplate.GetInitClassText()));
+                    });
+                }
+            }
 
             commentRowNum--;
             fieldNameRowNum--;
@@ -263,6 +272,12 @@ namespace KLib
             foreach (var action in flushCallbacks)
             {
                 action();
+            }
+
+            if (exportDataBytes || exportDatajson)
+            {
+                Console.WriteLine("已生成数据至");
+                Console.WriteLine(outputPath);
             }
 
             if (codeTemplate != null)
@@ -376,14 +391,6 @@ namespace KLib
 
                     ExcelCodeTemplate.AddClassName(fileClassName);
 
-                }
-
-                if (codeTemplate.HasInitClass)
-                {
-                    flushCallbacks.Add(() =>
-                    {
-                        File.WriteAllBytes(codeFolderPath + codeTemplate.GetInitClassFileName(), Encoding.UTF8.GetBytes(codeTemplate.GetInitClassText()));
-                    });
                 }
 
             }
