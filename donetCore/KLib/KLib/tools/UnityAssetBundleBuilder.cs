@@ -18,6 +18,7 @@ namespace KLib
     public class UnityAssetBundleBuilder
     {
 
+        static private Encoding encoding = new UTF8Encoding(false);
         static public void build(String inputPath, String outputPath, int maxThread)
         {
             Console.WriteLine("input:" + inputPath);
@@ -197,7 +198,6 @@ namespace KLib
             var lockObj = new object();
             int curThread = 0;
 
-            var encoding = Encoding.UTF8;
             var backNum = 0;
             var needWriteConsole = !Console.IsOutputRedirected;
 
@@ -315,12 +315,12 @@ namespace KLib
 
             Console.WriteLine();
 
-            Byte[] FileInfoBytes = Encoding.UTF8.GetBytes(buildInfo.ToAssetInfo());
+            Byte[] FileInfoBytes = encoding.GetBytes(buildInfo.ToAssetInfo());
 
-            File.WriteAllBytes(buildInfoPath, Encoding.UTF8.GetBytes(buildInfo.ToBuildInfo()));
+            File.WriteAllText(buildInfoPath, buildInfo.ToBuildInfo(), encoding);
             File.WriteAllBytes(outputFilePath + "assetInfo.txt", FileInfoBytes);
             File.WriteAllBytes(outputFilePath + "assetInfo_compressed.txt", LZMACompresser.compress(FileInfoBytes));
-            File.WriteAllBytes(outputPath + "assetVersion.txt", Encoding.UTF8.GetBytes(buildVersion));
+            File.WriteAllBytes(outputPath + "assetVersion.txt", encoding.GetBytes(buildVersion));
 
             Console.WriteLine();
             Console.WriteLine($@"已处理{count}个变化文件，生成了{buildInfo.Count}个文件信息");
@@ -340,7 +340,7 @@ namespace KLib
             {
                 if (File.Exists(path))
                 {
-                    var json = File.ReadAllText(path, Encoding.UTF8);
+                    var json = File.ReadAllText(path, encoding);
                     return JsonConvert.DeserializeObject<CompressBuildInfo>(json);
                 }
                 return null;
