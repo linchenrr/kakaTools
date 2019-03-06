@@ -2,7 +2,7 @@
 // do NOT EDIT it.
 // ------------------------------------------------------------------
 //
-// Copyright (c) 2010——2018 linchen.
+// Copyright (c) 2010——2019 linchen.
 // All rights reserved.
 //
 // Email: superkaka.org@gmail.com

@@ -16,8 +16,11 @@ using System.Threading;
 
 namespace KLib
 {
-    public class ExcelGenerater
+    public partial class ExcelGenerater
     {
+
+        static public string excelPath;
+        static public string outputDataPath;
 
         static public string templatePath;
         static public Endian endian;
@@ -34,6 +37,11 @@ namespace KLib
         static public bool writeCellLen = true;
         static public string[] writeCellLenExclude = new string[0];
         static public string[] excludes = new string[0];
+
+        static public string prefix_primaryKey = "[$]";
+        static public string prefix_IgnoreSheet = "#";
+        static public bool ignoreBlank = true;
+        static public CompressOption compressOP = CompressOption.none;
 
         static public string customerEncoder;
         static private ExcelTable.ExcelEncoder encoder;
@@ -53,7 +61,7 @@ namespace KLib
 
         static internal bool IsInvalid;
 
-        static public void export(String inputPath, String outputPath, CompressOption op, String prefix_primaryKey, String prefix_IgnoreSheet, Boolean ignoreBlank)
+        static public void export(String inputPath)
         {
 
             if (Directory.Exists(inputPath))
@@ -83,7 +91,7 @@ namespace KLib
 
                 for (int k = 0; k < fileInfos.Length; k++)
                 {
-                    export(fileInfos[k].FullName, outputPath, op, prefix_primaryKey, prefix_IgnoreSheet, ignoreBlank);
+                    export(fileInfos[k].FullName);
                 }
             }
             else
@@ -104,7 +112,7 @@ namespace KLib
                     {
                         //Console.WriteLine($@"为{curSheet}表生成数据文件");
 
-                        var path = outputPath + sheet.name + fileExt;
+                        var path = outputDataPath + sheet.name + fileExt;
                         sheet.SetEncoder(encoder);
                         var bytes = sheet.ToBytes(endian);
 
@@ -113,7 +121,7 @@ namespace KLib
                             var inStream = new MemoryStream(bytes);
                             var outStream = new MemoryStream();
 
-                            switch (op)
+                            switch (compressOP)
                             {
 
                                 case CompressOption.lzma:
@@ -149,7 +157,7 @@ namespace KLib
 
                     if (exportDatajson)
                     {
-                        var jsonPath = outputPath + sheet.name + ".json";
+                        var jsonPath = outputDataPath + sheet.name + ".json";
                         var jsonBytes = sheet.ToJson();
 
                         flushCallbacks.Add(() =>
@@ -166,7 +174,7 @@ namespace KLib
             }
         }
 
-        static public void startExport(String inputPath, String outputPath, CompressOption op, String prefix_primaryKey, String prefix_IgnoreSheet, Boolean ignoreBlank)
+        static public void startExport()
         {
             //customerEncoder = @"C:\work\unity\project\demo\demo\demo\codes\client\tools\excelEncoder\excelEncoder\bin\Release\excelEncoder.dll";
 
@@ -212,18 +220,30 @@ namespace KLib
 */
             }
 
-            if (null == outputPath || "" == outputPath)
+            if (string.IsNullOrEmpty(outputDataPath))
             {
-                FileInfo fi = new FileInfo(inputPath);
-                outputPath = fi.DirectoryName;
+                FileInfo fi = new FileInfo(excelPath);
+                outputDataPath = fi.DirectoryName;
             }
 
-            if (!Directory.Exists(outputPath))
-                Directory.CreateDirectory(outputPath);
+            if (!Directory.Exists(outputDataPath))
+                Directory.CreateDirectory(outputDataPath);
 
             if (exportDataBytes)
             {
-                var deleteFiles = Directory.GetFiles(outputPath, "*" + fileExt, SearchOption.TopDirectoryOnly);
+                var deleteFiles = Directory.GetFiles(outputDataPath, "*" + fileExt, SearchOption.TopDirectoryOnly);
+                flushCallbacks.Add(() =>
+                {
+                    foreach (var deleteFilePath in deleteFiles)
+                    {
+                        File.Delete(deleteFilePath);
+                    }
+                });
+            }
+
+            if (IsShareClassMode)
+            {
+                var deleteFiles = Directory.GetFiles(outputDataPath, "*.txt", SearchOption.TopDirectoryOnly);
                 flushCallbacks.Add(() =>
                 {
                     foreach (var deleteFilePath in deleteFiles)
@@ -264,8 +284,14 @@ namespace KLib
             typeRowNum--;
             dataRowStartNum--;
 
-
-            export(inputPath, outputPath, op, prefix_primaryKey, prefix_IgnoreSheet, ignoreBlank);
+            if (IsShareClassMode)
+            {
+                exportShareMode();
+            }
+            else
+            {
+                export(excelPath);
+            }
 
             Console.WriteLine();
 
@@ -277,7 +303,7 @@ namespace KLib
             if (exportDataBytes || exportDatajson)
             {
                 Console.WriteLine("已生成数据至");
-                Console.WriteLine(outputPath);
+                Console.WriteLine(outputDataPath);
             }
 
             if (codeTemplate != null)
@@ -348,55 +374,60 @@ namespace KLib
 
             if (codeTemplate != null)
             {
-                var reg_enter = new Regex(@"[\r\n]");
                 foreach (var sheet in tables)
                 {
-                    string str_definition = "";
-                    string str_decode = "";
-                    var fileClassName = codeTemplate.getFinalClassName(sheet.name);
-                    for (int i = 0; i < sheet.types.Length; i++)
-                    {
-                        var memberName = /*sheet.header[i] =*/ codeTemplate.getFinalMemberName(sheet.header[i]);
-                        var relationName = sheet.relations[i];
-                        var type = sheet.types[i];
-                        var enumName = sheet.enumNames[i];
-                        var isArray = sheet.isArray[i];
-                        var comment = reg_enter.Replace(sheet.comments[i], " ");
-                        var className = codeTemplate.getTypeClassName(type);
-                        if (enumName != null)
-                            className = enumName;
-
-                        if (!string.IsNullOrEmpty(isArray))
-                        {
-                            str_decode += codeTemplate.getDecode(type, memberName, true, enumName);
-                            str_definition += codeTemplate.getArrayDefinition(className, memberName, comment);
-                        }
-                        else
-                        {
-                            str_decode += codeTemplate.getDecode(type, memberName, false, enumName);
-                            str_definition += codeTemplate.getDefinition(className, memberName, comment);
-                            if (!string.IsNullOrEmpty(relationName))
-                            {
-                                str_definition += codeTemplate.getRelationMember(codeTemplate.getFinalClassName(relationName), memberName);
-                            }
-                        }
-                    }
-
-                    var classText = codeTemplate.getClassText(sheet.name, fileClassName, str_definition, str_decode, sheet.types[sheet.primaryKeyIndex], codeTemplate.getFinalMemberName(sheet.header[sheet.primaryKeyIndex]));
-
-                    flushCallbacks.Add(() =>
-                    {
-                        File.WriteAllBytes(codeFolderPath + fileClassName + codeTemplate.ClassExtension, Encoding.UTF8.GetBytes(classText));
-                    });
-
-                    ExcelCodeTemplate.AddClassName(fileClassName);
-
+                    GeneraterClassFile(sheet);
                 }
-
             }
 
             return tables;
 
+        }
+
+        static private Regex reg_enter = new Regex(@"[\r\n]");
+        static private void GeneraterClassFile(ExcelTable sheet, string tableName = null)
+        {
+            if (string.IsNullOrEmpty(tableName))
+                tableName = sheet.name;
+            string str_definition = "";
+            string str_decode = "";
+            var fileClassName = codeTemplate.getFinalClassName(tableName);
+            for (int i = 0; i < sheet.types.Length; i++)
+            {
+                var memberName = /*sheet.header[i] =*/ codeTemplate.getFinalMemberName(sheet.header[i]);
+                var relationName = sheet.relations[i];
+                var type = sheet.types[i];
+                var enumName = sheet.enumNames[i];
+                var isArray = sheet.isArray[i];
+                var comment = reg_enter.Replace(sheet.comments[i], " ");
+                var className = codeTemplate.getTypeClassName(type);
+                if (enumName != null)
+                    className = enumName;
+
+                if (!string.IsNullOrEmpty(isArray))
+                {
+                    str_decode += codeTemplate.getDecode(type, memberName, true, enumName);
+                    str_definition += codeTemplate.getArrayDefinition(className, memberName, comment);
+                }
+                else
+                {
+                    str_decode += codeTemplate.getDecode(type, memberName, false, enumName);
+                    str_definition += codeTemplate.getDefinition(className, memberName, comment);
+                    if (!string.IsNullOrEmpty(relationName))
+                    {
+                        str_definition += codeTemplate.getRelationMember(codeTemplate.getFinalClassName(relationName), memberName);
+                    }
+                }
+            }
+
+            var classText = codeTemplate.getClassText(tableName, fileClassName, str_definition, str_decode, sheet.types[sheet.primaryKeyIndex], codeTemplate.getFinalMemberName(sheet.header[sheet.primaryKeyIndex]));
+
+            flushCallbacks.Add(() =>
+            {
+                File.WriteAllBytes(codeFolderPath + fileClassName + codeTemplate.ClassExtension, Encoding.UTF8.GetBytes(classText));
+            });
+
+            ExcelCodeTemplate.AddClassName(fileClassName);
         }
 
         static public string codeFolderPath;
@@ -614,7 +645,7 @@ namespace KLib
                     if (isPrefix(sheet.Name, prefix_IgnoreSheet))
                         continue;
 
-                    if (!mergeSheets)
+                    if (!mergeSheets && !IsShareClassMode)
                     {
                         if (hs_sheetNames.Contains(sheet.Name))
                             throw new Exception(string.Format("有相同的表名:{0}", sheet.Name));
@@ -916,12 +947,44 @@ namespace KLib
 
     }
 
+    public class ExcelTableCollection : Dictionary<string, ExcelTable>
+    {
+        static public Dictionary<string, ExcelTableCollection> ShareCollections = new Dictionary<string, ExcelTableCollection>();
+        public string className;
+
+        static public void AddTable(ExcelTable sheet)
+        {
+            //excel文件名为数据文件名，sheet名为class名
+            var className = sheet.name;
+            var fileName = sheet.fileName;
+            var item = GetTableCollection(className);
+            if (item.ContainsKey(fileName))
+            {
+                throw new Exception($"类型{className}有重复的文件名:{fileName}");
+            }
+            item[fileName] = sheet;
+        }
+
+        static public ExcelTableCollection GetTableCollection(string className)
+        {
+            ExcelTableCollection item = null;
+            if (ShareCollections.TryGetValue(className, out item) == false)
+            {
+                item = new ExcelTableCollection() { className = className };
+                ShareCollections[className] = item;
+            }
+            return item;
+        }
+
+    }
+
     public class ExcelTable
     {
         /// <summary>
         /// 工作薄显示名
         /// </summary>
         public String name;
+        public String fileName;
 
         /// <summary>
         /// 字段名列表

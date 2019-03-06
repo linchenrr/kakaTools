@@ -21,22 +21,19 @@ namespace ExcelExport
                 return;
             }
 
-
             if (args.ContainsKey("excel"))
             {
-                var inputPath = args["excel"];
+                ExcelGenerater.excelPath = args["excel"];
 
-                String output = "";
+
                 if (args.ContainsKey("dataPath"))
-                    output = args["dataPath"] + @"\";
+                    ExcelGenerater.outputDataPath = args["dataPath"] + @"\";
 
-                String prefix_primaryKey = "[$]";
                 if (args.ContainsKey("prefix_primaryKey"))
-                    prefix_primaryKey = args["prefix_primaryKey"];
+                    ExcelGenerater.prefix_primaryKey = args["prefix_primaryKey"];
 
-                String prefix_IgnoreSheet = "#";
                 if (args.ContainsKey("prefix_IgnoreSheet"))
-                    prefix_IgnoreSheet = args["prefix_IgnoreSheet"];
+                    ExcelGenerater.prefix_IgnoreSheet = args["prefix_IgnoreSheet"];
 
                 string customerEncoder = null;
                 if (args.ContainsKey("customerEncoder"))
@@ -70,17 +67,20 @@ namespace ExcelExport
                             WindowUtils.Alert("无效的参数 -compress:" + args["compress"]);
                             return;
                     }
+                    ExcelGenerater.compressOP = compress;
                 }
 
-                Boolean ignoreBlank = true;
                 if (args.ContainsKey("ignoreBlank"))
-                    ignoreBlank = getArgsBool("ignoreBlank");
+                    ExcelGenerater.ignoreBlank = getArgsBool("ignoreBlank");
 
                 String fileExt = ".kk";
                 if (args.ContainsKey("ext"))
                     fileExt = args["ext"];
                 if (fileExt.IndexOf(".") < 0)
                     fileExt = "." + fileExt;
+
+                if (args.ContainsKey("shareMode"))
+                    ExcelGenerater.IsShareClassMode = getArgsBool("shareMode");
 
                 if (args.ContainsKey("exportDataBytes"))
                     ExcelGenerater.exportDataBytes = getArgsBool("exportDataBytes");
@@ -129,7 +129,7 @@ namespace ExcelExport
                     ExcelGenerater.endian = endian;
                     ExcelGenerater.fileExt = fileExt;
                     ExcelGenerater.customerEncoder = customerEncoder;
-                    ExcelGenerater.startExport(inputPath, output, compress, prefix_primaryKey, prefix_IgnoreSheet, ignoreBlank);
+                    ExcelGenerater.startExport();
 
                 }
 #if !DEBUG
