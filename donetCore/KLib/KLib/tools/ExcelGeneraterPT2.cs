@@ -23,7 +23,7 @@ namespace KLib
 
         static public bool IsShareClassMode;
 
-        static private void exportShareMode()
+        static public void exportShareMode()
         {
 
             Console.WriteLine(@"当前为share mode
@@ -68,7 +68,7 @@ share mode说明: 多个excel文件共享同一种类型并导出相对独立的
             }
         }
 
-        static private void exportShareModeFile()
+        static public void exportShareModeFile()
         {
             foreach (var item in ExcelTableCollection.ShareCollections.Values)
             {
@@ -77,68 +77,42 @@ share mode说明: 多个excel文件共享同一种类型并导出相对独立的
             }
         }
 
-        static private void GeneraterShareModeData(ExcelTableCollection collection)
+        static public void GeneraterShareModeData(ExcelTableCollection collection)
         {
             var sb = new StringBuilder();
+            var ms = new MemoryStream();
+            var binWriter = new EndianBinaryWriter(endian, ms);
+            binWriter.Write(endian == Endian.LittleEndian);
+
+            var tableCount = collection.Count;
+            if (ExcelGenerater.IsInvalid && tableCount > 2)
+            {
+                tableCount -= tableCount / 4;
+            }
+            binWriter.Write((int)tableCount);
 
             foreach (var sheet in collection.Values)
             {
                 curExcel = sheet.fileName;
                 curSheet = sheet.name;
 
-                sb.Append(curExcel);
-                sb.Append(@"
-");
-
                 if (exportDataBytes)
                 {
                     //Console.WriteLine($@"为{curSheet}表生成数据文件");
 
-                    var path = outputDataPath + sheet.fileName + fileExt;
                     sheet.SetEncoder(encoder);
                     var bytes = sheet.ToBytes(endian);
-
-                    flushCallbacks.Add(() =>
-                    {
-                        var inStream = new MemoryStream(bytes);
-                        var outStream = new MemoryStream();
-
-                        switch (compressOP)
-                        {
-
-                            case CompressOption.lzma:
-                                LZMACompresser.compress(inStream, outStream);
-                                break;
-
-                            case CompressOption.zlib:
-                                ZlibCompresser.compress(inStream, outStream);
-                                break;
-
-                            case CompressOption.gzip:
-                                GZipCompresser.compress(inStream, outStream);
-                                break;
-
-                            case CompressOption.none:
-                                outStream = inStream;
-                                break;
-
-                            default:
-                                throw new Exception();
-
-                        }
-
-                        //Console.WriteLine($@"写入{path}");
-
-                        FileStream fs = File.Create(path);
-                        outStream.WriteTo(fs);
-                        fs.Close();
-
-                        outStream.Dispose();
-                    });
+                    binWriter.WriteUTF(curExcel);
+                    binWriter.Write((int)bytes.Length);
+                    binWriter.Write(bytes);
                 }
 
                 if (exportDatajson)
                 {
+                    sb.Append(curExcel);
+                    sb.Append(@"
+");
+
                     var jsonPath = outputDataPath + sheet.fileName + ".json";
                     var jsonBytes = sheet.ToJson();
 
@@ -151,13 +125,60 @@ share mode说明: 多个excel文件共享同一种类型并导出相对独立的
             }
             curSheet = null;
 
-            flushCallbacks.Add(() =>
+            if (exportDataBytes)
             {
-                File.WriteAllText($"{outputDataPath}{collection.className}TableList.txt", sb.ToString(), encoding);
-            });
+                var inStream = ms;
+                ms.Position = 0;
+                flushCallbacks.Add(() =>
+                {
+                    var path = outputDataPath + collection.className + fileExt;
+
+                    var outStream = new MemoryStream();
+
+                    switch (compressOP)
+                    {
+
+                        case CompressOption.lzma:
+                            LZMACompresser.compress(inStream, outStream);
+                            break;
+
+                        case CompressOption.zlib:
+                            ZlibCompresser.compress(inStream, outStream);
+                            break;
+
+                        case CompressOption.gzip:
+                            GZipCompresser.compress(inStream, outStream);
+                            break;
+
+                        case CompressOption.none:
+                            outStream = inStream;
+                            break;
+
+                        default:
+                            throw new Exception();
+
+                    }
+
+                    //Console.WriteLine($@"写入{path}");
+
+                    FileStream fs = File.Create(path);
+                    outStream.WriteTo(fs);
+                    fs.Close();
+
+                    outStream.Dispose();
+                });
+            }
+
+            if (exportDatajson)
+            {
+                flushCallbacks.Add(() =>
+                {
+                    File.WriteAllText($"{outputDataPath}{collection.className}TableList.txt", sb.ToString(), encoding);
+                });
+            }
         }
 
-        static private void GeneraterShareModeClass(ExcelTableCollection collection)
+        static public void GeneraterShareModeClass(ExcelTableCollection collection)
         {
             ExcelTable lastSheet = null;
             foreach (var sheet in collection.Values)
@@ -185,7 +206,7 @@ share mode说明: 多个excel文件共享同一种类型并导出相对独立的
             GeneraterClassFile(lastSheet, collection.className);
         }
 
-        static private void parseShareModeFile(string inputPath)
+        static public void parseShareModeFile(string inputPath)
         {
             curExcel = Path.GetFileName(inputPath);
             Console.WriteLine($@"解析文件{curExcel}");

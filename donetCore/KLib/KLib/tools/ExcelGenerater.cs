@@ -241,7 +241,7 @@ namespace KLib
                 });
             }
 
-            if (IsShareClassMode)
+            if (IsShareClassMode && exportDatajson)
             {
                 var deleteFiles = Directory.GetFiles(outputDataPath, "*.txt", SearchOption.TopDirectoryOnly);
                 flushCallbacks.Add(() =>
@@ -385,7 +385,7 @@ namespace KLib
         }
 
         static private Regex reg_enter = new Regex(@"[\r\n]");
-        static private void GeneraterClassFile(ExcelTable sheet, string tableName = null)
+        static public void GeneraterClassFile(ExcelTable sheet, string tableName = null)
         {
             if (string.IsNullOrEmpty(tableName))
                 tableName = sheet.name;

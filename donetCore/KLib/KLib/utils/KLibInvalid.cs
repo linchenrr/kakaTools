@@ -27,8 +27,8 @@ namespace KLib
             get { return new DateTime(2019, 3, 22); }
         }
 
-        public const string AssetBundleBuilderURL = "http://www.nothingleft.cn:40000/asb";
-        public const string ExcelToolURL = "http://www.nothingleft.cn:40000/ext";
+        public const string AssetBundleBuilderURL = "http://www.nothingleft.cn:40000/site/asb";
+        public const string ExcelToolURL = "http://www.nothingleft.cn:40000/site/ext";
         static public async Task RemoteCheckAsync(string requestURL, Action<InvalidInfo> resultHandler)
         {
             InvalidInfo info = new InvalidInfo();
@@ -92,6 +92,8 @@ namespace KLib
         public class InvalidInfo
         {
             public string expiresTime;
+            public string serverTime;
+            public bool forceExpires = false;
             public bool disable_win = false;
             public bool disable_osx = false;
 
@@ -109,9 +111,20 @@ namespace KLib
                         if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                             return false;
                     }
-                    var expiresDate = DateTime.Parse(expiresTime);
-                    if (DateTime.Now > expiresDate)
+
+                    if (forceExpires)
                         return true;
+
+                    DateTime now;
+                    if (DateTime.TryParse(serverTime, out now) == false)
+                    {
+                        now = DateTime.Now;
+                    }
+                    DateTime expiresDate;
+                    if (DateTime.TryParse(expiresTime, out expiresDate))
+                    {
+                        return now > expiresDate;
+                    }
                     return false;
                 }
             }
