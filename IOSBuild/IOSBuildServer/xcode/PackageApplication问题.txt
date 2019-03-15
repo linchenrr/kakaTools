@@ -1,0 +1,8 @@
+在输入框中输入以下路径，
+
+/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/
+
+将PackageApplication放在该目录下。
+
+开启终端，在终端输入：
+chmod +x /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/PackageApplication，即可正常使用xcode命令行打包。
