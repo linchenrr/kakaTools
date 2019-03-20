@@ -1,0 +1,121 @@
+﻿<root>
+  <config language="lua">
+    <classExtension>.lua</classExtension>
+    <classNameTail>ExcelTable</classNameTail>
+    <classStartUpperCase>true</classStartUpperCase>
+    <memberStartUpperCase>false</memberStartUpperCase>
+  </config>
+  <definitionMember>
+  </definitionMember>
+  <decodeMember></decodeMember>
+  <relationMember></relationMember>
+  <definitionArray></definitionArray>
+  <decodeArray>
+
+  </decodeArray>
+
+  <params>
+    <param type="enum">
+      <decode></decode>
+    </param>
+    <param type="bool" class="bool">
+      <decode></decode>
+    </param>
+    <param type="int" class="int">
+      <decode></decode>
+    </param>
+    <param type="float" class="float">
+      <decode></decode>
+    </param>
+    <param type="string" class="string">
+      <decode></decode>
+    </param>
+    <param type="date" class="DateTime">
+      <decode></decode>
+    </param>
+    <param type="vector3" class="Vector3">
+      <decode></decode>
+    </param>
+    <param type="propertyChanger" class="PropertyChanger">
+      <decode></decode>
+    </param>
+    <param type="itemNum" class="ItemNum">
+      <decode></decode>
+    </param>
+    <param type="FP" class="FP">
+      <decode></decode>
+    </param>
+    <param type="heroAttrWeight" class="HeroAttrWeight">
+      <decode></decode>
+    </param>
+    <param type="getChipApproach" class="GetChipApproach">
+      <decode></decode>
+    </param>
+  </params>
+  <Class>
+    <![CDATA[
+--$(tableName)表
+
+$(className) = {}
+
+--数据源引用
+local s_data
+
+function $(className).init()
+
+  local str = ResUtil.LoadText("excel/data/$(tableName)", nil, ".json")
+  
+	s_data = json.decode(str)
+	
+	local pk = s_data.headerInfo.primaryKey
+	s_data.pk_index = {}
+	for k,v in pairs(s_data.data)do
+		s_data.pk_index[v[pk]] = k
+	end
+end
+
+--根据$(primaryKeyName)查找$(tableName)表的数据
+--@param {$(primaryKeyType)} $(primaryKeyName)
+--@return {table}
+function $(className).getData($(primaryKeyName))
+	local idx = s_data.pk_index[$(primaryKeyName)]
+	if not idx then
+		logError("$(tableName)表没有$(primaryKeyName)为"..$(primaryKeyName).."的记录！")
+		return nil
+	end
+
+	return s_data.data[idx]
+end
+
+--判断表中是否有此$(primaryKeyName)的数据
+--@param {$(primaryKeyType)} $(primaryKeyName)
+function $(className).hasData(id)
+	return s_data.pk_index[id] ~= nil
+end
+
+--根据表中索引查找$(tableName)表配置对象
+--@param {number} index 序列索引
+--@return {table}
+function $(className).getDataByIndex(index)
+	return s_data.data[index]
+end
+
+--获取$(className)表元信息
+--@return {table}、{headerInfo}
+function $(className).getTableInfo()
+	return s_data.data, s_data.headerInfo
+end
+]]>
+  </Class>
+  <InitClass fileName="autoInitExcelData">
+    <![CDATA[
+$(initCode)
+]]>
+  </InitClass>
+  <InitClassItem>
+    <![CDATA[
+require "$(className)"
+$(className).init()
+]]>
+  </InitClassItem>
+</root>
