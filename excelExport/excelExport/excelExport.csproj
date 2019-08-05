@@ -157,24 +157,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandModeNew.cs" />
-    <Compile Include="CommandMode.cs" />
-    <Compile Include="Form_ExcelExport.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Form_ExcelExport.Designer.cs">
-      <DependentUpon>Form_ExcelExport.cs</DependentUpon>
-    </Compile>
     <Compile Include="LangVO.cs" />
     <Compile Include="ProgramNew.cs" />
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegistryControl.cs" />
     <Compile Include="SchoolVO.cs" />
     <Compile Include="StudentVO.cs" />
     <Compile Include="TeacherVO.cs" />
-    <EmbeddedResource Include="Form_ExcelExport.resx">
-      <DependentUpon>Form_ExcelExport.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

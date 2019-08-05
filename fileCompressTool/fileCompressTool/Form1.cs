@@ -51,7 +51,7 @@ namespace fileCompressTool
 
             //cb_algorithm.Items.Add("sss");
 
-            cb_algorithm.Items.AddRange(new Object[] { 
+            cb_algorithm.Items.AddRange(new Object[] {
                 CompressOption.lzma,
                 CompressOption.gzip,
                 CompressOption.zlib
@@ -183,19 +183,20 @@ namespace fileCompressTool
                 {
                     addName = "_uncompress";
                 }
-
             }
 
             try
             {
-
-                if (dwInfo.compress)
+                foreach (var path in pathList)
                 {
-                    fc.compress(pathList, addName);
-                }
-                else
-                {
-                    fc.uncompress(pathList, addName);
+                    if (dwInfo.compress)
+                    {
+                        fc.compress(path, path + addName);
+                    }
+                    else
+                    {
+                        fc.uncompress(path, path + addName);
+                    }
                 }
 
                 lb_status.Text = "处理完成！";

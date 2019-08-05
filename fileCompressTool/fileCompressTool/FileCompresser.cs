@@ -36,95 +36,78 @@ namespace fileCompressTool
 
         }
 
-        private int doProcess(CompressProcesser processer, String[] pathList, String newFileSuffix = "")
+        private int doProcess(CompressProcesser processer, string input, string output)
         {
 
             int success = 0;
             int i = 0;
-            while (i < pathList.Length)
+
+            //处理文件
+            if (File.Exists(input))
             {
-                String path = pathList[i];
-
-                //处理文件
-                if (File.Exists(path))
+                try
                 {
-                    Stream inStream = null;
-                    try
+                    Console.WriteLine($@"处理文件
+input:{input}
+output:{output}");
+                    using (var inStream = File.Open(input, FileMode.Open, FileAccess.Read))
                     {
-
-                        String outputPath = Path.GetDirectoryName(path) + "/" + Path.GetFileNameWithoutExtension(path) + newFileSuffix + Path.GetExtension(path);
-
-                        inStream = File.Open(path, FileMode.Open, FileAccess.Read);
-                        MemoryStream ms = new MemoryStream();
-
-                        processer(inStream, ms);
-
-                        inStream.Close();
-
-                        Stream outStream = File.Create(outputPath);
-                        ms.WriteTo(outStream);
-
-                        outStream.Close();
-
-                        success++;
-
-                    }
-                    catch (Exception e)
-                    {
-                        MessageBox.Show("处理" + path + "时出现异常:\r\n" + e.Message);
-                    }
-                    finally
-                    {
-                        try
+                        using (var ms = new MemoryStream())
                         {
-                            inStream.Dispose();
+                            processer(inStream, ms);
+
+                            inStream.Close();
+
+                            var outStream = File.Create(output);
+                            ms.WriteTo(outStream);
+                            outStream.Close();
+
+                            success++;
                         }
-                        catch { }
                     }
                 }
-                //处理目录
-                else if (Directory.Exists(path))
+                catch (Exception e)
                 {
-
-                    DirectoryInfo di = new DirectoryInfo(path);
-
-                    FileSystemInfo[] fileInfos = di.GetFileSystemInfos();
-
-                    ArrayList newPathList = new ArrayList();
-
-                    for (int k = 0; k < fileInfos.Length; k++)
-                    {
-                        //如果不是隐藏文件  则添加文件或子目录
-                        if ((fileInfos[k].Attributes & FileAttributes.Hidden) == 0)
-                        {
-                            newPathList.Add(fileInfos[k].FullName);
-                        }
-
-                    }
-
-                    success += doProcess(processer, (String[])newPathList.ToArray(Type.GetType("System.String")), newFileSuffix);
-
+                    MessageBox.Show($@"处理{input}时出现异常:
+{e}");
+                }
+            }
+            //处理目录
+            else if (Directory.Exists(input))
+            {
+                var inDir = new DirectoryInfo(input);
+                var outDir = new DirectoryInfo(output);
+                if (outDir.Exists == false)
+                {
+                    Console.WriteLine($@"创建目录{outDir.FullName}");
+                    outDir.Create();
                 }
 
-                i++;
+
+                var files = inDir.GetFiles();
+                foreach (var file in files)
+                {
+                    success += doProcess(processer, file.FullName, output + "/" + file.Name);
+                }
+
+                var dirs = inDir.GetDirectories();
+                foreach (var dir in dirs)
+                {
+                    success += doProcess(processer, dir.FullName, output + "/" + dir.Name);
+                }
             }
 
             return success;
-
         }
 
-        public int compress(String[] pathList, String newFileSuffix = "")
+        public int compress(string input, string output)
         {
-
-            return doProcess(compresser.compress, pathList, newFileSuffix);
-
+            return doProcess(compresser.compress, input, output);
         }
 
-        public int uncompress(String[] pathList, String newFileSuffix = "")
+        public int uncompress(string input, string output)
         {
-
-            return doProcess(compresser.uncompress, pathList, newFileSuffix);
-
+            return doProcess(compresser.uncompress, input, output);
         }
 
     }

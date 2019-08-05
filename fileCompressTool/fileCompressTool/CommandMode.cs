@@ -9,7 +9,7 @@ namespace fileCompressTool
     public class CommandMode
     {
 
-        private delegate int CompressProcesser(String[] pathList, String newFileSuffix = "");
+        private delegate int CompressProcesser(string input, string output);
 
         static public void exec(Dictionary<String, String> args)
         {
@@ -61,17 +61,14 @@ namespace fileCompressTool
                 }
             }
 
-            String tail = "";
-            if (args.ContainsKey("tail"))
-                tail = args["tail"];
-
-            if (args.ContainsKey("path"))
+            if (args.ContainsKey("input"))
             {
-                String[] pathList = args["path"].Split(',');
-
-                processer(pathList, tail);
+                var inputPath = args["input"].Trim();
+                var outputPath = inputPath;
+                if (args.ContainsKey("output"))
+                    outputPath = args["output"].Trim();
+                processer(inputPath, outputPath);
             }
-
 
         }
     }
