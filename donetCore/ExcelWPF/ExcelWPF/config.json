@@ -1,0 +1,34 @@
+﻿{
+  //"ProjDir": "F:\\work\\unity\\Phoenix\\Phoenix_Android",
+  "ProjDir": "../../../../../../",
+  "ExcelLocalBaseDir": "excel",
+  "CodeOutputPath": "Assets/bundles/excel/code",
+  "Branchs": [
+    {
+      "Name": "分支1111111111",
+      "LocalFolder": "b1",
+      "SvnPath": "svn://dark.phoenix.wang/Phx/Excel"
+    },
+    {
+      "Name": "分支2222222222",
+      "LocalFolder": "b2",
+      "SvnPath": "svn://dark.phoenix.wang/Phx/Excel"
+    }
+  ],
+  "Ftps": [
+    {
+      "name": "测试1服",
+      "host": "ftp.nothingleft.cn",
+      "port": 40021,
+      "userName": "Share",
+      "pwd": "3364476"
+    },
+    {
+      "name": "测试2服",
+      "host": "ftp.nothingleft.cn",
+      "port": 40021,
+      "userName": "Share",
+      "pwd": "3364476"
+    }
+  ]
+}

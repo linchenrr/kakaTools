@@ -1,0 +1,74 @@
+﻿<Window x:Class="ExcelWPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ExcelWPF"
+        mc:Ignorable="d"
+        Title="ExcelExport v2019" Height="600.258" Width="1023.431" ResizeMode="NoResize" Cursor="Arrow" Loaded="Window_Loaded" Icon="icon.ico" Background="#FFACC5DE">
+
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="743*"/>
+            <ColumnDefinition Width="274*"/>
+        </Grid.ColumnDefinitions>
+        <DataGrid x:Name="grid_branch" HorizontalAlignment="Left" Height="226" Margin="36,20,0,0" VerticalAlignment="Top" Width="751" AutoGenerateColumns="False" SelectionMode="Single" RowBackground="#FFE6F8FF" Grid.ColumnSpan="2" RowDetailsVisibilityMode="Visible">
+            <DataGrid.Resources>
+                <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#FF40A5F9"/>
+            </DataGrid.Resources>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="分支名" CanUserSort="False" Binding="{Binding Name,Mode=OneWay}" MinWidth="120">
+                    <DataGridTextColumn.HeaderStyle>
+                        <Style TargetType="DataGridColumnHeader">
+                            <Setter Property="HorizontalContentAlignment" Value="Center"></Setter>
+                        </Style>
+                    </DataGridTextColumn.HeaderStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="本地目录" CanUserSort="False" Binding="{Binding LocalFolder,Mode=OneWay}" MinWidth="150">
+                    <DataGridTextColumn.HeaderStyle>
+                        <Style TargetType="DataGridColumnHeader">
+                            <Setter Property="HorizontalContentAlignment" Value="Center"></Setter>
+                        </Style>
+                    </DataGridTextColumn.HeaderStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="svn地址"  CanUserSort="False" Binding="{Binding SvnPath,Mode=OneWay}" Width="Auto" MinWidth="400">
+                    <DataGridTextColumn.HeaderStyle>
+                        <Style TargetType="DataGridColumnHeader">
+                            <Setter Property="HorizontalContentAlignment" Value="Center"></Setter>
+                        </Style>
+                    </DataGridTextColumn.HeaderStyle>
+                </DataGridTextColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+        <Button x:Name="btn_update" Content="svn更新" HorizontalAlignment="Left" Margin="89,20,0,0" VerticalAlignment="Top" Width="100" Height="38" FontSize="16" Click="Btn_update_Click" Grid.Column="1"/>
+        <Button x:Name="btn_commit" Content="svn提交" HorizontalAlignment="Left" Margin="89,72,0,0" VerticalAlignment="Top" Width="100" Height="38" FontSize="16" Click="Btn_commit_Click" Grid.Column="1"/>
+        <Button x:Name="btn_export" Content="导出数据" HorizontalAlignment="Left" Margin="89,122,0,0" VerticalAlignment="Top" Width="100" Height="38" FontSize="16" Click="Btn_export_Click" Grid.Column="1"/>
+        <Button x:Name="btn_code" Content="生成代码" HorizontalAlignment="Left" Margin="89,173,0,0" VerticalAlignment="Top" Width="100" Height="38" FontSize="16" Click="Btn_code_Click" Grid.Column="1"/>
+        <DataGrid x:Name="grid_ftp" HorizontalAlignment="Left" Height="226" Margin="36,303,0,0" VerticalAlignment="Top" Width="751" AutoGenerateColumns="False" SelectionMode="Single" RowBackground="#FFE6F8FF" Grid.ColumnSpan="2">
+            <DataGrid.Resources>
+                <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#FF40A5F9"/>
+            </DataGrid.Resources>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="服务器名" CanUserSort="False" Binding="{Binding name, Mode=OneWay}" MinWidth="180">
+                    <DataGridTextColumn.HeaderStyle>
+                        <Style TargetType="{x:Type DataGridColumnHeader}">
+                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                        </Style>
+                    </DataGridTextColumn.HeaderStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="ftp地址"  CanUserSort="False" Binding="{Binding url, Mode=OneWay}" Width="Auto" MinWidth="500">
+                    <DataGridTextColumn.HeaderStyle>
+                        <Style TargetType="{x:Type DataGridColumnHeader}">
+                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                        </Style>
+                    </DataGridTextColumn.HeaderStyle>
+                </DataGridTextColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+        <Button x:Name="btn_upload" Content="上传数据" HorizontalAlignment="Left" Margin="89,385,0,0" VerticalAlignment="Top" Width="100" Height="38" FontSize="16" Click="Btn_upload_Click" Grid.Column="1"/>
+        <Button x:Name="btn_openfolder" Content="打开文件夹" HorizontalAlignment="Left" Margin="89,224,0,0" VerticalAlignment="Top" Width="100" Height="38" FontSize="16" Click="Btn_openfolder_Click" Grid.Column="1"/>
+
+    </Grid>
+
+</Window>
