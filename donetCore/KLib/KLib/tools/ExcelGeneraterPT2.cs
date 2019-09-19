@@ -180,6 +180,8 @@ share mode说明: 多个excel文件共享同一种类型并导出相对独立的
 
         static public void GeneraterShareModeClass(ExcelTableCollection collection)
         {
+            if (codeTemplate == null)
+                return;
             ExcelTable lastSheet = null;
             foreach (var sheet in collection.Values)
             {

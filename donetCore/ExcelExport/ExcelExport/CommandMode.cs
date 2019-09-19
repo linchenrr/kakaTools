@@ -15,10 +15,10 @@ namespace ExcelExport
 
             dic_arg = args;
 
-            if (args.ContainsKey("showExpires"))
+            var pauseOnError = true;
+            if (args.ContainsKey("pauseOnError"))
             {
-                Console.WriteLine($@"是否过期:{KLibInvalid.IsInvalid}，工具到期日期为:{KLibInvalid.ExpiresTime.ToShortDateString()}");
-                return;
+                pauseOnError = getArgsBool("pauseOnError");
             }
 
             if (args.ContainsKey("excel"))
@@ -150,7 +150,10 @@ namespace ExcelExport
                     Console.WriteLine(errMsg);
                     WindowUtils.Alert($@"导出时出现错误:
 {errMsg}");
-                    Console.ReadLine();
+                    if (pauseOnError)
+                    {
+                        Console.ReadLine();
+                    }
                     Environment.Exit(5);
                 }
 #endif

@@ -10,6 +10,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="ProjTemplates\**" />
+    <EmbeddedResource Remove="ProjTemplates\**" />
+    <None Remove="ProjTemplates\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\KLib\KLib\KLib.csproj" />
   </ItemGroup>
 
