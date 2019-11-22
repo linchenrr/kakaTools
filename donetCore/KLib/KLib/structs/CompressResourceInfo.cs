@@ -8,7 +8,7 @@ namespace KLib
     {
 
         public string path;
-        public string version;
+        //public string version;
         public long bytesTotal;
         public string md5;
         public long lastWriteTime;

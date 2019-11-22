@@ -135,21 +135,21 @@ namespace KLib
                         {
                             //文件修改时间有变化
                             needCompress = true;
-                            Console.WriteLine($@"需要处理文件{fileName}, reason:文件有修改");
+                            Console.WriteLine($@"{fileName}, 文件有修改");
                         }
                     }
                     else
                     {
                         //有此文件压缩记录，但是文件不存在
                         needCompress = true;
-                        Console.WriteLine($@"需要处理文件{fileName}, reason:文件丢失(有此文件压缩记录，但是文件不存在)");
+                        Console.WriteLine($@"{fileName}, 文件丢失(有此文件压缩记录，但是文件不存在)");
                     }
                 }
                 else
                 {
                     //无此文件压缩记录
                     needCompress = true;
-                    Console.WriteLine($@"需要处理文件{fileName}, reason:新增文件(无此文件压缩记录)");
+                    Console.WriteLine($@"{fileName}, 新增文件(无此文件压缩记录)");
                 }
 
                 if (needCompress)
@@ -201,6 +201,8 @@ namespace KLib
             var backNum = 0;
             var needWriteConsole = !Console.IsOutputRedirected;
 
+            var lockThreadObj = new object();
+
             while (true)
             {
                 if (finishCount >= c)
@@ -219,7 +221,11 @@ namespace KLib
                         ResInfo = resInfo_loop,
                     };
 
-                    curThread++;
+                    lock (lockThreadObj)
+                    {
+                        curThread++;
+                    }
+
                     var thread = new Thread((par) =>
                     {
                         var param = (FileThreadParam)par;
@@ -269,16 +275,20 @@ namespace KLib
                             newFileName = fileName + "_" + crc;
                         //====================
                         */
-                        var targetFilePath = outputFilePath + fileName;
+
 
                         var md5 = MD5Utils.BytesToMD5(bytes);
+
+                        var targetFilePath = outputFilePath + fileName;
+                        //var targetFilePath = outputFilePath + fileName + "_" + md5;
+
                         File.WriteAllBytes(targetFilePath, bytes);
 
                         var writeTime = File.GetLastWriteTimeUtc(orgFilePath).Ticks;
                         var compressInfo = new CompressResourceInfo()
                         {
                             path = fileName,
-                            version = resInfo.version,
+                            //version = resInfo.version,
                             bytesTotal = bytes.Length,
                             md5 = md5,
                             lastWriteTime = writeTime,
@@ -290,7 +300,14 @@ namespace KLib
 
                             finishCount++;
                             count++;
+
+                            //Console.WriteLine($@"finish {compressInfo.path}");
+                        }
+
+                        lock (lockThreadObj)
+                        {
                             curThread--;
+                            //Console.WriteLine($@"{curThread}/{maxThread}");
                         }
 
                     });
@@ -309,6 +326,8 @@ namespace KLib
                     //Console.Write(backStr.ToString() + writeConsoleStr);
                     //backNum = encoding.GetBytes(writeConsoleStr).Length;
                 }
+
+                
             }
 
             time.Stop();
@@ -321,6 +340,7 @@ namespace KLib
             File.WriteAllBytes(outputFilePath + "assetInfo.txt", FileInfoBytes);
             File.WriteAllBytes(outputFilePath + "assetInfo_compressed.txt", LZMACompresser.compress(FileInfoBytes));
             File.WriteAllBytes(outputPath + "assetVersion.txt", encoding.GetBytes(buildVersion));
+            File.WriteAllBytes(outputFilePath + "assetVersion.txt", encoding.GetBytes(buildVersion));
 
             Console.WriteLine();
             Console.WriteLine($@"已处理{count}个变化文件，生成了{buildInfo.Count}个文件信息");
@@ -353,8 +373,8 @@ namespace KLib
                 {
                     sb.Append(info.path);
                     sb.Append(",");
-                    sb.Append(info.version);
-                    sb.Append(",");
+                    //sb.Append(info.version);
+                    //sb.Append(",");
                     sb.Append(info.bytesTotal);
                     sb.Append(",");
                     sb.Append(info.md5);

@@ -41,6 +41,7 @@ namespace AssetBundleBuilder
                 {
                     UnityAssetBundleBuilder.build(dic["input"], dic["output"], thread);
 #if DEBUG
+                    Console.WriteLine("完成，按任意键结束");
                     Console.ReadLine();
 #endif
                 }

@@ -316,7 +316,7 @@ namespace KLib
 
         static private ExcelCodeTemplate codeTemplate;
 
-        static ExcelTable[] doExport(String path, String prefix_primaryKey, String prefix_IgnoreSheet, Boolean ignoreBlank)
+        public static ExcelTable[] doExport(String path, String prefix_primaryKey, String prefix_IgnoreSheet, Boolean ignoreBlank)
         {
             var sheets = new List<ExcelTable>();
             var excelTables = getTables(path, prefix_IgnoreSheet);
@@ -433,7 +433,7 @@ namespace KLib
         static public string codeFolderPath;
 
 
-        static private ExcelTable processSheet(DataTable dt, String prefix_primaryKey, Boolean ignoreBlank)
+        static public ExcelTable processSheet(DataTable dt, String prefix_primaryKey, Boolean ignoreBlank)
         {
             //字段名+类型  至少2行
             if (dt.Rows.Count < 3 && dt.Columns.Count == 1)
@@ -628,7 +628,7 @@ namespace KLib
 
         static private HashSet<string> hs_sheetNames = new HashSet<string>();
 
-        static private List<DataTable> getTables(string path, string prefix_IgnoreSheet)
+        static public List<DataTable> getTables(string path, string prefix_IgnoreSheet)
         {
             var sheets = new List<DataTable>();
 
