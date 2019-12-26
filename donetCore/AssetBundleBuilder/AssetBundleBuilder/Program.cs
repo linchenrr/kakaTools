@@ -33,6 +33,15 @@ namespace AssetBundleBuilder
             if (dic.ContainsKey("thread"))
                 thread = Convert.ToInt32(dic["thread"]);
 
+            if (dic.ContainsKey("specialNames"))
+            {
+                var parts = dic["specialNames"].Split(',');
+                foreach (var part in parts)
+                {
+                    UnityAssetBundleBuilder.SpecialNames.Add(part.ToLower());
+                }
+            }
+
             if (dic.ContainsKey("input") && dic.ContainsKey("output"))
             {
 #if !DEBUG
@@ -41,8 +50,8 @@ namespace AssetBundleBuilder
                 {
                     UnityAssetBundleBuilder.build(dic["input"], dic["output"], thread);
 #if DEBUG
-                    Console.WriteLine("完成，按任意键结束");
-                    Console.ReadLine();
+                    //Console.WriteLine("完成，按任意键结束");
+                    //Console.ReadLine();
 #endif
                 }
 #if !DEBUG

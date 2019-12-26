@@ -19,6 +19,9 @@ namespace KLib
     {
 
         static private Encoding encoding = new UTF8Encoding(false);
+
+        static public HashSet<string> SpecialNames = new HashSet<string>();
+
         static public void build(String inputPath, String outputPath, int maxThread)
         {
             Console.WriteLine("input:" + inputPath);
@@ -78,6 +81,19 @@ namespace KLib
             var targetFileDir = new DirectoryInfo(outputFilePath);
             foreach (var dicInfo in targetFileDir.GetDirectories("*", SearchOption.AllDirectories))
             {
+                var isSpecial = false;
+                var lowerName = dicInfo.FullName.ToLower();
+                foreach (var sName in SpecialNames)
+                {
+                    if (lowerName.Contains(sName))
+                    {
+                        isSpecial = true;
+                        break;
+                    }
+                }
+                if (isSpecial)
+                    continue;
+
                 var dirPath = dicInfo.FullName.Replace(@"\", "/");
                 var dirName = dirPath.Substring(dirPath.IndexOf(outputFilePath) + outputFilePath.Length);
                 dirName = dirName.TrimStart('/');
@@ -96,8 +112,19 @@ namespace KLib
             //delete unuse files
             foreach (var fileInfo in targetFileDir.GetFiles("*", SearchOption.AllDirectories))
             {
-                if (specialFiles.Contains(fileInfo.Name))
+                var isSpecial = false;
+                var lowerName = fileInfo.FullName.ToLower();
+                foreach (var sName in SpecialNames)
+                {
+                    if (lowerName.Contains(sName))
+                    {
+                        isSpecial = true;
+                        break;
+                    }
+                }
+                if (isSpecial)
                     continue;
+
                 var filePath = fileInfo.FullName.Replace(@"\", "/");
                 var fileName = filePath.Substring(filePath.IndexOf(outputFilePath) + outputFilePath.Length);
                 fileName = fileName.TrimStart('/');
@@ -327,7 +354,7 @@ namespace KLib
                     //backNum = encoding.GetBytes(writeConsoleStr).Length;
                 }
 
-                
+
             }
 
             time.Stop();
