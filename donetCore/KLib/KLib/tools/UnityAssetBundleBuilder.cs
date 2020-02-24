@@ -22,7 +22,7 @@ namespace KLib
 
         static public HashSet<string> SpecialNames = new HashSet<string>();
 
-        static public void build(String inputPath, String outputPath, int maxThread)
+        static public void build(string inputPath, string outputPath, int maxThread)
         {
             Console.WriteLine("input:" + inputPath);
             Console.WriteLine("output:" + outputPath);
@@ -60,13 +60,12 @@ namespace KLib
 
 
             var outputDir = new DirectoryInfo(outputPath);
-            outputDir.Create();
-            //if (outputDir.Exists)
-            //{
-            //    outputDir.Delete(true);
-            //}
+            if (outputDir.Exists == false)
+                outputDir.Create();
 
             var outputFilePath = outputPath + "/build/";
+            if (Directory.Exists(outputFilePath) == false)
+                Directory.CreateDirectory(outputFilePath);
 
             var buildInfoPath = outputPath + "/buildCache.json";
             var buildInfo = CompressBuildInfo.ReadFromFile(buildInfoPath);
@@ -286,7 +285,16 @@ namespace KLib
                             }
                         }
 
-                        bytes = LZMACompresser.compress(bytes);
+                        #region retry
+                        var tmpBytes = GZipCompresser.compress(bytes);
+                        tmpBytes = null;
+                        tmpBytes = GZipCompresser.compress(bytes);
+                        tmpBytes = null;
+                        tmpBytes = GZipCompresser.compress(bytes);
+                        tmpBytes = null;
+                        #endregion
+
+                        bytes = GZipCompresser.compress(bytes);
                         /*
                         //======crc32===========
                         var crc32 = new Crc32();
@@ -357,11 +365,12 @@ namespace KLib
 
             }
 
+
             time.Stop();
 
             Console.WriteLine();
 
-            Byte[] FileInfoBytes = encoding.GetBytes(buildInfo.ToAssetInfo());
+            var FileInfoBytes = encoding.GetBytes(buildInfo.ToAssetInfo());
 
             File.WriteAllText(buildInfoPath, buildInfo.ToBuildInfo(), encoding);
             File.WriteAllBytes(outputFilePath + "assetInfo.txt", FileInfoBytes);

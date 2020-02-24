@@ -11,6 +11,15 @@ namespace KLib
     public class GZipCompresser
     {
 
+        static public byte[] compress(byte[] bytes)
+        {
+            var output = new MemoryStream();
+            var gzipStream = new GZipStream(output, CompressionMode.Compress, true);
+            gzipStream.Write(bytes, 0, bytes.Length);
+            gzipStream.Close();
+            return output.ToArray();
+        }
+
         static public void compress(Stream inStream, Stream outStream)
         {
 

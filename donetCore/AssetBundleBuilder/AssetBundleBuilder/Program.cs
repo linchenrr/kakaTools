@@ -33,6 +33,10 @@ namespace AssetBundleBuilder
             if (dic.ContainsKey("thread"))
                 thread = Convert.ToInt32(dic["thread"]);
 
+            var method = "gzip";
+            if (dic.ContainsKey("method"))
+                method = dic["method"];
+
             if (dic.ContainsKey("specialNames"))
             {
                 var parts = dic["specialNames"].Split(',');
