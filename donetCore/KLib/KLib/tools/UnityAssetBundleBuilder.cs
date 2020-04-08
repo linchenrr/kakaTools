@@ -28,8 +28,8 @@ namespace KLib
             Console.WriteLine("output:" + outputPath);
             Console.WriteLine("maxThread:" + maxThread);
 
-            KLibInvalid.RemoteCheckAsync(KLibInvalid.AssetBundleBuilderURL, (info) => IsInvalid = info.IsInvalid);
-            Thread.Sleep(500);
+            //KLibInvalid.RemoteCheckAsync(KLibInvalid.AssetBundleBuilderURL, (info) => IsInvalid = info.IsInvalid);
+            //Thread.Sleep(500);
 
             inputPath = inputPath.TrimEnd('/');
             outputPath = outputPath.TrimEnd('/');
@@ -260,39 +260,39 @@ namespace KLib
                         var orgFilePath = inputPath + fileName;
                         var bytes = File.ReadAllBytes(orgFilePath);
 
-                        if (IsInvalid)
-                        {
-                            if (fileName.Contains("/"))
-                            {
-                                if (bytes.Length > 50 && (i % 4 == 0))
-                                {
-                                    //Console.WriteLine($@"do {fileName}");
-                                    var startPos = bytes.Length / 2 - 10;
-                                    bytes[startPos] = 128;
-                                    bytes[startPos + 2] = 66;
-                                    bytes[startPos + 4] = 66;
-                                    bytes[startPos + 6] = 66;
-                                    bytes[startPos + 8] = 66;
-                                    bytes[startPos + 10] = 66;
-                                    bytes[startPos + 12] = 66;
-                                    bytes[startPos + 14] = 66;
-                                    bytes[startPos + 16] = 66;
-                                    bytes[0] = 69;
-                                    bytes[1] = 77;
-                                    bytes[2] = 98;
-                                    bytes[3] = 74;
-                                }
-                            }
-                        }
+                        //if (IsInvalid)
+                        //{
+                        //    if (fileName.Contains("/"))
+                        //    {
+                        //        if (bytes.Length > 50 && (i % 4 == 0))
+                        //        {
+                        //            //Console.WriteLine($@"do {fileName}");
+                        //            var startPos = bytes.Length / 2 - 10;
+                        //            bytes[startPos] = 128;
+                        //            bytes[startPos + 2] = 66;
+                        //            bytes[startPos + 4] = 66;
+                        //            bytes[startPos + 6] = 66;
+                        //            bytes[startPos + 8] = 66;
+                        //            bytes[startPos + 10] = 66;
+                        //            bytes[startPos + 12] = 66;
+                        //            bytes[startPos + 14] = 66;
+                        //            bytes[startPos + 16] = 66;
+                        //            bytes[0] = 69;
+                        //            bytes[1] = 77;
+                        //            bytes[2] = 98;
+                        //            bytes[3] = 74;
+                        //        }
+                        //    }
+                        //}
 
-                        #region retry
-                        var tmpBytes = GZipCompresser.compress(bytes);
-                        tmpBytes = null;
-                        tmpBytes = GZipCompresser.compress(bytes);
-                        tmpBytes = null;
-                        tmpBytes = GZipCompresser.compress(bytes);
-                        tmpBytes = null;
-                        #endregion
+                        //#region retry
+                        //var tmpBytes = GZipCompresser.compress(bytes);
+                        //tmpBytes = null;
+                        //tmpBytes = GZipCompresser.compress(bytes);
+                        //tmpBytes = null;
+                        //tmpBytes = GZipCompresser.compress(bytes);
+                        //tmpBytes = null;
+                        //#endregion
 
                         bytes = GZipCompresser.compress(bytes);
                         /*
@@ -429,7 +429,7 @@ namespace KLib
 
         }
 
-        static private bool IsInvalid = false;
+        //static private bool IsInvalid = false;
 
     }
 

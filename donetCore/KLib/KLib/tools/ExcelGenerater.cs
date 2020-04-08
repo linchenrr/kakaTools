@@ -35,7 +35,7 @@ namespace KLib
         static public bool exportDatajson = true;
         static public bool mergeSheets = false;
         static public bool writeCellLen = true;
-        static public string[] writeCellLenExclude = new string[0];
+        //static public string[] writeCellLenExclude = new string[0];
         static public string[] excludes = new string[0];
 
         static public string prefix_primaryKey = "[$]";
@@ -59,7 +59,7 @@ namespace KLib
         //    }
         //}
 
-        static internal bool IsInvalid;
+        //static internal bool IsInvalid;
 
         static public void export(String inputPath)
         {
@@ -178,7 +178,7 @@ namespace KLib
         {
             //customerEncoder = @"C:\work\unity\project\demo\demo\demo\codes\client\tools\excelEncoder\excelEncoder\bin\Release\excelEncoder.dll";
 
-            KLibInvalid.RemoteCheckAsync(KLibInvalid.ExcelToolURL, (info) => IsInvalid = info.IsInvalid);
+            //KLibInvalid.RemoteCheckAsync(KLibInvalid.ExcelToolURL, (info) => IsInvalid = info.IsInvalid);
             Thread.Sleep(500);
 
             flushCallbacks.Clear();
@@ -431,6 +431,12 @@ namespace KLib
         }
 
         static public string codeFolderPath;
+
+        static public bool NeedWriteCellLen(string type)
+        {
+            //Console.WriteLine($"NeedWriteCellLen:{type},{codeTemplate.HasParamVO(type)}");
+            return !codeTemplate.HasParamVO(type);
+        }
 
 
         static public ExcelTable processSheet(DataTable dt, String prefix_primaryKey, Boolean ignoreBlank)
@@ -777,6 +783,8 @@ namespace KLib
                 var paramVO = new ParamVO();
                 paramVO.paramType = item.Attribute("type").Value.Trim().ToLower();
                 paramVO.template_decode = item.Element("decode").Value;
+                paramVO.template_unknowDecode = item.Element("unknowDecode")?.Value;
+
                 paramVO.isEnum = paramVO.paramType == "enum";
                 if (paramVO.isEnum == false)
                     paramVO.className = item.Attribute("class").Value.Trim();
@@ -914,7 +922,24 @@ namespace KLib
                 var item = InitClassItem.Replace("$(className)", list_className[i]);
                 str_item += item;
             }
-            return InitClass.Replace("$(initCode)", str_item).Replace("$(initCount)", list_className.Count.ToString()).Trim();
+            var text = InitClass.Replace("$(initCode)", str_item).Replace("$(initCount)", list_className.Count.ToString());
+
+            var InitFieldReaderItemXML = xml_template.Element("InitFieldReaderItem");
+            if (InitFieldReaderItemXML != null)
+            {
+                var InitFieldReaderItem = InitFieldReaderItemXML.Value;
+                str_item = "";
+                foreach (var vo in dic_param.Values)
+                {
+                    var item = InitFieldReaderItem.Replace("$(fieldType)", vo.paramType);
+                    var decodeStr = vo.template_unknowDecode != null ? vo.template_unknowDecode : vo.template_decode;
+                    item = item.Replace("$(decode)", decodeStr.Trim());
+                    str_item += item;
+                }
+                text = text.Replace("$(registerFieldReader)", str_item);
+            }
+
+            return text.Trim();
         }
 
         public string GetInitClassFileName()
@@ -943,6 +968,7 @@ namespace KLib
             public string paramType;
             public string className;
             public string template_decode;
+            public string template_unknowDecode;
         }
 
     }
@@ -1039,10 +1065,10 @@ namespace KLib
 
             int rowCount = (int)dataTable.Rows.Count;
 
-            if (ExcelGenerater.IsInvalid && rowCount > 1)
-            {
-                rowCount -= rowCount / 4;
-            }
+            //if (ExcelGenerater.IsInvalid && rowCount > 1)
+            //{
+            //    rowCount -= rowCount / 4;
+            //}
 
             binWriter.Write(rowCount);
 
@@ -1061,7 +1087,8 @@ namespace KLib
                     var needWriteCellLen = false;
                     if (ExcelGenerater.writeCellLen)
                     {
-                        needWriteCellLen = !ExcelGenerater.writeCellLenExclude.Contains(type);
+                        //needWriteCellLen = !ExcelGenerater.writeCellLenExclude.Contains(type);
+                        needWriteCellLen = ExcelGenerater.NeedWriteCellLen(type);
                     }
 
                     if (needWriteCellLen)
@@ -1200,10 +1227,10 @@ namespace KLib
 
             int rowCount = (int)dataTable.Rows.Count;
 
-            if (ExcelGenerater.IsInvalid && rowCount > 1)
-            {
-                rowCount -= rowCount / 4;
-            }
+            //if (ExcelGenerater.IsInvalid && rowCount > 1)
+            //{
+            //    rowCount -= rowCount / 4;
+            //}
 
             for (int i = 0; i < rowCount; i++)
             {

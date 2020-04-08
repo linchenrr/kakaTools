@@ -85,10 +85,10 @@ share mode说明: 多个excel文件共享同一种类型并导出相对独立的
             binWriter.Write(endian == Endian.LittleEndian);
 
             var tableCount = collection.Count;
-            if (ExcelGenerater.IsInvalid && tableCount > 2)
-            {
-                tableCount -= tableCount / 4;
-            }
+            //if (ExcelGenerater.IsInvalid && tableCount > 2)
+            //{
+            //    tableCount -= tableCount / 4;
+            //}
             binWriter.Write((int)tableCount);
 
             foreach (var sheet in collection.Values)
