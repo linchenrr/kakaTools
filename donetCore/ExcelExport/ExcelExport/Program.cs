@@ -9,6 +9,8 @@ namespace ExcelExport
     {
         static void Main(string[] args)
         {
+            CommandLineTool.DisbleQuickEditMode();
+
             CommandMode.exec(CommandParse.parse(args));
         }
     }

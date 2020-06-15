@@ -8,6 +8,8 @@ namespace UnityBuildTool
     {
         static int Main(string[] args)
         {
+            CommandLineTool.DisbleQuickEditMode();
+
             if (Console.IsOutputRedirected)
             {
                 Console.OutputEncoding = Encoding.UTF8;

@@ -224,7 +224,6 @@ namespace KLib
             var lockObj = new object();
             int curThread = 0;
 
-            var backNum = 0;
             var needWriteConsole = !Console.IsOutputRedirected;
 
             var lockThreadObj = new object();
@@ -284,15 +283,6 @@ namespace KLib
                         //        }
                         //    }
                         //}
-
-                        //#region retry
-                        //var tmpBytes = GZipCompresser.compress(bytes);
-                        //tmpBytes = null;
-                        //tmpBytes = GZipCompresser.compress(bytes);
-                        //tmpBytes = null;
-                        //tmpBytes = GZipCompresser.compress(bytes);
-                        //tmpBytes = null;
-                        //#endregion
 
                         bytes = GZipCompresser.compress(bytes);
                         /*

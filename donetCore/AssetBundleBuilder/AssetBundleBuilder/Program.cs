@@ -21,6 +21,8 @@ namespace AssetBundleBuilder
             //Console.ReadLine();
             //return 0;
 
+            CommandLineTool.DisbleQuickEditMode();
+
             if (Console.IsOutputRedirected)
             {
                 Console.OutputEncoding = Encoding.UTF8;
