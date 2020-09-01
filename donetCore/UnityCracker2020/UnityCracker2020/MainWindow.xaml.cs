@@ -14,7 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 
-namespace UnityCracker2020
+namespace UnityPatcher2020
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -42,7 +42,6 @@ namespace UnityCracker2020
         {
             try
             {
-                //var path = @"J:/Unity.exe";
                 var path = txt_path.Text.Trim();
                 var watch = new Stopwatch();
 
@@ -110,7 +109,7 @@ namespace UnityCracker2020
                 }
                 else
                 {
-                    MessageBox.Show($@"can't find singCode in {path}!");
+                    MessageBox.Show($@"can't find pattern in {path}!");
                 }
 
                 watch.Stop();

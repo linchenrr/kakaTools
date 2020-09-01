@@ -6,6 +6,14 @@
     <UseWPF>true</UseWPF>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>icon.ico</ApplicationIcon>
+    <Authors>kaka</Authors>
+    <Company />
+    <PackageId>UnityPatcher2020</PackageId>
+    <Product>UnityPatcher2020</Product>
+    <Description></Description>
+    <Version>0.0.1</Version>
+    <AssemblyName>UnityPatcher2020</AssemblyName>
+    <RootNamespace>UnityPatcher2020</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace UnityCracker2020.Properties {
+namespace UnityPatcher2020.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
