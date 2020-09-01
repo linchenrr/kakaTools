@@ -1,0 +1,9 @@
+I found the simplest workaround would be to add the app.manifest file with the setting like what in net framework app
+
+<requestedExecutionLevel level="requireAdministrator" uiAccess="false" />
+then on your net core project file (.csproj in C# project) add the following:
+
+<PropertyGroup>
+  <ApplicationManifest>app.manifest</ApplicationManifest>
+</PropertyGroup>
+*Worked in Console and WPF netcore 3.0

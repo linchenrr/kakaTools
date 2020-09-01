@@ -1,0 +1,20 @@
+﻿<Window x:Class="UnityCracker2020.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:UnityCracker2020"
+        mc:Ignorable="d"
+        Title="unity2020 patcher v0.1 —— by kaka" Height="180" Width="608" Background="#FF3F3F46" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="440" Width="800">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="327*"/>
+            <ColumnDefinition Width="107*"/>
+            <ColumnDefinition Width="366*"/>
+        </Grid.ColumnDefinitions>
+        <Button x:Name="btn_browser" Content="browser" HorizontalAlignment="Left" Margin="59,34,0,0" VerticalAlignment="Top" Click="btn_browser_Click" Grid.Column="2" Height="27" Width="77" HorizontalContentAlignment="Center"/>
+        <TextBox x:Name="txt_path" HorizontalAlignment="Left" Margin="25,28,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="452" Height="40" Grid.ColumnSpan="3" Background="Black" Foreground="White"/>
+        <Button x:Name="btn_patch" Content="patch" Grid.Column="2" HorizontalAlignment="Left" Margin="59,91,0,0" VerticalAlignment="Top" Height="30" Width="77" Click="btn_patch_Click"/>
+
+    </Grid>
+</Window>
