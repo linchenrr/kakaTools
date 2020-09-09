@@ -24,6 +24,35 @@ namespace UnityPatcher2020
         public MainWindow()
         {
             InitializeComponent();
+            txt_info.Text = "";
+        }
+
+        private FileVersionInfo info;
+        private void txt_path_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var path = txt_path.Text.Trim();
+            if (string.IsNullOrEmpty(path))
+            {
+                txt_info.Text = "";
+                return;
+            }
+            var fileInfo = new FileInfo(path);
+
+            if (fileInfo.Exists)
+            {
+                info = FileVersionInfo.GetVersionInfo(path);
+
+                txt_info.Text = $@"ProductName：{info.ProductName}
+ProductVersion：{info.ProductVersion}";
+                //string productName = info.ProductName;
+                //string productVersion = info.ProductVersion;
+                //string companyName = info.CompanyName;
+                //string legalCopyright = info.LegalCopyright;
+            }
+            else
+            {
+                txt_info.Text = "file does not exist!";
+            }
         }
 
         private void btn_browser_Click(object sender, RoutedEventArgs e)
@@ -35,6 +64,8 @@ namespace UnityPatcher2020
             if (ofd.ShowDialog() == true)
             {
                 txt_path.Text = ofd.FileName;
+
+
             }
         }
 
@@ -47,6 +78,13 @@ namespace UnityPatcher2020
 
                 var signCode = new byte[] { 0x75, 0x11, 0xB8, 0x02, 0x00, 0x00, 0x00, 0xE9 };
                 var patchCode = new byte[] { 0xEB };
+
+                //if (info.ProductVersion.StartsWith("2020.2"))
+                //{
+                //    signCode = new byte[] { 0x55, 0x57, 0x41, 0x56, 0x48, 0x8D, 0xA8, 0x68, 0xFD, 0xFF, 0xFF, 0x48, 0x81 };
+                //    patchCode = new byte[] { 0xC3 };
+                //}
+
                 var codeLength = signCode.Length;
                 var finalFound = false;
                 var index = 0l;
@@ -121,5 +159,6 @@ namespace UnityPatcher2020
             }
 
         }
+
     }
 }
