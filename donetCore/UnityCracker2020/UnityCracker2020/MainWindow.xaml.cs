@@ -140,7 +140,11 @@ ProductVersion：{info.ProductVersion}";
                         Directory.Move(licensingDir, bakLicensingDir);
                     }
 
-                    File.Move(path, Path.Combine(dirInfo.FullName, fileInfo.Name + ".bak"));
+                    var bakFilePath = Path.Combine(dirInfo.FullName, fileInfo.Name + ".bak");
+                    if (File.Exists(bakFilePath))
+                        File.Delete(bakFilePath);
+
+                    File.Move(path, bakFilePath);
                     File.WriteAllBytes(fileInfo.FullName, sourceBytes);
 
                     MessageBox.Show($@"patch success for {path}!");
