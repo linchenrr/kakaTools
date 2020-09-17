@@ -16,7 +16,7 @@ namespace IOSBuildServer.Controllers
         [HttpGet]
         public ActionResult Test()
         {
-            return new JsonResult("It's running!");
+            return new JsonResult($@"It's running!  {DateTime.Now.ToShortTimeString()}");
         }
 
         [HttpGet]

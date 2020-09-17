@@ -1,0 +1,16 @@
+修改/etc/sudoers
+
+打开终端  输入
+sudo visudo
+
+添加
+kaka ALL=NOPASSWD:ALL
+
+按ESC键
+再输入:号时，vi会在屏幕的最下方等待我们输入命令
+:w 保存；
+:w filename 另存为filename；
+:wq! 保存退出；
+:wq! filename 注：以filename为文件名保存后退出；
+:q! 不保存退出；
+:x 应该是保存并退出 ，功能和:wq!相同
