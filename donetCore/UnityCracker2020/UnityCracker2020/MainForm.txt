@@ -1,0 +1,66 @@
+﻿using System;
+using System.IO;
+using System.Windows.Forms;
+using Unity3dPacth.Lib;
+using static Unity3dPacth.Lib.PatchToolsUtility;
+
+namespace Unity3dPacth.Lib
+{
+
+    public class Main
+    {
+       
+        private void Patch(string Name, string Extension, string InitialDirectory, FilePatchCode[] FilePatchCodes, Func<FileInfo,bool> OnBeforeCompletion = null,string ErrorTitle="额外任务错误", string ErrorMessage = "额外任务失败")
+        {
+            if (!PickFile.ShowPickFile(Name, Extension, out FileInfo fileInfo, InitialDirectory))
+                return;
+            try
+            {
+                if (fileInfo.Patch(FilePatchCodes, out byte[] Appasar))
+                {
+                    try
+                    {
+                        string path = fileInfo.FullName;
+                        fileInfo.MoveTo(path + ".bak", false);
+                        File.WriteAllBytes(path, Appasar);
+                    }
+                    catch (Exception exc) { MessageBox.Show(this, $"写入失败:{exc.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
+                }
+                else { MessageBox.Show(this, "失败:未找到特征位", "失败", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
+            }
+            catch (Exception exc) { MessageBox.Show(this, $"失败:异常:{exc.Message}", "异常", MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
+            if (!OnBeforeCompletion?.Invoke(fileInfo) ?? false)
+            { MessageBox.Show(this, ErrorTitle, ErrorMessage, MessageBoxButtons.OK, MessageBoxIcon.Information); return; }
+            MessageBox.Show(this, "完成", "信息", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+
+        private void PatchUnity_button_Click(object sender, EventArgs e)
+        {
+            Patch("Unity", "exe", SearchDirectory.UnityInstallPath, PatchUnityEXE.FilePatchCodes,fileInfo=> 
+            {
+                string clientPath = Path.Combine(fileInfo.DirectoryName, "Data", "Resources", "Licensing", "Client", "Unity.Licensing.Client.exe");
+                if (File.Exists(clientPath))
+                    File.Move(clientPath, clientPath + ".bak");
+                return true;
+            });
+        }
+
+        private void CreateLicens_button_Click(object sender, EventArgs e)
+        {
+            try 
+            {
+                if(UnityLicense.SaveLicenseDocument(this))
+                    MessageBox.Show(this, "完成", "信息", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception exc) { MessageBox.Show(this, $"失败:异常:{exc.Message}", "异常", MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
+        }
+
+        private void PatchHub_button_Click(object sender, EventArgs e)
+        {
+            Patch("app", "asar", SearchDirectory.HubResourcesPath, PatchHub.FilePatchCodes);
+        }
+
+
+    }
+}
