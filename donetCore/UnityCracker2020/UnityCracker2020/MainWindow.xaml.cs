@@ -13,6 +13,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using Unity3dPacth.Lib;
+using static Unity3dPacth.Lib.PatchToolsUtility;
 
 namespace UnityPatcher2020
 {
@@ -164,5 +166,58 @@ ProductVersion：{info.ProductVersion}";
 
         }
 
+        private void btn_patchUnity_Click(object sender, RoutedEventArgs e)
+        {
+            Patch("Unity", "exe", SearchDirectory.UnityInstallPath, PatchUnityEXE.FilePatchCodes, fileInfo =>
+            {
+                string clientPath = Path.Combine(fileInfo.DirectoryName, "Data", "Resources", "Licensing", "Client", "Unity.Licensing.Client.exe");
+                if (File.Exists(clientPath))
+                    File.Move(clientPath, clientPath + ".bak");
+                return true;
+            });
+        }
+
+        private void Patch(string Name, string Extension, string InitialDirectory, FilePatchCode[] FilePatchCodes, Func<FileInfo, bool> OnBeforeCompletion = null, string ErrorTitle = "额外任务错误", string ErrorMessage = "额外任务失败")
+        {
+            if (!PickFile.ShowPickFile(Name, Extension, out FileInfo fileInfo, InitialDirectory))
+                return;
+            try
+            {
+                if (fileInfo.Patch(FilePatchCodes, out byte[] Appasar))
+                {
+                    try
+                    {
+                        string path = fileInfo.FullName;
+                        fileInfo.MoveTo(path + ".bak", false);
+                        File.WriteAllBytes(path, Appasar);
+                    }
+                    catch (Exception exc) { MessageBox.Show(this, $"写入失败:{exc.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error); return; }
+                }
+                else { MessageBox.Show(this, "失败:未找到特征位", "失败", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
+            }
+            catch (Exception exc) { MessageBox.Show(this, $"失败:异常:{exc.Message}", "异常", MessageBoxButton.OK, MessageBoxImage.Error); return; }
+            if (!OnBeforeCompletion?.Invoke(fileInfo) ?? false)
+            { MessageBox.Show(this, ErrorTitle, ErrorMessage, MessageBoxButton.OK, MessageBoxImage.Information); return; }
+            MessageBox.Show(this, "完成", "信息", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private void btn_patchHub_Click(object sender, RoutedEventArgs e)
+        {
+            Patch("app", "asar", SearchDirectory.HubResourcesPath, PatchHub.FilePatchCodes);
+        }
+
+        private void btn_createLicenses_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (UnityLicense.SaveLicenseDocument(this))
+                    MessageBox.Show(this, "完成", "信息", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show(this, $"失败:异常:{exc.Message}", "异常", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+        }
     }
 }
