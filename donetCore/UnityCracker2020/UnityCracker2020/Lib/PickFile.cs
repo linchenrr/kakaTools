@@ -12,19 +12,23 @@ namespace Unity3dPacth.Lib
         {
             var openFileDialog = new OpenFileDialog();
 
+            //openFileDialog.DefaultExt = ".exe";
+            //openFileDialog.Filter = "unity file|*.exe";
+            //openFileDialog.Multiselect = false;
+
             openFileDialog.CheckFileExists = true;
             openFileDialog.FileName = $"{FileName}.{Extension}";
-            openFileDialog.Filter = $"|{FileName}.{Extension}";
+            //openFileDialog.Filter = $"|{FileName}.{Extension}";
             openFileDialog.DefaultExt = Extension;
             openFileDialog.Multiselect = false;
             openFileDialog.ReadOnlyChecked = false;
             openFileDialog.RestoreDirectory = true;
             openFileDialog.ShowReadOnly = false;
             openFileDialog.Title = $"拾取[{FileName}.{Extension}]文件";
-            if (!string.IsNullOrWhiteSpace(InitialDirectory) && Directory.Exists(InitialDirectory))
-                openFileDialog.InitialDirectory = InitialDirectory;
-            else
-                openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyComputer);
+            //if (!string.IsNullOrWhiteSpace(InitialDirectory) && Directory.Exists(InitialDirectory))
+            //    openFileDialog.InitialDirectory = InitialDirectory;
+            //else
+            //    openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyComputer);
             if (openFileDialog.ShowDialog() == true)
             {
                 Result = new FileInfo(openFileDialog.FileName);

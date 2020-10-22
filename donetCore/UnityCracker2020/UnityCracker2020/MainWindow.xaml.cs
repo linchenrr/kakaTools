@@ -171,8 +171,15 @@ ProductVersion：{info.ProductVersion}";
             Patch("Unity", "exe", SearchDirectory.UnityInstallPath, PatchUnityEXE.FilePatchCodes, fileInfo =>
             {
                 string clientPath = Path.Combine(fileInfo.DirectoryName, "Data", "Resources", "Licensing", "Client", "Unity.Licensing.Client.exe");
+
                 if (File.Exists(clientPath))
-                    File.Move(clientPath, clientPath + ".bak");
+                {
+                    var bakPath = clientPath + ".bak";
+                    if (File.Exists(bakPath))
+                        File.Delete(bakPath);
+                    File.Move(clientPath, bakPath);
+                }
+
                 return true;
             });
         }
@@ -188,7 +195,10 @@ ProductVersion：{info.ProductVersion}";
                     try
                     {
                         string path = fileInfo.FullName;
-                        fileInfo.MoveTo(path + ".bak", false);
+                        var bakPath = path + ".bak";
+                        //if (File.Exists(bakPath))
+                        //    File.Delete(bakPath);
+                        fileInfo.MoveTo(bakPath, true);
                         File.WriteAllBytes(path, Appasar);
                     }
                     catch (Exception exc) { MessageBox.Show(this, $"写入失败:{exc.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error); return; }
