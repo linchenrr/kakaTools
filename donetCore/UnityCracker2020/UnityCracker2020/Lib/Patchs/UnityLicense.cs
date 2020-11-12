@@ -45,7 +45,7 @@ namespace Unity3dPacth.Lib
                 di.Create();
             if (fi.Exists)
             {
-                if (MessageBox.Show(owner, "证书文件以存在，是否重写新的证书文件？", "写入证书", MessageBoxButton.OKCancel, MessageBoxImage.Question, MessageBoxResult.No) == MessageBoxResult.OK)
+                if (MessageBox.Show(owner, "证书文件已存在，是否重写新的证书文件？", "写入证书", MessageBoxButton.OKCancel, MessageBoxImage.Question, MessageBoxResult.No) == MessageBoxResult.OK)
                 {
                     fi.MoveTo($"{fi.FullName}.{new Random().Next(1000, 10000)}.bak");
                     File.WriteAllText(Path.Combine(di.FullName, "Unity_lic.ulf"), GetLicenseDocument);

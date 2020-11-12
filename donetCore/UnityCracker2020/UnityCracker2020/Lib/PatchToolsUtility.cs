@@ -55,6 +55,12 @@ namespace Unity3dPacth.Lib
             return patchCodes.Patch(ref FileBytes);
         }
 
+        public static bool Patch(string path, FilePatchCode[] patchCodes, out byte[] FileBytes)
+        {
+            FileBytes = File.ReadAllBytes(path);
+            return patchCodes.Patch(ref FileBytes);
+        }
+
         /****************************数据定义****************************/
         /// <summary>
         /// Patch

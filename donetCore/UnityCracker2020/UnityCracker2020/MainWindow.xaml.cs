@@ -26,7 +26,7 @@ namespace UnityPatcher2020
         public MainWindow()
         {
             InitializeComponent();
-            txt_info.Text = "";
+            txt_info.Content = "";
         }
 
         private FileVersionInfo info;
@@ -35,7 +35,7 @@ namespace UnityPatcher2020
             var path = txt_path.Text.Trim();
             if (string.IsNullOrEmpty(path))
             {
-                txt_info.Text = "";
+                txt_info.Content = "";
                 return;
             }
             var fileInfo = new FileInfo(path);
@@ -44,7 +44,7 @@ namespace UnityPatcher2020
             {
                 info = FileVersionInfo.GetVersionInfo(path);
 
-                txt_info.Text = $@"ProductName：{info.ProductName}
+                txt_info.Content = $@"ProductName：{info.ProductName}
 ProductVersion：{info.ProductVersion}";
                 //string productName = info.ProductName;
                 //string productVersion = info.ProductVersion;
@@ -53,7 +53,7 @@ ProductVersion：{info.ProductVersion}";
             }
             else
             {
-                txt_info.Text = "file does not exist!";
+                txt_info.Content = "file does not exist!";
             }
         }
 
@@ -73,6 +73,21 @@ ProductVersion：{info.ProductVersion}";
 
         private void btn_patch_Click(object sender, RoutedEventArgs e)
         {
+            Patch(txt_path.Text, PatchUnityEXE.FilePatchCodes, fileInfo =>
+            {
+                string clientPath = Path.Combine(fileInfo.DirectoryName, "Data", "Resources", "Licensing", "Client", "Unity.Licensing.Client.exe");
+
+                if (File.Exists(clientPath))
+                {
+                    var bakPath = clientPath + ".bak";
+                    if (File.Exists(bakPath))
+                        File.Delete(bakPath);
+                    File.Move(clientPath, bakPath);
+                }
+                return true;
+            });
+            return;
+
             try
             {
                 var path = txt_path.Text.Trim();
@@ -188,13 +203,45 @@ ProductVersion：{info.ProductVersion}";
         {
             if (!PickFile.ShowPickFile(Name, Extension, out FileInfo fileInfo, InitialDirectory))
                 return;
+            Patch(fileInfo.FullName, FilePatchCodes, OnBeforeCompletion, ErrorTitle, ErrorMessage);
+
+            //try
+            //{
+            //    if (fileInfo.Patch(FilePatchCodes, out byte[] Appasar))
+            //    {
+            //        try
+            //        {
+            //            string path = fileInfo.FullName;
+            //            var bakPath = path + ".bak";
+            //            //if (File.Exists(bakPath))
+            //            //    File.Delete(bakPath);
+            //            fileInfo.MoveTo(bakPath, true);
+            //            File.WriteAllBytes(path, Appasar);
+            //        }
+            //        catch (Exception exc) { MessageBox.Show(this, $"写入失败:{exc.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error); return; }
+            //    }
+            //    else { MessageBox.Show(this, "失败:未找到特征位", "失败", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
+            //}
+            //catch (Exception exc) { MessageBox.Show(this, $"失败:异常:{exc.Message}", "异常", MessageBoxButton.OK, MessageBoxImage.Error); return; }
+            //if (!OnBeforeCompletion?.Invoke(fileInfo) ?? false)
+            //{ MessageBox.Show(this, ErrorTitle, ErrorMessage, MessageBoxButton.OK, MessageBoxImage.Information); return; }
+            //MessageBox.Show(this, "完成", "信息", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private void Patch(string path, FilePatchCode[] FilePatchCodes, Func<FileInfo, bool> OnBeforeCompletion = null, string ErrorTitle = "额外任务错误", string ErrorMessage = "额外任务失败")
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                MessageBox.Show(this, $"无效的路径", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            var fileInfo = new FileInfo(path);
             try
             {
                 if (fileInfo.Patch(FilePatchCodes, out byte[] Appasar))
                 {
                     try
                     {
-                        string path = fileInfo.FullName;
                         var bakPath = path + ".bak";
                         //if (File.Exists(bakPath))
                         //    File.Delete(bakPath);
