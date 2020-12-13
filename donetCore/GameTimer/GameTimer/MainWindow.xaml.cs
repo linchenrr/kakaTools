@@ -28,9 +28,14 @@ namespace GameTimer
 
             btn_stop.Visibility = Visibility.Hidden;
 
+            player_start = new SoundPlayer("start.wav");
+            player_start.Load();
+
             player = new SoundPlayer("ding.wav");
+            player.Load();
         }
 
+        private SoundPlayer player_start;
         private SoundPlayer player;
         private bool isEnd;
         private long nextPlayTime;
@@ -43,6 +48,7 @@ namespace GameTimer
             isEnd = false;
 
             nextPlayTime = DateTime.Now.AddSeconds(startDelay).Ticks / 10000;
+            player_start.Play();
             Task.Run(() =>
             {
                 while (true)
@@ -54,7 +60,7 @@ namespace GameTimer
                     if (now >= nextPlayTime)
                     {
                         nextPlayTime += Convert.ToInt64(intervalSeconds * 1000);
-                        player.PlaySync();
+                        player.Play();
                     }
                     //Console.WriteLine($"{now}");
                     Thread.Sleep(10);
