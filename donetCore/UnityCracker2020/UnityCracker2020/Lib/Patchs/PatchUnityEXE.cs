@@ -32,7 +32,19 @@ namespace Unity3dPacth.Lib
                          Patch = new byte[] { 0xEB }
                      }
                  }
-            }
+            },
+            //2020.2
+            new FilePatchCode
+            {
+                 patchCodes=new PatchCode[]
+                 {
+                     new PatchCode
+                     {
+                         SignatureCode = new byte[] { 0x75,0x16,0xB8,0x02,0x00,0x00,0x00,0xE9,0xEA,0x03,0x00 },
+                         Patch = new byte[] { 0xEB }
+                     }
+                 }
+            },
         };
     }
 }
