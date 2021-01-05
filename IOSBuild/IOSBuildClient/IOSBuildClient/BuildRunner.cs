@@ -20,6 +20,7 @@ namespace IOSBuildClient
             var shellPath = commands.GetValue("shellPath", "/Users/kaka/Desktop/share/buildIPA.sh");
             var ipaPath = commands.GetValue("ipaPath", "/Users/kaka/Desktop/share/output.ipa");
             var writeLocalIpa = commands.GetValue("writeLocalIpa", "/output.ipa");
+            var timeOut = int.Parse(commands.GetValue("timeOut", "3000"));
 
             Console.WriteLine();
             foreach (var kv in commands)
@@ -37,8 +38,8 @@ namespace IOSBuildClient
             {
                 var paramBytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(buildParam));
                 var request = (HttpWebRequest)WebRequest.Create(requestURL);
-                //等待超时40分钟
-                request.Timeout = 40 * 60 * 1000;
+                //等待超时
+                request.Timeout = timeOut * 1000;
                 request.Method = "POST";
                 request.ContentType = "application/json;charset=UTF-8";
                 request.ContentLength = paramBytes.Length;
@@ -128,6 +129,7 @@ downloading ipa...");
                             {
                                 Console.WriteLine($@"build failed!
 message:{result.errorMsg}");
+                                return false;
                             }
                         }
                     }

@@ -1,10 +1,13 @@
+  #!/bin/bash
+#只需要在终端中输入 $ sh archive.sh  即可打包成ipa
+
 curPath=$(cd `dirname $0`;pwd)
 
 if [ x$1 != x ]
 then
 ipaPath=$1
 else
-ipaPath=${curPath}/Unity-iPhone.ipa
+ipaPath=${curPath}/build/Unity-iPhone.ipa
 fi
 
 echo ${curPath}
@@ -17,27 +20,60 @@ rm -f *.ipa
 xcodeProj_path=${curPath}/xcodeProj
 
 cd ${xcodeProj_path}
+ 
+packaging(){
 
-project_Name="Unity-iPhone"
-build_debug="Release"
-#清理
-#xcodebuild clean -project ${project_Name}.xcodeproj -scheme ${project_Name} -configuration ${build_debug}
-xcodebuild clean -workspace ${xcodeProj_path}/${project_Name}.xcodeproj/project.xcworkspace -scheme ${project_Name} -configuration ${build_debug}
+#***********配置项目
+#工程名称(Project的名字)
+MWProjectName=$1
+#scheme名字 -可以点击Product->Scheme->Manager Schemes...查看
+MWScheme=$2
+#Release还是Debug
+MWConfiguration=$3
+#日期
+MWDate=`date +%Y%m%d_%H%M`
+#工程路径
+MWWorkspace=$4
+#build路径
+MWBuildDir=$5
+#plist文件名，默认放在工程文件路径的位置
+MBPlistName=$6
 
-#编译工程
-#ARCHIVEPATH=${WORKSPACE_PATH}/output
-#codeSignIdentity="iPhone Developer: He BoKai (JT8R738GA6)"
-#codeSignIdentity="iPhone Developer"
-#provisioningProfile="EMA PHX DEV"
-#devel_Team="KHQZBTCGQ5"
+#创建构建和输出的路径
+mkdir -p $MWBuildDir
 
-#archive导出.xcarchive文件#
-#xcodebuild archive -project ${project_Name}.xcodeproj -scheme ${project_Name} -archivePath ${ARCHIVEPATH} CODE_SIGN_IDENTITY="$codeSignIdentity" PROVISIONING_PROFILE="$provisioningProfile" DEVELOPMENT_TEAM="$devel_Team"
+#pod 相关配置
 
-#sudo xcodebuild || exit
+#更新pod配置
+#pod install
+
+#构建
+xcodebuild archive \
+-workspace  "${MWWorkspace}/${MWScheme}.xcodeproj/$MWProjectName.xcworkspace" \
+-scheme "$MWScheme" \
+-configuration "$MWConfiguration" \
+-archivePath "$MWBuildDir/$MWProjectName" \
+clean \
+build \
+-derivedDataPath "${curPath}/tmp"
+
+
+#生成ipa
+xcodebuild -exportArchive \
+-archivePath "$MWBuildDir/$MWProjectName.xcarchive" \
+-exportPath "$MWBuildDir" \
+-exportOptionsPlist "$MBPlistName"
+
+open $MWBuildDir
+
+}
+
 echo "build ipa..."
-#打包#
-xcrun -sdk iphoneos PackageApplication -v ${xcodeProj_path}/build/Release-iphoneos/*.app -o ${ipaPath}
+
+#函数调用
+# $1 工程名  $2 scheme名字  $3 Release还是Debug  $4 工程路径  $5 ipa文件输出路径 $6 plist文件名字
+#packaging "XXX" "XXX"  "Release"  "/Users/maowo-001/Desktop/XXX" "/Users/maowo-001/Desktop/XXX/build" "adhocExportOptions.plist"
+
+packaging "project" "Unity-iPhone" "Release"  "/Users/linchen/Desktop/xcodeProj/xcodeProj" ${ipaPath} "${curPath}/ExportOptions.plist"
 
 echo "ipa生成完毕"
-

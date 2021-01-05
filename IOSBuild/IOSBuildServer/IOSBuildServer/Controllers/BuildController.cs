@@ -106,7 +106,6 @@ namespace IOSBuildServer.Controllers
         [HttpPost]
         public ActionResult BuildIPA([FromBody] BuildParam buildParam)
         {
-
             var buildResult = new BuildResult();
 
             if (isBuilding)
@@ -163,11 +162,12 @@ error:{errorMsg}
                 }
                 else
                 {
+                    var fs = new FileStream(buildParam.targetIpa, FileMode.Open, FileAccess.Read);
+                    isBuilding = false;
+
                     buildResult.success = true;
                     buildResult.buildMsg = "build success";
 
-                    var fs = new FileStream(buildParam.targetIpa, FileMode.Open);
-                    isBuilding = false;
                     return new FileStreamResult(fs, "application/octet-stream");
                 }
             }
@@ -188,7 +188,7 @@ error:{errorMsg}
             {
                 if (newOutput == null)
                     return "";
-                returnValue = newOutput.ToString(); ;
+                returnValue = newOutput.ToString();
                 newOutput.Clear();
             }
             return returnValue;
