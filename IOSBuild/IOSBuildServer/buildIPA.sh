@@ -50,6 +50,8 @@ chmod +x   ${MWWorkspace}/MapFileParser.sh
 #更新pod配置
 #pod install
 
+echo `date +%H:%M` "编译xcode工程..."
+
 #构建
 xcodebuild archive \
 -workspace  "${MWWorkspace}/${MWScheme}.xcodeproj/$MWProjectName.xcworkspace" \
@@ -60,7 +62,7 @@ clean \
 build \
 #-derivedDataPath "${curPath}/tmp"
 
-
+echo `date +%H:%M` "编译成功，导出ipa..."
 #生成ipa
 xcodebuild -exportArchive \
 -archivePath "$MWBuildDir/$MWProjectName.xcarchive" \
@@ -71,7 +73,7 @@ xcodebuild -exportArchive \
 
 }
 
-echo "build ipa..."
+echo "start build ipa"
 
 #函数调用
 # $1 工程名  $2 scheme名字  $3 Release还是Debug  $4 工程路径  $5 ipa文件输出路径 $6 plist文件名字
