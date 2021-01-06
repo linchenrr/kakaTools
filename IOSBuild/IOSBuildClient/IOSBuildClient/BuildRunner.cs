@@ -141,7 +141,7 @@ message:{result.errorMsg}");
             {
                 SetBuildComplete();
                 Console.WriteLine($@"Error:
-{e.ToString()}");
+{e}");
 
             }
             return false;

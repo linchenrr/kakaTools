@@ -152,9 +152,11 @@ namespace IOSBuildServer.Controllers
                 var buildMsg = outputSb.ToString();
                 var errorMsg = p.StandardError.ReadToEnd();
 
-                if (exitCode != 0 || string.IsNullOrWhiteSpace(errorMsg) == false)
+                //if (exitCode != 0 || string.IsNullOrWhiteSpace(errorMsg) == false)
+                if (exitCode != 0)
                 {
-                    buildResult.buildMsg = buildMsg;
+                    //完整日志太大  不发了
+                    //buildResult.buildMsg = buildMsg;
                     buildResult.errorMsg = $@"exitCode:{exitCode},
 shell:{buildParam.targetShell}
 error:{errorMsg}
@@ -162,11 +164,11 @@ error:{errorMsg}
                 }
                 else
                 {
-                    var fs = new FileStream(buildParam.targetIpa, FileMode.Open, FileAccess.Read);
+                    var fs = new FileStream(buildParam.IpaPath, FileMode.Open, FileAccess.Read);
                     isBuilding = false;
 
                     buildResult.success = true;
-                    buildResult.buildMsg = "build success";
+                    //buildResult.buildMsg = "build success";
 
                     return new FileStreamResult(fs, "application/octet-stream");
                 }
@@ -198,12 +200,13 @@ error:{errorMsg}
         {
             public string targetShell;
             public string targetIpa;
+            public string IpaPath => targetIpa + "/Unity-iPhone.ipa";
         }
 
         public class BuildResult
         {
             public bool success;
-            public string buildMsg;
+            //public string buildMsg;
             public string errorMsg;
         }
 

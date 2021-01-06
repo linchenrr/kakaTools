@@ -42,6 +42,9 @@ MBPlistName=$6
 #创建构建和输出的路径
 mkdir -p $MWBuildDir
 
+
+chmod +x   ${MWWorkspace}/MapFileParser.sh
+
 #pod 相关配置
 
 #更新pod配置
@@ -55,7 +58,7 @@ xcodebuild archive \
 -archivePath "$MWBuildDir/$MWProjectName" \
 clean \
 build \
--derivedDataPath "${curPath}/tmp"
+#-derivedDataPath "${curPath}/tmp"
 
 
 #生成ipa
@@ -64,7 +67,7 @@ xcodebuild -exportArchive \
 -exportPath "$MWBuildDir" \
 -exportOptionsPlist "$MBPlistName"
 
-open $MWBuildDir
+#open $MWBuildDir
 
 }
 
