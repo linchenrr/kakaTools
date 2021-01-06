@@ -110,6 +110,11 @@ downloading ipa...");
                             Console.WriteLine($@"download ipa complete.
 {writeLocalIpa}");
                         }
+                        else
+                        {
+                            Console.WriteLine($@"writeLocalIpa is invalid:{writeLocalIpa}");
+                            return false;
+                        }
                     }
                     else
                     {

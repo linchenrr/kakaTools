@@ -134,23 +134,30 @@ namespace IOSBuildServer.Controllers
 
             try
             {
-                var p = Process.Start(start);
+                var exitCode = 0;
+                var buildMsg = "";
+                var errorMsg = "";
 
-                var outputSb = new StringBuilder();
-                var buffer = new char[1024 * 20];
-                while (p.HasExited == false)
+                if (string.IsNullOrEmpty(buildParam.targetShell) == false)
                 {
-                    var readNum = p.StandardOutput.Read(buffer, 0, buffer.Length);
-                    lock (lockObj)
-                    {
-                        newOutput.Append(buffer, 0, readNum);
-                    }
-                    outputSb.Append(buffer, 0, readNum);
-                }
+                    var p = Process.Start(start);
 
-                var exitCode = p.ExitCode;
-                var buildMsg = outputSb.ToString();
-                var errorMsg = p.StandardError.ReadToEnd();
+                    var outputSb = new StringBuilder();
+                    var buffer = new char[1024 * 20];
+                    while (p.HasExited == false)
+                    {
+                        var readNum = p.StandardOutput.Read(buffer, 0, buffer.Length);
+                        lock (lockObj)
+                        {
+                            newOutput.Append(buffer, 0, readNum);
+                        }
+                        outputSb.Append(buffer, 0, readNum);
+                    }
+
+                    exitCode = p.ExitCode;
+                    buildMsg = outputSb.ToString();
+                    errorMsg = p.StandardError.ReadToEnd();
+                }
 
                 //if (exitCode != 0 || string.IsNullOrWhiteSpace(errorMsg) == false)
                 if (exitCode != 0)
