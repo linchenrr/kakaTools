@@ -27,6 +27,19 @@ namespace UnityBuildTool
             var targetFileName = xml.Element("targetFileName").Value;
             var changeList = xml.Element("changeList").Value;
 
+            //var now = DateTime.Now;
+            //var year = now.Year;
+            //var month = now.Month;
+            //var day = now.Day;
+            //var hour = now.Hour;
+            //var minute = now.Minute;
+
+            var year = buildVersion.Substring(0, 4);
+            var month = buildVersion.Substring(4, 2);
+            var day = buildVersion.Substring(6, 2);
+            var hour = buildVersion.Substring(8, 2);
+            var minute = buildVersion.Substring(10, 2);
+
             var inputDir = Path.GetDirectoryName(buildInfoPath) + "/";
 
             var inputFile = inputDir + sourceFileName;
@@ -50,8 +63,14 @@ namespace UnityBuildTool
                     tamplate_updateInfo = tamplate_updateInfo.Replace("$(updateURL)", targetFileName);
                     tamplate_updateInfo = tamplate_updateInfo.Replace("$(changeList)", changeList);
 
+                    tamplate_updateInfo = tamplate_updateInfo.Replace("$(year)", year);
+                    tamplate_updateInfo = tamplate_updateInfo.Replace("$(month)", month);
+                    tamplate_updateInfo = tamplate_updateInfo.Replace("$(day)", day);
+                    tamplate_updateInfo = tamplate_updateInfo.Replace("$(hour)", hour);
+                    tamplate_updateInfo = tamplate_updateInfo.Replace("$(minute)", minute);
+
                     tamplate_updateInfo = tamplate_updateInfo.Replace("$(md5)", MD5Utils.BytesToMD5(APKBytes));
-                    tamplate_updateInfo = tamplate_updateInfo.Replace("$(bytesTotal)", $@"{APKBytes.Length.ToString()} ({((float)APKBytes.Length / 1048576).ToString("F2")}MB)");
+                    tamplate_updateInfo = tamplate_updateInfo.Replace("$(bytesTotal)", $@"{APKBytes.Length} ({((float)APKBytes.Length / 1048576).ToString("F2")}MB)");
 
                     File.WriteAllText(inputDir + fileName, tamplate_updateInfo, Encoding.UTF8);
                 }
