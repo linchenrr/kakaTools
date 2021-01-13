@@ -5,13 +5,11 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Collections;
 using KLib;
-using System.Data.SQLite;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using Newtonsoft.Json;
-using System.Runtime.InteropServices;
 
 namespace KLib
 {
