@@ -21,6 +21,18 @@ namespace Unity3dPacth.Lib
                      }
                  }
             },
+            //2019.4
+            new FilePatchCode
+            {
+                 patchCodes=new PatchCode[]
+                 {
+                     new PatchCode
+                     {
+                         SignatureCode = new byte[] { 0x75,0x0A,0xB8,0x02,0x00,0x00,0x00,0xE9,0xF3,0x04,0x00,0x00,0x48,0x8D,0x4D,0xE0 },
+                         Patch = new byte[] { 0xEB }
+                     }
+                 }
+            },
             //2020.1
             new FilePatchCode
             {
