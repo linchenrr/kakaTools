@@ -1,0 +1,16 @@
+{
+  "Items": [
+    {
+      "IsActive": true,
+      "StartTime": "2021-02-05 21:51:00",
+      "IntervalDays": 1,
+      "OffsetMinute": 1
+    },
+    {
+      "IsActive": true,
+      "StartTime": "2021-02-05 21:24:00",
+      "IntervalDays": 3,
+      "OffsetMinute": 1
+    }
+  ]
+}
