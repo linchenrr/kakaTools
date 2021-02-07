@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -31,11 +32,32 @@ namespace Reminder
                 var json = File.ReadAllText("config.json", new UTF8Encoding(false));
                 var config = JsonConvert.DeserializeObject<RemindConfig>(json);
 
-                foreach (var item in config.Items)
+                RemindRunner.CheckInterval = config.CheckInterval * 1000;
+
+                for (int i = 0; i < config.Items.Count; i++)
                 {
+                    var item = config.Items[i];
+                    item.ShowBalloon = ShowNotify;
+                    item.OnRemindTimeUpdate = OnRemindTimeUpdate;
+
                     var runner = new RemindRunner();
-                    runner.Run(item);
-                    runners.Add(runner);
+                    if (runner.Run(item))
+                    {
+                        var txt = new Label();
+                        txt.Location = new Point(20, i * 30 + 20);
+                        txt.AutoSize = true;
+                        Controls.Add(txt);
+                        item.Txt = txt;
+
+                        runners.Add(runner);
+                    }
+                }
+
+                UpdateStartUp();
+
+                if (config.HideOnStartUp)
+                {
+                    HideAsync();
                 }
             }
             catch (Exception ex)
@@ -43,8 +65,37 @@ namespace Reminder
                 MessageBox.Show($@"初始化错误,
 {ex.Message}");
 
-                Environment.Exit(1);
+                RunExit(1);
             }
+        }
+
+        private async void HideAsync()
+        {
+            await Task.Delay(1);
+            this.Hide();
+        }
+
+        public void OnRemindTimeUpdate(RemindRunner runner)
+        {
+            var time = runner.remindTime;
+            this.Invoke(new AsynUpdateUI(delegate ()
+            {
+                runner.Data.Txt.Text = $"{time.ToShortDateString()} {time.ToShortTimeString()} {runner.Data.Text}";
+            }));
+
+        }
+
+        delegate void AsynUpdateUI();
+        private void ShowNotify(string text)
+        {
+            MessageBox.Show(text, "定时提醒");
+            /*
+             this.Invoke(new AsynUpdateUI(delegate ()
+             {
+                 MessageBox.Show(text, "定时提醒");
+                 //notifyIcon.ShowBalloonTip(0, "定时提醒", text, ToolTipIcon.Info);
+             }));
+            */
         }
 
         private void notifyIcon1_MouseClick(object sender, MouseEventArgs e)
@@ -61,6 +112,7 @@ namespace Reminder
                 {
                     this.Show(Owner);
                     this.Activate();
+
                 }
             }
             else if (e.Button == MouseButtons.Right)
@@ -80,15 +132,74 @@ namespace Reminder
                     break;
 
                 case 1:
-                    Environment.Exit(0);
+                    RunExit();
                     break;
             }
         }
 
+        private void RunExit(int exitCode = 0)
+        {
+            isRealClose = true;
+            this.Close();
+            Environment.Exit(exitCode);
+        }
+
+        private bool isRealClose;
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            this.Hide();
-            e.Cancel = true;
+            if (isRealClose == false)
+            {
+                this.Hide();
+                e.Cancel = true;
+            }
+        }
+
+
+        private string Regpath = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run";
+        private string keyName = "XiaoKaReminder";
+        private string ExEPath = Process.GetCurrentProcess().MainModule.FileName;
+        private void SetStartUp(bool runOnStartUp)
+        {
+            var path = ExEPath;
+            var Rkey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(Regpath, true);
+
+            if (runOnStartUp)
+            {
+                if (Rkey == null)
+                {
+                    Rkey = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(Regpath);
+                }
+                Rkey.SetValue(keyName, path);
+            }
+            else
+            {
+                if (Rkey != null)
+                {
+                    Rkey.DeleteValue(keyName, false);
+                }
+            }
+        }
+
+        private void UpdateStartUp()
+        {
+            var path = ExEPath;
+            var Rkey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(Regpath, true);
+
+
+            cb_autoRun.Checked = false;
+            if (Rkey != null)
+            {
+                var keyValue = Rkey.GetValue(keyName) as string;
+                cb_autoRun.Checked = keyValue != null;
+                if (keyValue != null && keyValue != path)
+                    Rkey.SetValue(keyName, path);
+            }
+            cb_autoRun.CheckedChanged += cb_autoRun_CheckedChanged;
+        }
+
+        private void cb_autoRun_CheckedChanged(object sender, EventArgs e)
+        {
+            SetStartUp(cb_autoRun.Checked);
         }
     }
 }

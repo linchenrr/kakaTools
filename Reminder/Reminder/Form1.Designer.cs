@@ -31,21 +31,22 @@ namespace Reminder
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
+            this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.iconMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.item_open = new System.Windows.Forms.ToolStripMenuItem();
             this.item_exit = new System.Windows.Forms.ToolStripMenuItem();
+            this.cb_autoRun = new System.Windows.Forms.CheckBox();
             this.iconMenu.SuspendLayout();
             this.SuspendLayout();
             // 
-            // notifyIcon1
+            // notifyIcon
             // 
-            this.notifyIcon1.BalloonTipText = "定时提醒工具";
-            this.notifyIcon1.ContextMenuStrip = this.iconMenu;
-            this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon")));
-            this.notifyIcon1.Text = "定时提醒工具";
-            this.notifyIcon1.Visible = true;
-            this.notifyIcon1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseClick);
+            this.notifyIcon.BalloonTipText = "定时提醒工具";
+            this.notifyIcon.ContextMenuStrip = this.iconMenu;
+            this.notifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon.Icon")));
+            this.notifyIcon.Text = "定时提醒工具";
+            this.notifyIcon.Visible = true;
+            this.notifyIcon.MouseClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseClick);
             // 
             // iconMenu
             // 
@@ -68,11 +69,22 @@ namespace Reminder
             this.item_exit.Size = new System.Drawing.Size(136, 22);
             this.item_exit.Text = "退出";
             // 
+            // cb_autoRun
+            // 
+            this.cb_autoRun.AutoSize = true;
+            this.cb_autoRun.Location = new System.Drawing.Point(445, 12);
+            this.cb_autoRun.Name = "cb_autoRun";
+            this.cb_autoRun.Size = new System.Drawing.Size(75, 21);
+            this.cb_autoRun.TabIndex = 1;
+            this.cb_autoRun.Text = "开机自启";
+            this.cb_autoRun.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(546, 353);
+            this.Controls.Add(this.cb_autoRun);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
@@ -84,15 +96,17 @@ namespace Reminder
             this.Load += new System.EventHandler(this.Form1_Load);
             this.iconMenu.ResumeLayout(false);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
 
-        private System.Windows.Forms.NotifyIcon notifyIcon1;
+        private System.Windows.Forms.NotifyIcon notifyIcon;
         private System.Windows.Forms.ContextMenuStrip iconMenu;
         private System.Windows.Forms.ToolStripMenuItem item_open;
         private System.Windows.Forms.ToolStripMenuItem item_exit;
+        private System.Windows.Forms.CheckBox cb_autoRun;
     }
 }
 

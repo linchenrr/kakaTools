@@ -3,28 +3,33 @@ using System.Collections.Generic;
 using System.Media;
 using System.Text;
 using System.Threading;
+using System.Windows.Forms;
 
 namespace Reminder
 {
     public class RemindRunner
     {
 
-        private RemindItem Data;
+        static public int CheckInterval = 1000;
+
+        public RemindItem Data;
         private Thread thread;
         public DateTime remindTime;
+        public bool needAdvance;
+        public DateTime advanceTime;
         private SoundPlayer player;
+        private SoundPlayer player_advanceSound;
 
-        public void Run(RemindItem data)
+        public bool Run(RemindItem data)
         {
             this.Data = data;
             if (data.IsActive == false)
-                return;
-
-            player = new SoundPlayer("ding.wav");
-            player.Load();
+                return false;
 
             thread = new Thread(Running);
             thread.Start();
+
+            return true;
         }
 
         private int DateDiff(DateTime dateStart, DateTime dateEnd)
@@ -35,50 +40,108 @@ namespace Reminder
             return sp.Days;
         }
 
+        private void CalculateAdvance()
+        {
+            needAdvance = Data.NeedAdvance;
+            if (needAdvance)
+                advanceTime = remindTime.AddSeconds(-Data.AdvanceSeconds);
+        }
+
         private void Running()
         {
-            var targetTime = Data.StartTime;
-            var now = DateTime.Now;
-            //计算出下一次提醒的时间
-            while (true)
+            try
             {
-                var diffDay = DateDiff(targetTime, now);
-                if (diffDay == 0 || targetTime >= now)
-                {
-                    remindTime = targetTime;
-                    break;
-                }
-                if (Data.IntervalDays > 0)
-                {
-                    targetTime = targetTime.AddDays(Data.IntervalDays).AddMinutes(Data.OffsetMinute);
-                }
-                else
-                    return;
-            }
+                //Thread.Sleep(500);
+                //if (Data.BalloonText != null)
+                //{
+                //    Data.ShowBalloon(Data.BalloonText);
+                //MessageBox.Show(Data.BalloonText);
+                //}
 
-            while (true)
-            {
-                Thread.Sleep(1000);
 
-                now = DateTime.Now;
-                if (now >= remindTime)
+                player = new SoundPlayer(Data.RemindSound);
+                player.Load();
+
+                var targetTime = Data.StartTime;
+                var now = DateTime.Now;
+                //计算出下一次提醒的时间
+                while (true)
                 {
-                    //程序开启后  过了30分钟内都会提示
-                    if ((now - remindTime).TotalMinutes < 30d)
+                    var diffDay = DateDiff(targetTime, now);
+                    if (diffDay == 0 || targetTime >= now)
                     {
-                        player.Play();
+                        remindTime = targetTime;
+                        Data.OnRemindTimeUpdate(this);
+                        break;
                     }
-
                     if (Data.IntervalDays > 0)
                     {
-                        remindTime = remindTime.AddDays(Data.IntervalDays).AddMinutes(Data.OffsetMinute);
+                        targetTime = targetTime.AddDays(Data.IntervalDays).AddSeconds(Data.OffsetSeconds);
+                    }
+                    else
+                        return;
+                }
+
+                CalculateAdvance();
+                if (needAdvance)
+                {
+                    player_advanceSound = new SoundPlayer(Data.AdvanceSound);
+                    player_advanceSound.Load();
+                }
+
+
+                while (true)
+                {
+                    Thread.Sleep(CheckInterval);
+
+                    now = DateTime.Now;
+
+                    if (needAdvance)
+                    {
+                        if (now >= advanceTime)
+                        {
+                            needAdvance = false;
+                            //如果还没过正式提醒时间  则播放提示
+                            if (now < remindTime)
+                            {
+                                player_advanceSound.Play();
+                                Data.ShowBalloon($@"预先提醒: {Data.Text}
+时间：{remindTime.ToShortTimeString()}");
+                            }
+                        }
                     }
                     else
                     {
-                        return;
+                        if (now >= remindTime)
+                        {
+                            //程序开启后  过了2分钟内都会提示
+                            if ((now - remindTime).TotalMinutes < 2d)
+                            {
+                                player.Play();
+                                Data.ShowBalloon($@"{Data.Text}");
+                            }
+
+                            if (Data.IntervalDays > 0)
+                            {
+                                remindTime = remindTime.AddDays(Data.IntervalDays).AddSeconds(Data.OffsetSeconds);
+                                CalculateAdvance();
+                                Data.OnRemindTimeUpdate(this);
+                            }
+                            else
+                            {
+                                return;
+                            }
+                        }
                     }
                 }
             }
+            catch (Exception e)
+            {
+                MessageBox.Show($@"错误：
+{e.Message}");
+                return;
+            }
+
         }
 
     }
