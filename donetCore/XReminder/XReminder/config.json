@@ -1,0 +1,36 @@
+{
+  "CheckInterval": 5,
+  "HideOnStartUp": true,
+  "Items": [
+    {
+      "IsActive": true,
+      "StartTime": "2021-02-05 21:53:00",
+      "AdvanceSeconds": 90,
+      "IntervalDays": 1,
+      "OffsetSeconds": 60,
+      "RemindSound": "start.mp3",
+      "AdvanceSound": "beep2.mp3",
+      "Text": "圣遗物"
+    },
+    {
+      "IsActive": true,
+      "StartTime": "2021-02-05 21:28:00",
+      "AdvanceSeconds": 90,
+      "IntervalDays": 3,
+      "OffsetSeconds": 100,
+      "RemindSound": "start.mp3",
+      "AdvanceSound": "beep2.mp3",
+      "Text": "挖矿"
+    },
+    {
+      "IsActive": false,
+      "StartTime": "2021-02-08 19:30:00",
+      "AdvanceSeconds": 10,
+      "IntervalDays": 1,
+      "OffsetSeconds": 60,
+      "RemindSound": "start.mp3",
+      "AdvanceSound": "beep2.mp3",
+      "Text": "提示消息提示消息提示消"
+    }
+  ]
+}
