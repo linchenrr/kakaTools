@@ -1,0 +1,33 @@
+﻿<Window x:Class="XReminder.UpdateWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:XReminder"
+        mc:Ignorable="d" Height="278" Width="461" Background="#FF3F3F46" WindowStyle="None" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+    <Window.Resources>
+        <!--用于一键换肤-->
+        <ResourceDictionary Source="XRemindRes.xaml"></ResourceDictionary>
+    </Window.Resources>
+    <Canvas>
+        <Label Content="检测到新版本"  Height="38" Foreground="#FFF0D55F" Canvas.Top="10" FontSize="18" Canvas.Left="10" Width="441" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+        <Label Content="版本：" Foreground="#FFE8E8E8" Canvas.Top="48" FontSize="16" Canvas.Left="10" Width="88" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"/>
+        <Label Content="地址：" Foreground="#FFE8E8E8" Canvas.Top="83" FontSize="16" Canvas.Left="10" Width="88" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"/>
+        <Label Content="提取码：" Foreground="#FFE8E8E8" Canvas.Top="118" FontSize="16" Canvas.Left="10" Width="88" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"/>
+        <Label Content="发布日期：" Foreground="#FFE8E8E8" Canvas.Top="153" FontSize="16" Canvas.Left="10" Width="88" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"/>
+        <Label Content="更新内容：" Foreground="#FFE8E8E8" Canvas.Top="188" FontSize="16" Canvas.Left="10" Width="88" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"/>
+        <Label x:Name="txt_version" Content="0.2" Foreground="#FFE8E8E8" Canvas.Top="48" FontSize="16" Canvas.Left="94" HorizontalContentAlignment="Left" VerticalContentAlignment="Center"/>
+        <Label x:Name="txt_url" Content="https://pan.baidu.com/s/1Mahoe3HfByfr_T-bo9Rq9Q" Foreground="#FF8FC2FF" Canvas.Top="87" Canvas.Left="94" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Width="345" Cursor="Hand" MouseLeftButtonUp="txt_url_MouseLeftButtonUp"/>
+        <Label x:Name="txt_code" Content="1111" Foreground="#FFE8E8E8" Canvas.Top="118" FontSize="16" Canvas.Left="94" HorizontalContentAlignment="Left" VerticalContentAlignment="Center"/>
+        <Label x:Name="txt_date" Content="43543534" Foreground="#FFE8E8E8" Canvas.Top="153" FontSize="16" Canvas.Left="94" HorizontalContentAlignment="Left" VerticalContentAlignment="Center"/>
+        <Label x:Name="txt_updateInfo" Content="0.2" Foreground="#FFE8E8E8" Canvas.Top="195" FontSize="14" Canvas.Left="94" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" Width="357" Height="73" Padding="5,0,0,0"/>
+        <Button x:Name="btn_copyCode" Content="复制" Canvas.Left="192" Canvas.Top="121" Height="27" Width="77" FontSize="16" Click="btn_copyCode_Click"/>
+        <Button x:Name="btn_close" Style="{StaticResource MyButton}" Content="" Width="46" Height="38"  BorderBrush="{x:Null}" Foreground="{x:Null}" Canvas.Left="405" Canvas.Top="5" Cursor="Hand" Click="btn_close_Click">
+            <Button.Background>
+                <ImageBrush ImageSource="/close.png"/>
+            </Button.Background>
+        </Button>
+
+
+    </Canvas>
+</Window>

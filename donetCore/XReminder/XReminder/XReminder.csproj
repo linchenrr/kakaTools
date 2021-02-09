@@ -8,6 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Resources\**" />
+    <EmbeddedResource Remove="Resources\**" />
+    <None Remove="Resources\**" />
+    <Page Remove="Resources\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="about.png" />
     <None Remove="beep1.mp3" />
     <None Remove="beep2.mp3" />
@@ -21,6 +28,7 @@
     <None Remove="min.png" />
     <None Remove="start.mp3" />
     <None Remove="start.wav" />
+    <None Remove="XReminderUpdate.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -44,10 +52,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Resources\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="Sound\weixinMsg.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -58,6 +62,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Sound\start.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XReminderUpdate.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Resource Include="about.png" />

@@ -123,6 +123,8 @@ namespace XReminder
 
                     //HideAsync();
                 }
+
+                CheckUpdate();
             }
             catch (Exception ex)
             {
@@ -278,6 +280,24 @@ namespace XReminder
             aboutWindow.Owner = this;
             aboutWindow.ShowDialog();
             //aboutWindow.Owner = this;
+        }
+
+        private void CheckUpdate()
+        {
+            var json = File.ReadAllText(UpdateChecker.UpdateInfoFileName, new UTF8Encoding(false));
+            var localInfo = JsonConvert.DeserializeObject<VersionInfo>(json);
+
+            UpdateChecker.RemoteCheckAsync(info =>
+            {
+                if (localInfo.Version != info.Version)
+                {
+                    this.Show();
+                    var aboutWindow = new UpdateWindow();
+                    aboutWindow.SetInfo(info);
+                    aboutWindow.Owner = this;
+                    aboutWindow.ShowDialog();
+                }
+            });
         }
     }
 }
