@@ -1,16 +1,28 @@
 {
+  //计时检测精度（秒），每几秒检测一次是否到时间需要提醒
   "CheckInterval": 5,
-  "HideOnStartUp": true,
+  //开机自启时程序自动最小化
+  "HideOnAutoStartUp": true,
+  //提醒配置列表
   "Items": [
     {
+      //此项配置是否启用
       "IsActive": true,
+      //第一次提醒的时间
       "StartTime": "2021-02-05 21:53:00",
+      //提前多少秒执行一次预提醒（填0不执行预提醒）
       "AdvanceSeconds": 90,
+      //每隔几天重复提醒
       "IntervalDays": 1,
+      //每次提醒后，下次（IntervalDays）后提醒时间延后多少秒
       "OffsetSeconds": 60,
+      //音效文件，放置于程序所在文件夹/Sound下
+      //正式提醒的音效文件
       "RemindSound": "start.mp3",
-      "AdvanceSound": "beep2.mp3",
-      "Text": "圣遗物"
+      //预先提醒的音效
+      "AdvanceSound": "ding.mp3",
+      //提醒文本
+      "Text": "捡圣遗物"
     },
     {
       "IsActive": true,
@@ -19,17 +31,19 @@
       "IntervalDays": 3,
       "OffsetSeconds": 100,
       "RemindSound": "start.mp3",
-      "AdvanceSound": "beep2.mp3",
+      "AdvanceSound": "ding.mp3",
       "Text": "挖矿"
     },
     {
+      //调试用，不用管
+      "IsTestItem": true,
       "IsActive": false,
       "StartTime": "2021-02-08 19:30:00",
       "AdvanceSeconds": 10,
       "IntervalDays": 1,
       "OffsetSeconds": 60,
       "RemindSound": "start.mp3",
-      "AdvanceSound": "beep2.mp3",
+      "AdvanceSound": "ding.mp3",
       "Text": "提示消息提示消息提示消"
     }
   ]

@@ -4,6 +4,7 @@ using System.IO;
 using System.Media;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using static XReminder.GlobalValues;
@@ -16,7 +17,6 @@ namespace XReminder
         static public int CheckInterval = 1000;
 
         public RemindItem Data;
-        private Thread thread;
         public DateTime remindTime;
         public bool needAdvance;
         public DateTime advanceTime;
@@ -29,8 +29,7 @@ namespace XReminder
             if (data.IsActive == false)
                 return false;
 
-            thread = new Thread(Running);
-            thread.Start();
+            Running();
 
             return true;
         }
@@ -50,20 +49,14 @@ namespace XReminder
                 advanceTime = remindTime.AddSeconds(-Data.AdvanceSeconds);
         }
 
-        private void Running()
+        private async void Running()
         {
             try
             {
-                //Thread.Sleep(500);
-                //if (Data.BalloonText != null)
-                //{
-                //    Data.ShowBalloon(Data.BalloonText);
-                //MessageBox.Show(Data.BalloonText);
-                //}
-
-
                 player = new MediaPlayer();
-                player.Open(new Uri(Path.Combine(StartUpDir, Data.RemindSound)));
+                player.Open(new Uri(Path.Combine(StartUpDir, "Sound", Data.RemindSound)));
+
+                await Task.Delay(1);
 
                 var targetTime = Data.StartTime;
                 var now = DateTime.Now;
@@ -89,13 +82,13 @@ namespace XReminder
                 if (needAdvance)
                 {
                     player_advanceSound = new MediaPlayer();
-                    player_advanceSound.Open(new Uri(Path.Combine(StartUpDir, Data.AdvanceSound)));
+                    player_advanceSound.Open(new Uri(Path.Combine(StartUpDir, "Sound", Data.AdvanceSound)));
                 }
 
 
                 while (true)
                 {
-                    Thread.Sleep(CheckInterval);
+                    await Task.Delay(CheckInterval);
 
                     now = DateTime.Now;
 
@@ -108,7 +101,7 @@ namespace XReminder
                             if (now < remindTime)
                             {
                                 player_advanceSound.Play();
-                                Data.ShowBalloon($@"预先提醒: {Data.Text}
+                                Data.ShowBalloon($@"即将开始: {Data.Text}
 时间：{remindTime.ToShortTimeString()}");
                             }
                         }

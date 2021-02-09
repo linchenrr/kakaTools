@@ -6,33 +6,48 @@
         xmlns:local="clr-namespace:XReminder"
         xmlns:tb="http://www.hardcodet.net/taskbar"
         mc:Ignorable="d"
-        Title="MainWindow" Height="269" Width="663" Background="#FF3F3F46" ResizeMode="NoResize" Icon="/icon.ico" WindowStyle="None" Loaded="Window_Loaded">
+        Title="XReminder" Height="269" Width="663" ResizeMode="NoResize" Icon="/icon.ico" WindowStyle="None" Loaded="Window_Loaded">
 
     <Window.Resources>
         <!--用于一键换肤-->
         <ResourceDictionary Source="XRemindRes.xaml"></ResourceDictionary>
     </Window.Resources>
+    <Window.Background>
+        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+            <GradientStop Color="#FF3D3D42"/>
+            <GradientStop Color="#FF181819" Offset="1"/>
+        </LinearGradientBrush>
+    </Window.Background>
 
 
 
     <Canvas x:Name="canvas">
+
         <tb:TaskbarIcon x:Name="notifyIcon"
                     Visibility="Visible"
-                    ToolTipText="test"
+                    ToolTipText="XReminder"
                     IconSource="/icon.ico"
                     ContextMenu="{StaticResource tbMenu}" NoLeftClickDelay="True" TrayLeftMouseUp="notifyIcon_TrayLeftMouseUp" TrayLeftMouseDown="notifyIcon_TrayLeftMouseDown"
                     
       >
 
         </tb:TaskbarIcon>
-        <Label x:Name="orgLabel" Content="Labelssdsa测试测试" Canvas.Left="21" Canvas.Top="23" Height="32" Foreground="#FFE8E8E8" FontSize="16"/>
-        <CheckBox x:Name="cb_autoRun" Content="开机自启" Canvas.Left="510" Canvas.Top="26" Foreground="#FFE4E4E4" FontSize="16" Height="26" Width="117" Padding="4,-1,0,0" VerticalContentAlignment="Center" HorizontalAlignment="Stretch"/>
+        <Label x:Name="orgLabel" Content="Labelssdsa测试测试" Canvas.Left="21" Canvas.Top="44" Height="32" Foreground="#FFE8E8E8" FontSize="16"/>
+        <CheckBox x:Name="cb_autoRun" Content="开机自启" Canvas.Left="550" Canvas.Top="242" Foreground="#FFE4E4E4" FontSize="16" Height="26" Width="103" Padding="4,-1,0,0" VerticalContentAlignment="Center"/>
 
-        <Button x:Name="btn_close" Style="{StaticResource MyButton}" Content="" Width="56" Height="38" Grid.Column="1"  BorderBrush="{x:Null}" Foreground="{x:Null}" Canvas.Left="597" Canvas.Top="-1" Cursor="Hand" Click="btn_close_Click">
+        <Button x:Name="btn_close" Style="{StaticResource MyButton}" Content="" Width="46" Height="38" Grid.Column="1"  BorderBrush="{x:Null}" Foreground="{x:Null}" Canvas.Left="607" Canvas.Top="-1" Cursor="Hand" Click="btn_close_Click">
             <Button.Background>
                 <ImageBrush ImageSource="/close.png"/>
             </Button.Background>
         </Button>
+        <Button x:Name="btn_test" Content="test" Canvas.Left="550" Canvas.Top="173" Height="31" Width="92" Click="btn_test_Click"/>
+        <Label Content="XReminder" Height="32" Foreground="#FFE8E8E8" FontSize="16" Canvas.Left="2"/>
+        <Button x:Name="btn_min" Style="{StaticResource MyButton}" Content="" Width="42" Height="32"  BorderBrush="{x:Null}" Foreground="{x:Null}" Canvas.Left="558" Cursor="Hand" Click="btn_min_Click">
+            <Button.Background>
+                <ImageBrush ImageSource="/min.png"/>
+            </Button.Background>
+        </Button>
+        <Label Content="v0.1 by — lin (superkaka.org@gmail.com)" Height="28" Foreground="#FFE8E8E8" Canvas.Top="241" FontSize="14"/>
     </Canvas>
 
 </Window>

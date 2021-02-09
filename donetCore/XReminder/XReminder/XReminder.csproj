@@ -17,6 +17,7 @@
     <None Remove="icon.ico" />
     <None Remove="Images\Add.png" />
     <None Remove="Images\Close.png" />
+    <None Remove="min.png" />
     <None Remove="start.mp3" />
     <None Remove="start.wav" />
   </ItemGroup>
@@ -46,25 +47,23 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="beep1.mp3">
+    <Content Include="Sound\weixinMsg.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="beep2.mp3">
+    <Content Include="Sound\ding.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="config.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="ding.mp3">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="start.mp3">
+    <Content Include="Sound\start.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Resource Include="close.png" />
     <Resource Include="icon.ico" />
     <Resource Include="Images\Add.png" />
     <Resource Include="Images\Close.png" />
+    <Resource Include="min.png" />
   </ItemGroup>
 
 </Project>

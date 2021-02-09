@@ -11,7 +11,7 @@ namespace XReminder
     {
 
         public int CheckInterval = 1;
-        public bool HideOnStartUp;
+        public bool HideOnAutoStartUp;
         public List<RemindItem> Items;
 
         static public string MakeDefaultConfig()
@@ -37,6 +37,7 @@ namespace XReminder
 
     public class RemindItem
     {
+        public bool IsTestItem;
         public bool IsActive;
         public DateTime StartTime;
         public int AdvanceSeconds = -1;

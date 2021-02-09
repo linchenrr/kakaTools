@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -24,18 +25,19 @@ namespace XReminder
     {
         public MainWindow()
         {
+            WindowStartupLocation = WindowStartupLocation.CenterScreen;
             InitializeComponent();
         }
 
         private List<RemindRunner> runners = new List<RemindRunner>();
         private string exePath;
-
+        private const string AutoRunParam = "-autorun";
         //MediaPlayer player;
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             exePath = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
             StartUpDir = Path.GetDirectoryName(exePath);
-
+            Environment.CurrentDirectory = StartUpDir;
 
             //player = new MediaPlayer();
             //player.Open(new Uri(Path.Combine(StartUpDir, "test.mp3")));
@@ -51,11 +53,11 @@ namespace XReminder
             };
 
 
-            //string xaml = System.Windows.Markup.XamlWriter.Save(txt);
-            //Label newLabel = System.Windows.Markup.XamlReader.Parse(xaml) as Label;
-            //canvas.Children.Add(newLabel);
-            //Canvas.SetTop(newLabel, 20);
-            //newLabel.Content = "sadsad萨达222";
+#if DEBUG
+
+#else
+            btn_test.Visibility = Visibility.Hidden;
+#endif
 
 
             foreach (var item in notifyIcon.ContextMenu.Items)
@@ -82,16 +84,25 @@ namespace XReminder
                 for (int i = 0; i < config.Items.Count; i++)
                 {
                     var item = config.Items[i];
+                    if (item.IsTestItem)
+                    {
+#if DEBUG
+                        item.IsActive = true;
+                        item.StartTime = DateTime.Now.AddSeconds(10d);
+#endif
+                    }
+
                     item.ShowBalloon = ShowNotify;
                     item.OnRemindTimeUpdate = OnRemindTimeUpdate;
 
                     var runner = new RemindRunner();
+                    var startY = Canvas.GetTop(orgLabel);
                     if (runner.Run(item))
                     {
                         var xaml = System.Windows.Markup.XamlWriter.Save(orgLabel);
                         var newLabel = System.Windows.Markup.XamlReader.Parse(xaml) as Label;
                         canvas.Children.Add(newLabel);
-                        Canvas.SetTop(newLabel, i * 30 + 20);
+                        Canvas.SetTop(newLabel, i * 30 + startY);
                         item.Txt = newLabel;
                         newLabel.Visibility = Visibility.Visible;
 
@@ -99,13 +110,17 @@ namespace XReminder
                     }
                 }
 
-
-
                 UpdateStartUp();
 
-                if (config.HideOnStartUp)
+                if (config.HideOnAutoStartUp)
                 {
-                    //this.Hide();
+                    var args = Environment.GetCommandLineArgs();
+                    foreach (var item in args)
+                    {
+                        if (item == AutoRunParam)
+                            this.Hide();
+                    }
+
                     //HideAsync();
                 }
             }
@@ -146,37 +161,39 @@ namespace XReminder
         {
             var time = runner.remindTime;
 
-            this.Dispatcher.Invoke(new AsynUpdateUI(delegate ()
+            this.Dispatcher.Invoke(delegate ()
             {
                 runner.Data.Txt.Content = $"{time.ToShortDateString()} {time.ToShortTimeString()} {runner.Data.Text}";
-            }));
+            });
 
         }
 
-        delegate void AsynUpdateUI();
         private void ShowNotify(string text)
         {
-            MessageBox.Show(text, "定时提醒");
-            /*
-             this.Invoke(new AsynUpdateUI(delegate ()
-             {
-                 MessageBox.Show(text, "定时提醒");
-                 //notifyIcon.ShowBalloonTip(0, "定时提醒", text, ToolTipIcon.Info);
-             }));
-            */
+            //MessageBox.Show(text, "定时提醒");
+            this.Dispatcher.Invoke(delegate ()
+            {
+                var balloon = new FancyBalloon();
+                balloon.SetInfo(text);
+
+                //notifyIcon.ShowCustomBalloon(balloon, PopupAnimation.Slide, 4000);
+                notifyIcon.ShowCustomBalloon(balloon, PopupAnimation.Slide, null);
+            });
         }
 
         private void RunExit(int exitCode = 0)
         {
+            //notifyIcon.ContextMenu.Visibility = Visibility.Hidden;
+            notifyIcon.Dispose();
             this.Close();
             Environment.Exit(exitCode);
         }
 
         private string Regpath = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run";
         private string keyName = "XiaoKaReminder";
+        private string commandLine => $"{exePath} {AutoRunParam}";
         private void SetStartUp(bool runOnStartUp)
         {
-            var path = exePath;
             var Rkey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(Regpath, true);
 
             if (runOnStartUp)
@@ -185,7 +202,7 @@ namespace XReminder
                 {
                     Rkey = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(Regpath);
                 }
-                Rkey.SetValue(keyName, path);
+                Rkey.SetValue(keyName, commandLine);
             }
             else
             {
@@ -201,14 +218,13 @@ namespace XReminder
             var path = exePath;
             var Rkey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(Regpath, true);
 
-
             cb_autoRun.IsChecked = false;
             if (Rkey != null)
             {
                 var keyValue = Rkey.GetValue(keyName) as string;
                 cb_autoRun.IsChecked = keyValue != null;
-                if (keyValue != null && keyValue != path)
-                    Rkey.SetValue(keyName, path);
+                if (keyValue != null && keyValue != commandLine)
+                    Rkey.SetValue(keyName, commandLine);
             }
             cb_autoRun.Checked += cb_autoRun_CheckedChanged;
         }
@@ -236,9 +252,24 @@ namespace XReminder
             }
         }
 
-        private void btn_close_Click(object sender, RoutedEventArgs e)
+        private void btn_test_Click(object sender, RoutedEventArgs e)
+        {
+            var balloon = new FancyBalloon();
+            balloon.SetInfo("Custom Balloon");
+
+            //notifyIcon.ShowCustomBalloon(balloon, PopupAnimation.Slide, 4000);
+            notifyIcon.ShowCustomBalloon(balloon, PopupAnimation.Slide, null);
+            //notifyIcon.ShowBalloonTip("111", "222奥术大师", Hardcodet.Wpf.TaskbarNotification.BalloonIcon.Info);
+        }
+
+        private void btn_min_Click(object sender, RoutedEventArgs e)
         {
             this.Hide();
+        }
+
+        private void btn_close_Click(object sender, RoutedEventArgs e)
+        {
+            RunExit();
         }
     }
 }
