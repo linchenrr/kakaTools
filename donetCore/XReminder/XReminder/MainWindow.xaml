@@ -5,8 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:XReminder"
         xmlns:tb="http://www.hardcodet.net/taskbar"
-        mc:Ignorable="d"
-        Title="XReminder" Height="269" Width="663" ResizeMode="NoResize" Icon="/icon.ico" WindowStyle="None" Loaded="Window_Loaded">
+        mc:Ignorable="d" Height="269" Width="663" ResizeMode="NoResize" Icon="/icon.ico" WindowStyle="None" Loaded="Window_Loaded" WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
         <!--用于一键换肤-->
@@ -47,7 +46,11 @@
                 <ImageBrush ImageSource="/min.png"/>
             </Button.Background>
         </Button>
-        <Label Content="v0.1 by — lin (superkaka.org@gmail.com)" Height="28" Foreground="#FFE8E8E8" Canvas.Top="241" FontSize="14"/>
+        <Button x:Name="btn_about" Style="{StaticResource MyButton}" Content="" Width="18" Height="18"  BorderBrush="{x:Null}" Canvas.Left="99" Cursor="Hand" Foreground="{x:Null}" Canvas.Top="6" Click="btn_about_Click">
+            <Button.Background>
+                <ImageBrush ImageSource="/about.png"/>
+            </Button.Background>
+        </Button>
     </Canvas>
 
 </Window>

@@ -25,7 +25,7 @@ namespace XReminder
     {
         public MainWindow()
         {
-            WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            //WindowStartupLocation = WindowStartupLocation.CenterScreen;
             InitializeComponent();
         }
 
@@ -270,6 +270,14 @@ namespace XReminder
         private void btn_close_Click(object sender, RoutedEventArgs e)
         {
             RunExit();
+        }
+
+        private void btn_about_Click(object sender, RoutedEventArgs e)
+        {
+            var aboutWindow = new AboutWindow();
+            aboutWindow.Owner = this;
+            aboutWindow.ShowDialog();
+            //aboutWindow.Owner = this;
         }
     }
 }

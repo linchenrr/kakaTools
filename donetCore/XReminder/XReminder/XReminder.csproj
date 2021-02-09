@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="about.png" />
     <None Remove="beep1.mp3" />
     <None Remove="beep2.mp3" />
     <None Remove="close.png" />
@@ -59,6 +60,7 @@
     <Content Include="Sound\start.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="about.png" />
     <Resource Include="close.png" />
     <Resource Include="icon.ico" />
     <Resource Include="Images\Add.png" />
