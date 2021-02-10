@@ -5,10 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:XReminder"
         mc:Ignorable="d"
-        Title="AboutWindow" Height="160" Width="360" WindowStyle="None" Background="#FF181819" BorderBrush="#FF595959" BorderThickness="1,1,1,1" MouseDown="Window_MouseDown" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" ShowInTaskbar="False">
-    <Canvas>
-        <Label Content="XReminder v0.1"  Height="40" Foreground="#FFE8E8E8" Canvas.Top="22" FontSize="14" Canvas.Left="31" Width="291" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-        <Label Content="Author — lin (superkaka.org@gmail.com)" Foreground="#FFE8E8E8" Canvas.Top="79" FontSize="14" Canvas.Left="31" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+        Title="AboutWindow" Height="508" Width="693" WindowStyle="None" Background="#FF181819" BorderBrush="#FF595959" BorderThickness="1,1,1,1" MouseDown="Window_MouseDown" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" ShowInTaskbar="False">
+    <Canvas Margin="0,0,0,0">
+        <Label Content="XReminder（原神提醒助手） v0.1"  Height="40" Foreground="#FFE8E8E8" Canvas.Top="10" FontSize="14" Canvas.Left="200" Width="291" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MouseDown="Label_MouseDown"/>
+        <Label Content="作者 — lin，反馈建议：" Foreground="#FFE8E8E8" Canvas.Top="42" FontSize="14" Canvas.Left="174" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MouseDown="Label_MouseDown"/>
+        <Image Height="364" Canvas.Left="29" Canvas.Top="124" Width="639" Source="/Images/捐赠.png"/>
+        <Label Content="玩原神一时兴起做了这个提醒软件，欢迎捐赠~" Foreground="#FFE8E8E8" Canvas.Top="77" FontSize="16" Canvas.Left="153" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="390" MouseDown="Label_MouseDown"/>
+        <TextBox Canvas.Left="329" Canvas.Top="46" Text="superkaka.org@gmail.com" TextWrapping="NoWrap" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="#FFDAE6E8" SelectionBrush="#FFEAEAEA" SelectionTextBrush="#FF252525" FontSize="14" IsReadOnlyCaretVisible="True" IsReadOnly="True" MaxLines="1"/>
 
 
     </Canvas>

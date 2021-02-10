@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -39,9 +40,15 @@ namespace XReminder
             StartUpDir = Path.GetDirectoryName(exePath);
             Environment.CurrentDirectory = StartUpDir;
 
-            //player = new MediaPlayer();
-            //player.Open(new Uri(Path.Combine(StartUpDir, "test.mp3")));
-            //player.Play();
+            RegKey.Init(@"SOFTWARE\XReminder");
+            //test
+            //RegKey.Instance.SetBool("bb", true);
+            //RegKey.Instance.SetString("str", "sadsadas阿斯顿撒sad");
+            //RegKey.Instance.SetInt("int", -85);
+
+            //var bb = RegKey.Instance.GetBool("bb");
+            //var str = RegKey.Instance.GetString("str");
+            //var ii = RegKey.Instance.GetInt("int");
 
 
             this.MouseDown += (x, y) =>
@@ -112,15 +119,17 @@ namespace XReminder
 
                 UpdateStartUp();
 
-                if (config.HideOnAutoStartUp)
+                var hideOnStartUp = RegKey.Instance.GetBool(RegKey.Key_HideOnStartUp);
+                cb_hideOnStartUp.IsChecked = hideOnStartUp;
+                if (hideOnStartUp)
                 {
-                    var args = Environment.GetCommandLineArgs();
-                    foreach (var item in args)
-                    {
-                        if (item == AutoRunParam)
-                            this.Hide();
-                    }
-
+                    //var args = Environment.GetCommandLineArgs();
+                    //foreach (var item in args)
+                    //{
+                    //    if (item == AutoRunParam)
+                    //        this.Hide();
+                    //}
+                    this.Hide();
                     //HideAsync();
                 }
 
@@ -228,10 +237,9 @@ namespace XReminder
                 if (keyValue != null && keyValue != commandLine)
                     Rkey.SetValue(keyName, commandLine);
             }
-            cb_autoRun.Checked += cb_autoRun_CheckedChanged;
         }
 
-        private void cb_autoRun_CheckedChanged(object sender, EventArgs e)
+        private void cb_autoRun_Click(object sender, RoutedEventArgs e)
         {
             SetStartUp(cb_autoRun.IsChecked.Value);
         }
@@ -276,15 +284,23 @@ namespace XReminder
 
         private void btn_about_Click(object sender, RoutedEventArgs e)
         {
-            var aboutWindow = new AboutWindow();
-            aboutWindow.Owner = this;
-            aboutWindow.ShowDialog();
-            //aboutWindow.Owner = this;
+            btn_about.ContextMenu.IsOpen = true;
         }
 
         private void CheckUpdate()
         {
-            var json = File.ReadAllText(UpdateChecker.UpdateInfoFileName, new UTF8Encoding(false));
+            var lastCheckTime = RegKey.Instance.GetDateTime(RegKey.Key_LastCheckUpdateTime);
+            if (lastCheckTime != null)
+            {
+                if ((DateTime.Now - lastCheckTime.Value).TotalDays < 1)
+                    return;
+            }
+
+            RegKey.Instance.SetDateTime(RegKey.Key_LastCheckUpdateTime, DateTime.Now);
+
+            //var jj = Application.Current.Resources["XReminderUpdate"];
+            var json = Properties.Resources.XReminderUpdate;
+            //var json = File.ReadAllText(UpdateChecker.UpdateInfoFileName, new UTF8Encoding(false));
             var localInfo = JsonConvert.DeserializeObject<VersionInfo>(json);
 
             UpdateChecker.RemoteCheckAsync(info =>
@@ -298,6 +314,24 @@ namespace XReminder
                     aboutWindow.ShowDialog();
                 }
             });
+        }
+
+        private void cb_hideOnStartUp_Click(object sender, RoutedEventArgs e)
+        {
+            RegKey.Instance.SetBool(RegKey.Key_HideOnStartUp, cb_hideOnStartUp.IsChecked.Value);
+        }
+
+        private void menuItem_about_Click(object sender, RoutedEventArgs e)
+        {
+            var aboutWindow = new AboutWindow();
+            aboutWindow.Owner = this;
+            aboutWindow.ShowDialog();
+            //aboutWindow.Owner = this;
+        }
+
+        private void menuItem_help_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("explorer.exe", Path.Combine(StartUpDir, "使用说明.txt"));
         }
     }
 }

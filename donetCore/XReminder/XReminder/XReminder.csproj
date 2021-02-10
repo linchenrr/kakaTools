@@ -25,10 +25,12 @@
     <None Remove="icon.ico" />
     <None Remove="Images\Add.png" />
     <None Remove="Images\Close.png" />
+    <None Remove="Images\捐赠.png" />
     <None Remove="min.png" />
     <None Remove="start.mp3" />
     <None Remove="start.wav" />
     <None Remove="XReminderUpdate.json" />
+    <None Remove="使用说明.txt" />
   </ItemGroup>
 
   <ItemGroup>
@@ -64,9 +66,13 @@
     <Content Include="Sound\start.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="XReminderUpdate.json">
+    <Content Include="使用说明.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Images\捐赠.png" />
+    <Resource Include="XReminderUpdate.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="about.png" />
     <Resource Include="close.png" />
     <Resource Include="icon.ico" />

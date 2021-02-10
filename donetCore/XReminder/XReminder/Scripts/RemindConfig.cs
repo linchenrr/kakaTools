@@ -11,7 +11,6 @@ namespace XReminder
     {
 
         public int CheckInterval = 1;
-        public bool HideOnAutoStartUp;
         public List<RemindItem> Items;
 
         static public string MakeDefaultConfig()

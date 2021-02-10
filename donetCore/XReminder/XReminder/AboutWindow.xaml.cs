@@ -28,5 +28,10 @@ namespace XReminder
         {
             this.Close();
         }
+
+        private void Label_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = true;
+        }
     }
 }

@@ -59,5 +59,20 @@ namespace XReminder.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   查找类似 {
+        ///  &quot;Version&quot;: &quot;0.1&quot;,
+        ///  &quot;DownLoadURL&quot;: &quot;&quot;,
+        ///  &quot;Code&quot;: &quot;&quot;,
+        ///  &quot;BuildDate&quot;: &quot;2021-02-09 21:53:00&quot;,
+        ///  &quot;UpdateInfo&quot;: &quot;\r\n&quot;
+        ///} 的本地化字符串。
+        /// </summary>
+        public static string XReminderUpdate {
+            get {
+                return ResourceManager.GetString("XReminderUpdate", resourceCulture);
+            }
+        }
     }
 }
