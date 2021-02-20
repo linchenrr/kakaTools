@@ -178,6 +178,10 @@ namespace XReminder
                     RunExit();
                     break;
 
+                case 2:
+                    OpenReadMe();
+                    break;
+
                 case 1:
                     this.Show();
                     this.Activate();

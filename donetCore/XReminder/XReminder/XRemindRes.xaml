@@ -13,6 +13,13 @@
                        Source="/icon.ico" />
             </MenuItem.Icon>
         </MenuItem>
+        <MenuItem Header="使用说明"  CommandParameter="2">
+            <MenuItem.Icon>
+                <Image Width="16"
+                       Height="16"
+                       Source="/about.png" />
+            </MenuItem.Icon>
+        </MenuItem>
 
         <Separator />
 
