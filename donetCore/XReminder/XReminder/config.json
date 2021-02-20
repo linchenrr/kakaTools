@@ -1,39 +1,43 @@
 {
-  //计时检测精度（秒），每几秒检测一次是否到时间需要提醒
-  "CheckInterval": 5,
   //提醒项列表
   "Items": [
     {
       "IsActive": true,
-      "StartTime": "2021-02-05 21:53:00",
-      "AdvanceSeconds": 90,
-      "IntervalDays": 1,
-      "OffsetSeconds": 60,
+      "Text": "捡圣遗物",
+      "StartTime": "2021-02-17 22:10:00",
+      "Interval": "1d 1m",
+      "PreRemind": "90s",
       "RemindSound": "start.mp3",
-      "AdvanceSound": "ding.mp3",
-      "Text": "捡圣遗物"
+      "PreRemindSound": "ding.mp3"
     },
     {
       "IsActive": true,
-      "StartTime": "2021-02-05 21:28:00",
-      "AdvanceSeconds": 90,
-      "IntervalDays": 3,
-      "OffsetSeconds": 100,
+      "Text": "挖矿",
+      "StartTime": "2021-02-17 21:41:00",
+      "Interval": "3d 100s",
+      "PreRemind": "90s",
       "RemindSound": "start.mp3",
-      "AdvanceSound": "ding.mp3",
-      "Text": "挖矿"
+      "PreRemindSound": "ding.mp3"
+    },
+    {
+      "IsActive": true,
+      "Text": "参变质量仪",
+      "StartTime": "2021-02-20 20:50:00",
+      "Interval": "7d 100s",
+      "PreRemind": "60s",
+      "RemindSound": "start.mp3",
+      "PreRemindSound": "ding.mp3"
     },
     {
       //此项为调试用，不用管
-      "IsTestItem": true,
+      "IsTestItem": false,
       "IsActive": false,
+      "Text": "测试消息提示消息提示消",
       "StartTime": "2021-02-08 19:30:00",
-      "AdvanceSeconds": 10,
-      "IntervalDays": 1,
-      "OffsetSeconds": 60,
+      "Interval": "30s",
+      "PreRemind": "10s",
       "RemindSound": "start.mp3",
-      "AdvanceSound": "ding.mp3",
-      "Text": "提示消息提示消息提示消"
+      "PreRemindSound": "ding.mp3"
     }
   ]
 }

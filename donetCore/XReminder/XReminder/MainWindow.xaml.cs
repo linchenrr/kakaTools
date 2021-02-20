@@ -33,22 +33,17 @@ namespace XReminder
         private List<RemindRunner> runners = new List<RemindRunner>();
         private string exePath;
         private const string AutoRunParam = "-autorun";
+        private RemindConfig config;
         //MediaPlayer player;
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            btn_about.ContextMenu = null;
+
             exePath = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
             StartUpDir = Path.GetDirectoryName(exePath);
             Environment.CurrentDirectory = StartUpDir;
 
             RegKey.Init(@"SOFTWARE\XReminder");
-            //test
-            //RegKey.Instance.SetBool("bb", true);
-            //RegKey.Instance.SetString("str", "sadsadas阿斯顿撒sad");
-            //RegKey.Instance.SetInt("int", -85);
-
-            //var bb = RegKey.Instance.GetBool("bb");
-            //var str = RegKey.Instance.GetString("str");
-            //var ii = RegKey.Instance.GetInt("int");
 
 
             this.MouseDown += (x, y) =>
@@ -74,16 +69,15 @@ namespace XReminder
                     continue;
                 menuItem.Click += OnMenuItemClick;
             }
-            //var menuItem = (MenuItem)notifyIcon.ContextMenu.Items[0];
-            //menuItem.Click += OnMenuItemClick;
 
             try
             {
                 //var testJson = RemindConfig.MakeDefaultConfig();
-                //var config = JsonConvert.DeserializeObject<RemindConfig>(testJson);
+                //config = JsonConvert.DeserializeObject<RemindConfig>(testJson);
 
-                var json = File.ReadAllText("config.json", new UTF8Encoding(false));
-                var config = JsonConvert.DeserializeObject<RemindConfig>(json);
+                var json = File.ReadAllText("config.json", RemindConfig.Encoding);
+                config = JsonConvert.DeserializeObject<RemindConfig>(json);
+                config.Init();
 
                 RemindRunner.CheckInterval = config.CheckInterval * 1000;
 
@@ -100,24 +94,36 @@ namespace XReminder
                     }
 
                     item.ShowBalloon = ShowNotify;
-                    item.OnRemindTimeUpdate = OnRemindTimeUpdate;
 
                     var runner = new RemindRunner();
                     var startY = Canvas.GetTop(orgLabel);
                     if (runner.Run(item))
                     {
-                        var xaml = System.Windows.Markup.XamlWriter.Save(orgLabel);
-                        var newLabel = System.Windows.Markup.XamlReader.Parse(xaml) as Label;
-                        canvas.Children.Add(newLabel);
-                        Canvas.SetTop(newLabel, i * 30 + startY);
-                        item.Txt = newLabel;
-                        newLabel.Visibility = Visibility.Visible;
+                        var viewItem = new RemindViewItem();
+                        canvas.Children.Add(viewItem);
+                        Canvas.SetTop(viewItem, i * 30 + startY);
+                        viewItem.SetInfo(runner);
 
+                        //var xaml = System.Windows.Markup.XamlWriter.Save(orgLabel);
+                        //var newLabel = System.Windows.Markup.XamlReader.Parse(xaml) as Label;
+                        //canvas.Children.Add(newLabel);
+                        //Canvas.SetTop(newLabel, i * 30 + startY);
+                        //item.Txt = newLabel;
+                        //newLabel.Visibility = Visibility.Visible;
+
+                        runner.OnDataChanged += OnDataChanged;
                         runners.Add(runner);
                     }
                 }
 
                 UpdateStartUp();
+
+                var autoCheckUpdate = RegKey.Instance.GetBool(RegKey.Key_AutoCheckUpdate, true);
+                cb_autoCheckUpdate.IsChecked = autoCheckUpdate;
+                if (autoCheckUpdate)
+                {
+                    CheckUpdate();
+                }
 
                 var hideOnStartUp = RegKey.Instance.GetBool(RegKey.Key_HideOnStartUp);
                 cb_hideOnStartUp.IsChecked = hideOnStartUp;
@@ -133,7 +139,18 @@ namespace XReminder
                     //HideAsync();
                 }
 
-                CheckUpdate();
+                //CheckUpdate();
+
+#if DEBUG
+                RegKey.Instance.SetBool(RegKey.Key_ReadMe, false);
+#endif
+
+                var hasReadMe = RegKey.Instance.GetBool(RegKey.Key_ReadMe);
+                RegKey.Instance.SetBool(RegKey.Key_ReadMe, true);
+                if (hasReadMe == false)
+                {
+                    OpenReadMe();
+                }
             }
             catch (Exception ex)
             {
@@ -142,6 +159,12 @@ namespace XReminder
 
                 RunExit(1);
             }
+        }
+
+        private void OnDataChanged()
+        {
+            var json = JsonConvert.SerializeObject(config, Formatting.Indented);
+            File.WriteAllText("config.json", json, RemindConfig.Encoding);
         }
 
         private void OnMenuItemClick(object sender, RoutedEventArgs e)
@@ -168,21 +191,10 @@ namespace XReminder
             this.Hide();
         }
 
-        public void OnRemindTimeUpdate(RemindRunner runner)
-        {
-            var time = runner.remindTime;
-
-            this.Dispatcher.Invoke(delegate ()
-            {
-                runner.Data.Txt.Content = $"{time.ToShortDateString()} {time.ToShortTimeString()} {runner.Data.Text}";
-            });
-
-        }
-
         private void ShowNotify(string text)
         {
             //MessageBox.Show(text, "定时提醒");
-            this.Dispatcher.Invoke(delegate ()
+            this.Dispatcher.Invoke(() =>
             {
                 var balloon = new FancyBalloon();
                 balloon.SetInfo(text);
@@ -226,7 +238,6 @@ namespace XReminder
 
         private void UpdateStartUp()
         {
-            var path = exePath;
             var Rkey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(Regpath, true);
 
             cb_autoRun.IsChecked = false;
@@ -234,8 +245,10 @@ namespace XReminder
             {
                 var keyValue = Rkey.GetValue(keyName) as string;
                 cb_autoRun.IsChecked = keyValue != null;
+#if !DEBUG
                 if (keyValue != null && keyValue != commandLine)
                     Rkey.SetValue(keyName, commandLine);
+#endif
             }
         }
 
@@ -264,12 +277,7 @@ namespace XReminder
 
         private void btn_test_Click(object sender, RoutedEventArgs e)
         {
-            var balloon = new FancyBalloon();
-            balloon.SetInfo("Custom Balloon");
-
-            //notifyIcon.ShowCustomBalloon(balloon, PopupAnimation.Slide, 4000);
-            notifyIcon.ShowCustomBalloon(balloon, PopupAnimation.Slide, null);
-            //notifyIcon.ShowBalloonTip("111", "222奥术大师", Hardcodet.Wpf.TaskbarNotification.BalloonIcon.Info);
+            RegKey.Instance.Delete();
         }
 
         private void btn_min_Click(object sender, RoutedEventArgs e)
@@ -284,7 +292,8 @@ namespace XReminder
 
         private void btn_about_Click(object sender, RoutedEventArgs e)
         {
-            btn_about.ContextMenu.IsOpen = true;
+            //btn_about.ContextMenu.IsOpen = true;
+            OpenReadMe();
         }
 
         private void CheckUpdate()
@@ -292,7 +301,7 @@ namespace XReminder
             var lastCheckTime = RegKey.Instance.GetDateTime(RegKey.Key_LastCheckUpdateTime);
             if (lastCheckTime != null)
             {
-                if ((DateTime.Now - lastCheckTime.Value).TotalDays < 1)
+                if ((DateTime.Now - lastCheckTime.Value).TotalHours < 1)
                     return;
             }
 
@@ -331,7 +340,23 @@ namespace XReminder
 
         private void menuItem_help_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("explorer.exe", Path.Combine(StartUpDir, "使用说明.txt"));
+            OpenReadMe();
+        }
+
+        private void OpenReadMe()
+        {
+            //Process.Start("explorer.exe", Path.Combine(StartUpDir, "使用说明.txt"));
+            var window = new ReadMeWindow();
+            window.Owner = this;
+            window.ShowDialog();
+        }
+
+        private void cb_autoCheckUpdate_Click(object sender, RoutedEventArgs e)
+        {
+            var autoCheckUpdate = cb_autoCheckUpdate.IsChecked.Value;
+            RegKey.Instance.SetBool(RegKey.Key_AutoCheckUpdate, autoCheckUpdate);
+            if (autoCheckUpdate)
+                CheckUpdate();
         }
     }
 }

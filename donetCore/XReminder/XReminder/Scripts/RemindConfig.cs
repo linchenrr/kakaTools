@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Controls;
 using static XReminder.GlobalValues;
 
@@ -9,9 +10,22 @@ namespace XReminder
 {
     public class RemindConfig
     {
+        static public Encoding Encoding = new UTF8Encoding(false);
 
         public int CheckInterval = 1;
         public List<RemindItem> Items;
+
+        public void Init()
+        {
+            if (CheckInterval < 1)
+            {
+                CheckInterval = 1;
+            }
+            foreach (var item in Items)
+            {
+                item.Init();
+            }
+        }
 
         static public string MakeDefaultConfig()
         {
@@ -23,8 +37,7 @@ namespace XReminder
                     IsActive=true,
                     //StartTime=DateTime.Now.AddMinutes(1),
                     StartTime=DateTime.Now.AddMinutes(-10),
-                    IntervalDays=3,
-                    OffsetSeconds=60,
+                    Interval="3d 1m 30s",
                 },
                 },
             };
@@ -39,30 +52,59 @@ namespace XReminder
         public bool IsTestItem;
         public bool IsActive;
         public DateTime StartTime;
-        public int AdvanceSeconds = -1;
 
-        public int IntervalDays;
-        //每次提醒后下次提醒的时间偏移分钟
-        public int OffsetSeconds;
+        //10d 20h5m  6s
+        public string Interval;
+        public TimeSpan IntervalTimeSpan;
 
-        public string AdvanceSound;
+        public string PreRemind;
+        public TimeSpan PreRemindTimeSpan;
+
+        public string PreRemindSound;
         public string RemindSound;
 
         public string Text;
 
         [JsonIgnore]
-        public bool NeedAdvance => AdvanceSeconds > 0;
+        public bool NeedAdvance => PreRemindTimeSpan > TimeSpan.Zero;
         [JsonIgnore]
         public Action<string> ShowBalloon;
-        [JsonIgnore]
-        public Label Txt;
 
-        public Action<RemindRunner> OnRemindTimeUpdate;
 
-        //public void OnRemindTimeUpdate(DateTime time)
-        //{
-        //    Txt.Text = $"{time.ToShortDateString()} {time.ToShortTimeString()}";
-        //}
+        static private int GetTimeNum(Regex reg, string text)
+        {
+            //var str = @"10d 20h5m  6s";
+            //text = str;
+            var matchs = reg.Matches(text);
+            if (matchs.Count > 0)
+            {
+                var d = matchs[0].Groups[1];
+                return int.Parse(d.Value);
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        static private TimeSpan GetTimeSpan(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+                return TimeSpan.Zero;
+            return new TimeSpan(GetTimeNum(reg_d, text), GetTimeNum(reg_h, text), GetTimeNum(reg_m, text), GetTimeNum(reg_s, text));
+        }
+
+        static private Regex reg_d = new Regex(@"(\d+)d", RegexOptions.IgnoreCase);
+        static private Regex reg_h = new Regex(@"(\d+)h", RegexOptions.IgnoreCase);
+        static private Regex reg_m = new Regex(@"(\d+)m", RegexOptions.IgnoreCase);
+        static private Regex reg_s = new Regex(@"(\d+)s", RegexOptions.IgnoreCase);
+
+        public void Init()
+        {
+            IntervalTimeSpan = GetTimeSpan(Interval);
+            PreRemindTimeSpan = GetTimeSpan(PreRemind);
+        }
+
     }
 
 }

@@ -13,6 +13,8 @@ namespace XReminder
 
         public const string Key_HideOnStartUp = "HideOnStartUp";
         public const string Key_LastCheckUpdateTime = "LastCheckUpdateTime";
+        public const string Key_AutoCheckUpdate = "AutoCheckUpdate";
+        public const string Key_ReadMe = "ReadMe";
 
         static public RegKey Instance { get; private set; }
         static public void Init(string path)
@@ -21,13 +23,23 @@ namespace XReminder
         }
 
         private RegistryKey reg;
+        private string path;
 
         public RegKey(string path)
         {
+            this.path = path;
             reg = Registry.CurrentUser.OpenSubKey(path, true);
             if (reg == null)
             {
                 reg = Registry.CurrentUser.CreateSubKey(path);
+            }
+        }
+
+        public void Delete()
+        {
+            foreach (var key in reg.GetValueNames())
+            {
+                reg.DeleteValue(key);
             }
         }
 

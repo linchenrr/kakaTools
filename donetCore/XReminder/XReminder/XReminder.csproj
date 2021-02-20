@@ -29,6 +29,8 @@
     <None Remove="min.png" />
     <None Remove="start.mp3" />
     <None Remove="start.wav" />
+    <None Remove="UIImages\close.png" />
+    <None Remove="UIImages\min.png" />
     <None Remove="XReminderUpdate.json" />
     <None Remove="使用说明.txt" />
   </ItemGroup>
@@ -70,6 +72,8 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Resource Include="Images\捐赠.png" />
+    <Resource Include="UIImages\close.png" />
+    <Resource Include="UIImages\min.png" />
     <Resource Include="XReminderUpdate.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>

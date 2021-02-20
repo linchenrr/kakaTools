@@ -22,9 +22,13 @@ namespace XReminder
         public DateTime advanceTime;
         private MediaPlayer player;
         private MediaPlayer player_advanceSound;
+        public Action<RemindRunner> OnRemindTimeUpdate;
+        public Action OnDataChanged;
+        public DateTime NewStartTime;
 
         public bool Run(RemindItem data)
         {
+            needReset = false;
             this.Data = data;
             if (data.IsActive == false)
                 return false;
@@ -46,9 +50,25 @@ namespace XReminder
         {
             needAdvance = Data.NeedAdvance;
             if (needAdvance)
-                advanceTime = remindTime.AddSeconds(-Data.AdvanceSeconds);
+                advanceTime = remindTime.Add(-Data.PreRemindTimeSpan);
         }
 
+        public void SetStartTimeToNow()
+        {
+            NewStartTime = DateTime.Now;
+            needReset = true;
+        }
+
+        private void reset()
+        {
+            Data.StartTime = NewStartTime;
+            needReset = false;
+            Run(Data);
+            OnDataChanged();
+        }
+
+        static private TimeSpan ZeroTimeSpan = new TimeSpan();
+        private bool needReset;
         private async void Running()
         {
             try
@@ -63,32 +83,55 @@ namespace XReminder
                 //计算出下一次提醒的时间
                 while (true)
                 {
-                    var diffDay = DateDiff(targetTime, now);
-                    if (diffDay == 0 || targetTime >= now)
+                    //if (targetTime >= now)
+                    //程序开启后  过了30秒内都会提示
+                    if ((now - targetTime).TotalSeconds < 30d)
                     {
                         remindTime = targetTime;
-                        Data.OnRemindTimeUpdate(this);
+                        OnRemindTimeUpdate(this);
                         break;
                     }
-                    if (Data.IntervalDays > 0)
+                    if (Data.IntervalTimeSpan > TimeSpan.Zero)
                     {
-                        targetTime = targetTime.AddDays(Data.IntervalDays).AddSeconds(Data.OffsetSeconds);
+                        targetTime = targetTime.Add(Data.IntervalTimeSpan);
                     }
                     else
+                    {
+                        remindTime = targetTime;
+                        OnRemindTimeUpdate(this);
                         return;
+                    }
+                    //var diffDay = DateDiff(targetTime, now);
+                    //if (diffDay == 0 || targetTime >= now)
+                    //{
+                    //    remindTime = targetTime;
+                    //    OnRemindTimeUpdate(this);
+                    //    break;
+                    //}
+                    //if (Data.IntervalDays > 0)
+                    //{
+                    //    targetTime = targetTime.AddDays(Data.IntervalDays).AddSeconds(Data.OffsetSeconds);
+                    //}
+                    //else
+                    //    return;
                 }
 
                 CalculateAdvance();
                 if (needAdvance)
                 {
                     player_advanceSound = new MediaPlayer();
-                    player_advanceSound.Open(new Uri(Path.Combine(StartUpDir, "Sound", Data.AdvanceSound)));
+                    player_advanceSound.Open(new Uri(Path.Combine(StartUpDir, "Sound", Data.PreRemindSound)));
                 }
 
 
                 while (true)
                 {
                     await Task.Delay(CheckInterval);
+                    if (needReset)
+                    {
+                        reset();
+                        return;
+                    }
 
                     now = DateTime.Now;
 
@@ -100,6 +143,7 @@ namespace XReminder
                             //如果还没过正式提醒时间  则播放提示
                             if (now < remindTime)
                             {
+                                player_advanceSound.Stop();
                                 player_advanceSound.Play();
                                 Data.ShowBalloon($@"即将开始: {Data.Text}
 时间：{remindTime.ToShortTimeString()}");
@@ -111,17 +155,18 @@ namespace XReminder
                         if (now >= remindTime)
                         {
                             //程序开启后  过了2分钟内都会提示
-                            if ((now - remindTime).TotalMinutes < 2d)
+                            //if ((now - remindTime).TotalMinutes < 2d)
                             {
+                                player.Stop();
                                 player.Play();
                                 Data.ShowBalloon($@"{Data.Text}");
                             }
 
-                            if (Data.IntervalDays > 0)
+                            if (Data.IntervalTimeSpan > TimeSpan.Zero)
                             {
-                                remindTime = remindTime.AddDays(Data.IntervalDays).AddSeconds(Data.OffsetSeconds);
+                                remindTime = remindTime.Add(Data.IntervalTimeSpan);
                                 CalculateAdvance();
-                                Data.OnRemindTimeUpdate(this);
+                                OnRemindTimeUpdate(this);
                             }
                             else
                             {
