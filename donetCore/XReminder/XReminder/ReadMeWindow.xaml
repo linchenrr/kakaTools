@@ -11,14 +11,16 @@
         <ResourceDictionary Source="XRemindRes.xaml"></ResourceDictionary>
     </Window.Resources>
     <Canvas Margin="0,0,0,0">
-        <Label Content="XReminder使用说明"  Height="40" Foreground="#FFE8E8E8" Canvas.Top="10" FontSize="16" Canvas.Left="200" Width="291" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+        <Label Content="XReminder 原神提醒助手 v0.2"  Height="40" Foreground="#FFE8E8E8" Canvas.Top="10" FontSize="16" Canvas.Left="200" Width="291" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
         <TextBox x:Name="txt_readme" Canvas.Left="10" Canvas.Top="55" TextWrapping="Wrap" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="#FFDAE6E8" SelectionBrush="#FFEAEAEA" SelectionTextBrush="#FF252525" FontSize="14" IsReadOnlyCaretVisible="True" IsReadOnly="True" MaxLines="100" Width="671" Height="441" BorderThickness="0,0,0,0"/>
-        <Button x:Name="btn_close" Style="{StaticResource MyButton}" Content="" Width="30" Height="30"  BorderBrush="{x:Null}" Foreground="{x:Null}" Canvas.Left="661" Cursor="Hand" Click="btn_close_Click">
+        <Button x:Name="btn_close" Style="{StaticResource MyButton}" Content="" Width="36" Height="36"  BorderBrush="{x:Null}" Foreground="{x:Null}" Canvas.Left="655" Cursor="Hand" Click="btn_close_Click">
             <Button.Background>
                 <ImageBrush ImageSource="/UIImages/close.png"/>
             </Button.Background>
         </Button>
-        <Button x:Name="btn_donate" Content="捐赠" Canvas.Left="603" Canvas.Top="503" Height="30" Width="80" FontSize="16" Click="btn_donate_Click"/>
+        <Button x:Name="btn_donate" Content="捐赠!" Canvas.Left="603" Canvas.Top="503" Height="30" Width="80" FontSize="16" Click="btn_donate_Click"/>
+        <Label Content="by — lin，反馈建议：" Foreground="#FFE8E8E8" Canvas.Top="503" FontSize="14" Canvas.Left="10" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+        <TextBox Canvas.Left="153" Canvas.Top="507" Text="superkaka.org@gmail.com" TextWrapping="NoWrap" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="#FFDAE6E8" SelectionBrush="#FFEAEAEA" SelectionTextBrush="#FF252525" FontSize="14" IsReadOnlyCaretVisible="True" IsReadOnly="True" MaxLines="1"/>
 
 
     </Canvas>

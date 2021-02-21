@@ -49,21 +49,24 @@ namespace XReminder
 
     public class RemindItem
     {
-        public bool IsTestItem;
         public bool IsActive;
+        public string Text;
         public DateTime StartTime;
 
-        //10d 20h5m  6s
         public string Interval;
+        [JsonIgnore]
         public TimeSpan IntervalTimeSpan;
 
         public string PreRemind;
+        [JsonIgnore]
         public TimeSpan PreRemindTimeSpan;
 
-        public string PreRemindSound;
         public string RemindSound;
+        public string PreRemindSound;
 
-        public string Text;
+#if DEBUG
+        public bool IsTestItem;
+#endif
 
         [JsonIgnore]
         public bool NeedAdvance => PreRemindTimeSpan > TimeSpan.Zero;

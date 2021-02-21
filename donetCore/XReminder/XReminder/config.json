@@ -1,4 +1,6 @@
 {
+  //计时器检测精度(秒)
+  "CheckInterval": 1,
   //提醒项列表
   "Items": [
     {
@@ -13,7 +15,7 @@
     {
       "IsActive": true,
       "Text": "挖矿",
-      "StartTime": "2021-02-17 21:41:00",
+      "StartTime": "2021-02-21 21:08:00",
       "Interval": "3d 100s",
       "PreRemind": "90s",
       "RemindSound": "start.mp3",
@@ -22,17 +24,16 @@
     {
       "IsActive": true,
       "Text": "参变质量仪",
-      "StartTime": "2021-02-20 20:50:00",
+      "StartTime": "2021-02-20 20:53:00",
       "Interval": "7d 100s",
       "PreRemind": "60s",
       "RemindSound": "start.mp3",
       "PreRemindSound": "ding.mp3"
     },
     {
-      //此项为调试用，不用管
       "IsTestItem": false,
       "IsActive": false,
-      "Text": "测试消息提示消息提示消",
+      "Text": "此项为调试用消息，不用管",
       "StartTime": "2021-02-08 19:30:00",
       "Interval": "30s",
       "PreRemind": "10s",

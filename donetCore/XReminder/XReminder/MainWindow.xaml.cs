@@ -43,7 +43,7 @@ namespace XReminder
             StartUpDir = Path.GetDirectoryName(exePath);
             Environment.CurrentDirectory = StartUpDir;
 
-            RegKey.Init(@"SOFTWARE\XReminder");
+            RegKey.Init(@"SOFTWARE\XReminderV2");
 
 
             this.MouseDown += (x, y) =>
@@ -85,13 +85,13 @@ namespace XReminder
                 for (int i = 0; i < config.Items.Count; i++)
                 {
                     var item = config.Items[i];
+#if DEBUG
                     if (item.IsTestItem)
                     {
-#if DEBUG
                         item.IsActive = true;
                         item.StartTime = DateTime.Now.AddSeconds(10d);
-#endif
                     }
+#endif
 
                     item.ShowBalloon = ShowNotify;
 
@@ -145,12 +145,7 @@ namespace XReminder
                 RegKey.Instance.SetBool(RegKey.Key_ReadMe, false);
 #endif
 
-                var hasReadMe = RegKey.Instance.GetBool(RegKey.Key_ReadMe);
-                RegKey.Instance.SetBool(RegKey.Key_ReadMe, true);
-                if (hasReadMe == false)
-                {
-                    OpenReadMe();
-                }
+                CheckReadMe();
             }
             catch (Exception ex)
             {
@@ -161,9 +156,25 @@ namespace XReminder
             }
         }
 
+        private async void CheckReadMe()
+        {
+            await Task.Delay(2000);
+            var hasReadMe = RegKey.Instance.GetBool(RegKey.Key_ReadMe);
+            RegKey.Instance.SetBool(RegKey.Key_ReadMe, true);
+            if (hasReadMe == false)
+            {
+                this.Dispatcher.Invoke(() =>
+                {
+                    var result = MessageBox.Show(this, @"是否先阅读使用教程？", "首次使用提示", MessageBoxButton.YesNo);
+                    if (result == MessageBoxResult.Yes || result == MessageBoxResult.OK)
+                        OpenReadMe();
+                });
+            }
+        }
+
         private void OnDataChanged()
         {
-            var json = JsonConvert.SerializeObject(config, Formatting.Indented);
+            var json = JsonConvert.SerializeObject(config, Formatting.Indented, DateTimeConverter.Instance);
             File.WriteAllText("config.json", json, RemindConfig.Encoding);
         }
 

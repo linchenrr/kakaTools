@@ -35,7 +35,7 @@ namespace XReminder
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            this.Close();
+            //this.Close();
         }
 
         private void btn_donate_Click(object sender, RoutedEventArgs e)

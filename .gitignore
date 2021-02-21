@@ -4,3 +4,4 @@ obj
 *.user
 *.suo
 packages
+/donetCore/XReminder/历史版本

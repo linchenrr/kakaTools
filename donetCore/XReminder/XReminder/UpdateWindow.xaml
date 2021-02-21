@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:XReminder"
-        mc:Ignorable="d" Height="278" Width="461" Background="#FF3F3F46" WindowStyle="None" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+        mc:Ignorable="d" Height="344" Width="461" Background="#FF3F3F46" WindowStyle="None" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
     <Window.Resources>
         <!--用于一键换肤-->
         <ResourceDictionary Source="XRemindRes.xaml"></ResourceDictionary>
@@ -20,7 +20,7 @@
         <Label x:Name="txt_url" Content="https://pan.baidu.com/s/1Mahoe3HfByfr_T-bo9Rq9Q" Foreground="#FF8FC2FF" Canvas.Top="87" Canvas.Left="94" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Width="345" Cursor="Hand" MouseLeftButtonUp="txt_url_MouseLeftButtonUp"/>
         <Label x:Name="txt_code" Content="1111" Foreground="#FFE8E8E8" Canvas.Top="118" FontSize="16" Canvas.Left="94" HorizontalContentAlignment="Left" VerticalContentAlignment="Center"/>
         <Label x:Name="txt_date" Content="43543534" Foreground="#FFE8E8E8" Canvas.Top="153" FontSize="16" Canvas.Left="94" HorizontalContentAlignment="Left" VerticalContentAlignment="Center"/>
-        <Label x:Name="txt_updateInfo" Content="0.2" Foreground="#FFE8E8E8" Canvas.Top="195" FontSize="14" Canvas.Left="94" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" Width="357" Height="73" Padding="5,0,0,0"/>
+        <Label x:Name="txt_updateInfo" Content="0.2" Foreground="#FFE8E8E8" Canvas.Top="195" FontSize="14" Canvas.Left="94" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" Width="357" Height="139" Padding="5,0,0,0"/>
         <Button x:Name="btn_copyCode" Content="复制" Canvas.Left="192" Canvas.Top="121" Height="27" Width="77" FontSize="16" Click="btn_copyCode_Click"/>
         <Button x:Name="btn_close" Style="{StaticResource MyButton}" Content="" Width="46" Height="38"  BorderBrush="{x:Null}" Foreground="{x:Null}" Canvas.Left="405" Canvas.Top="5" Cursor="Hand" Click="btn_close_Click">
             <Button.Background>
