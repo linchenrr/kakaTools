@@ -26,7 +26,30 @@ namespace UnityPatcher2020
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
             txt_info.Content = "";
+
+
+            foreach (var arg in Environment.GetCommandLineArgs())
+            {
+                if (arg.Equals("noCheck", StringComparison.OrdinalIgnoreCase))
+                    return;
+            }
+            UpdateChecker.RemoteCheckAsync(info =>
+            {
+                if (info.IsEnable == false)
+                {
+
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        MessageBox.Show("此工具仅限内部使用");
+                        Environment.Exit(5);
+                    });
+                }
+            });
         }
 
         private FileVersionInfo info;
@@ -276,5 +299,6 @@ ProductVersion：{info.ProductVersion}";
                 return;
             }
         }
+
     }
 }

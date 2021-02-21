@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:UnityPatcher2020"
         mc:Ignorable="d"
-        Title="unity patcher v0.7 beta —— by lin" Height="268" Width="608" Background="#FF3F3F46" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        Title="unity patcher v0.7 beta —— by lin" Height="268" Width="608" Background="#FF3F3F46" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Loaded="Window_Loaded" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Icon="/icon.ico" >
     <Canvas>
         <Button x:Name="btn_browser" Content="browser" Click="btn_browser_Click" Grid.Column="5" Height="28" Width="76" HorizontalContentAlignment="Center" Canvas.Left="504" Canvas.Top="34"/>
         <TextBox x:Name="txt_path" HorizontalAlignment="Left" Margin="25,28,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="452" Height="40" Grid.ColumnSpan="6" Background="Black" Foreground="White" TextChanged="txt_path_TextChanged"/>
