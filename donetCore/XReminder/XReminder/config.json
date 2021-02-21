@@ -15,7 +15,7 @@
     {
       "IsActive": true,
       "Text": "挖矿",
-      "StartTime": "2021-02-21 21:08:00",
+      "StartTime": "2021-02-24 09:20:00",
       "Interval": "3d 100s",
       "PreRemind": "90s",
       "RemindSound": "start.mp3",
