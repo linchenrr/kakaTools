@@ -12,7 +12,7 @@ public class UpdateChecker
 {
 
     public const string UpdateInfoFileName = "UnityCracker.json";
-    static public string UpdateInfoURL = $"http://192.168.1.55/{UpdateInfoFileName}";
+    static public string UpdateInfoURL = $"http://tools.local/{UpdateInfoFileName}";
     static public async Task RemoteCheckAsync(Action<VersionInfo> resultHandler)
     {
         var request = (HttpWebRequest)WebRequest.Create(UpdateInfoURL);
