@@ -74,9 +74,9 @@
     <Resource Include="Images\捐赠.png" />
     <Resource Include="UIImages\close.png" />
     <Resource Include="UIImages\min.png" />
-    <Resource Include="XReminderUpdate.json">
+    <EmbeddedResource Include="XReminderUpdate.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
+    </EmbeddedResource>
     <Resource Include="about.png" />
     <Resource Include="close.png" />
     <Resource Include="icon.ico" />

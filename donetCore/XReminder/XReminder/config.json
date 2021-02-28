@@ -13,7 +13,7 @@
     {
       "IsActive": true,
       "Text": "挖矿",
-      "StartTime": "2021-02-24 09:03:00",
+      "StartTime": "2021-02-27 09:18:32",
       "Interval": "3d 100s",
       "PreRemind": "90s",
       "RemindSound": "start.mp3",
@@ -22,11 +22,9 @@
     {
       "IsActive": true,
       "Text": "参变质量仪",
-      "StartTime": "2021-02-20 20:53:00",
-      "Interval": "7d 100s",
-      "PreRemind": "60s",
-      "RemindSound": "start.mp3",
-      "PreRemindSound": "ding.mp3"
+      "StartTime": "2021-02-20 20:50:00",
+      "Interval": "7d",
+      "RemindSound": "start.mp3"
     },
     {
       "IsActive": false,

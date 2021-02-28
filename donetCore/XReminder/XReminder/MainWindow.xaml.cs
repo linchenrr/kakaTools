@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -322,22 +323,27 @@ namespace XReminder
 
             RegKey.Instance.SetDateTime(RegKey.Key_LastCheckUpdateTime, DateTime.Now);
 
-            //var jj = Application.Current.Resources["XReminderUpdate"];
-            var json = Properties.Resources.XReminderUpdate;
-            //var json = File.ReadAllText(UpdateChecker.UpdateInfoFileName, new UTF8Encoding(false));
-            var localInfo = JsonConvert.DeserializeObject<VersionInfo>(json);
-
-            UpdateChecker.RemoteCheckAsync(info =>
+            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("XReminder.XReminderUpdate.json"))
             {
-                if (localInfo.Version != info.Version)
+                var bytes = new byte[stream.Length];
+                stream.Read(bytes, 0, bytes.Length);
+                var json = RemindConfig.Encoding.GetString(bytes);
+                //var json = File.ReadAllText(UpdateChecker.UpdateInfoFileName, new UTF8Encoding(false));
+                var localInfo = JsonConvert.DeserializeObject<VersionInfo>(json);
+
+                UpdateChecker.RemoteCheckAsync(info =>
                 {
-                    this.Show();
-                    var aboutWindow = new UpdateWindow();
-                    aboutWindow.SetInfo(info);
-                    aboutWindow.Owner = this;
-                    aboutWindow.ShowDialog();
-                }
-            });
+                    if (localInfo.Version != info.Version)
+                    {
+                        this.Show();
+                        var aboutWindow = new UpdateWindow();
+                        aboutWindow.SetInfo(info);
+                        aboutWindow.Owner = this;
+                        aboutWindow.ShowDialog();
+                    }
+                });
+            }
+
         }
 
         private void cb_hideOnStartUp_Click(object sender, RoutedEventArgs e)

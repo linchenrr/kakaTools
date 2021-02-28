@@ -59,20 +59,5 @@ namespace XReminder.Properties {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///   查找类似 {
-        ///  &quot;Version&quot;: &quot;0.1&quot;,
-        ///  &quot;DownLoadURL&quot;: &quot;https://pan.baidu.com/s/1Pq5ZCTj8ReaIOG_OlqwkSA&quot;,
-        ///  &quot;Code&quot;: &quot;1111&quot;,
-        ///  &quot;BuildDate&quot;: &quot;2021-02-21 10:39:00&quot;,
-        ///  &quot;UpdateInfo&quot;: &quot;改进了提醒项配置方式\r\n新增设置提醒起始时间为当前时间功能\r\n优化了界面UI&quot;
-        ///} 的本地化字符串。
-        /// </summary>
-        public static string XReminderUpdate {
-            get {
-                return ResourceManager.GetString("XReminderUpdate", resourceCulture);
-            }
-        }
     }
 }
